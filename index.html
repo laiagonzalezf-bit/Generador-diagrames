@@ -6,129 +6,77 @@
     <title>Generador de Diagrames Musicals</title>
     <style>
         /* --- ESTILS DE LA PÀGINA --- */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f7f6;
-            color: #333;
-        }
-        .contenidor {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .contenidor { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
         /* --- ZONA DE CONTROLS --- */
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            background: #e9ecef;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        .grup-control {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
+        .controls { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; align-items: flex-end; background: #e9ecef; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+        .grup-control { display: flex; flex-direction: column; flex-grow: 1; }
         label { font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
-        input, select, button {
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-weight: bold;
-            transition: background 0.2s;
-            padding: 10px 20px;
-        }
+        input, select, button { padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        
+        /* --- BOTONS --- */
+        button { background-color: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; transition: background 0.2s; padding: 10px 20px; }
         button:hover { background-color: #0056b3; }
-        .btn-imprimir { background-color: #28a745; }
-        .btn-imprimir:hover { background-color: #1e7e34; }
         .btn-bateria { background-color: #fd7e14; }
         .btn-bateria:hover { background-color: #e86e04; }
+        .btn-baix { background-color: #6f42c1; }
+        .btn-baix:hover { background-color: #59339d; }
+        .btn-imprimir { background-color: #28a745; }
+        .btn-imprimir:hover { background-color: #1e7e34; }
         
         /* --- ZONA DE LA PARTITURA / SECCIONS --- */
-        .titol-canco { 
-            text-align: center; margin-top: 10px; margin-bottom: 30px;
-            font-size: 2.5em; text-transform: uppercase; color: #222;
-        }
-        .titol-seccio {
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 5px;
-            color: #444;
-            margin-top: 40px;
-        }
+        .titol-canco { text-align: center; margin-top: 10px; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; color: #222; }
+        .titol-seccio { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #444; margin-top: 40px; }
 
-        /* Graelles per a cada instrument */
+        /* Graelles */
         .graella-guitarra { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
         .graella-teclat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .graella-bateria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; } /* Ara són 2 columnes: ocupa la meitat */
+        .graella-bateria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .graella-baix { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
-        .acord-item {
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            background-color: #fff;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+        .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; background-color: #fff; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .acord-item h3 { margin: 0 0 10px 0; font-size: 1.1em; color: #444; }
         .acord-item img { max-width: 100%; height: auto; border-radius: 4px; }
-        
-        .eliminar-btn {
-            position: absolute; top: -10px; right: -10px;
-            background: #dc3545; color: white; border: none; border-radius: 50%;
-            width: 30px; height: 30px; cursor: pointer; font-size: 14px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .eliminar-btn { position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 10;}
 
-        /* --- FINESTRA EMERGENT (MODAL BATERIA) --- */
-        #modalBateria {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;
-        }
-        .modal-contingut {
-            background: white; padding: 20px; border-radius: 10px;
-            width: 80%; max-height: 80%; overflow-y: auto; text-align: center;
-        }
-        .modal-graella {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;
-        }
-        .bateria-opcio {
-            border: 2px solid transparent; cursor: pointer; transition: 0.2s;
-        }
-        .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.05); }
-        .bateria-opcio img { max-width: 100%; height: auto; border: 1px solid #ccc; }
+        /* --- FINESTRES EMERGENTS (MODALS) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 80%; max-width: 600px; max-height: 80%; overflow-y: auto; text-align: center; }
         .tancar-modal { margin-top: 20px; background: #6c757d; }
         
-        /* --- IMPRESSIÓ I PDF (DIN A4) --- */
+        /* Modal Bateria */
+        .modal-graella { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .bateria-opcio { border: 2px solid transparent; cursor: pointer; transition: 0.2s; }
+        .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.05); }
+        .bateria-opcio img { max-width: 100%; height: auto; border: 1px solid #ccc; }
+        
+        /* Modal Baix (Formulari) */
+        .formulari-baix { display: grid; grid-template-columns: 1fr; gap: 15px; text-align: left; margin-top: 20px; }
+        .input-corda { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
+        .input-corda label { margin: 0; width: 120px; }
+        .input-corda input { width: 60px; text-align: center; }
+
+        /* --- DISSENY TABULATURA BAIX (Generat amb Codi) --- */
+        .tab-baix { display: flex; align-items: center; margin-top: 15px; background: #fdfdfd; padding: 15px 10px; border: 1px solid #ccc; border-radius: 6px; }
+        .tab-esquerra { font-family: monospace; font-weight: bold; font-size: 16px; line-height: 1.2; padding-right: 15px; border-right: 2px solid #333; margin-right: 15px; color: #333; }
+        .tab-linies { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; height: 90px; }
+        .corda-linea { position: relative; height: 20px; display: flex; align-items: center; justify-content: center; }
+        .corda-linea::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background-color: #666; z-index: 1; }
+        .nota-numero { position: relative; z-index: 2; background-color: #fdfdfd; padding: 0 5px; font-family: monospace; font-weight: bold; font-size: 18px; color: #d90429; }
+
+        /* --- IMPRESSIÓ I PDF (DIN A4 HORITZONTAL) --- */
         @media print {
-            @page { size: A4; margin: 15mm; }
+            /* Hem afegit 'landscape' per forçar l'orientació horitzontal */
+            @page { size: A4 landscape; margin: 15mm; }
+            
             .controls, .no-print { display: none !important; }
             body { background: white; padding: 0; }
             .contenidor { box-shadow: none; padding: 0; max-width: 100%; }
             .acord-item { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
             
-            /* Lògica de salt de pàgina */
-            .seccio-nova-pagina {
-                break-before: page;
-                page-break-before: always;
-            }
+            /* Lògica de salt de pàgina per a cada secció */
+            .seccio-nova-pagina { break-before: page; page-break-before: always; }
         }
     </style>
 </head>
@@ -144,7 +92,7 @@
         </div>
 
         <div class="grup-control">
-            <label for="instrument">Instrument:</label>
+            <label for="instrument">Instrument (Imatges):</label>
             <select id="instrument">
                 <option value="guitarra">Guitarra</option>
                 <option value="teclat">Teclat</option>
@@ -191,6 +139,7 @@
         </div>
 
         <button onclick="afegirAcord()">+ Afegir Acord</button>
+        <button class="btn-baix" onclick="obrirModalBaix()">🎸 Tab de Baix</button>
         <button class="btn-bateria" onclick="obrirModalBateria()">🥁 Afegir Bateria</button>
         <button class="btn-imprimir" onclick="window.print()">🖨️ PDF</button>
     </div>
@@ -206,6 +155,11 @@
         <h3 class="titol-seccio">🎹 Teclats</h3>
         <div class="graella-teclat" id="seccio-teclat"></div>
     </div>
+    
+    <div id="wrap-baix" style="display: none;">
+        <h3 class="titol-seccio">🎸 Baix Elèctric (TAB)</h3>
+        <div class="graella-baix" id="seccio-baix"></div>
+    </div>
 
     <div id="wrap-bateria" style="display: none;">
         <h3 class="titol-seccio">🥁 Bateria</h3>
@@ -213,26 +167,59 @@
     </div>
 </div>
 
-<div id="modalBateria" class="no-print">
+<div id="modalBateria" class="modal-overlay no-print">
     <div class="modal-contingut">
         <h2>Tria un patró de bateria</h2>
-        <p>Fes clic a la imatge per afegir-la a la partitura.</p>
-        <div class="modal-graella" id="galeria-bateria">
+        <p>Fes clic a la imatge per afegir-la.</p>
+        <div class="modal-graella" id="galeria-bateria"></div>
+        <button class="tancar-modal" onclick="tancarModalBateria()">Cancel·lar</button>
+    </div>
+</div>
+
+<div id="modalBaix" class="modal-overlay no-print">
+    <div class="modal-contingut" style="max-width: 400px;">
+        <h2>🎸 Crear Tab de Baix</h2>
+        <div class="formulari-baix">
+            <div class="grup-control">
+                <label>Nom de l'acord / nota (Títol):</label>
+                <input type="text" id="baix-titol" placeholder="Ex: A- o Riff Principal">
             </div>
-        <button class="tancar-modal" onclick="tancarModalBateria()">Tancar / Cancel·lar</button>
+            
+            <p style="margin: 10px 0 0 0; font-weight: bold; color: #555;">Números de trast:</p>
+            <div class="input-corda">
+                <label>Corda 1 (G - aguda):</label>
+                <input type="text" id="baix-g" placeholder="-">
+            </div>
+            <div class="input-corda">
+                <label>Corda 2 (D):</label>
+                <input type="text" id="baix-d" placeholder="-">
+            </div>
+            <div class="input-corda">
+                <label>Corda 3 (A):</label>
+                <input type="text" id="baix-a" placeholder="-">
+            </div>
+            <div class="input-corda">
+                <label>Corda 4 (E - greu):</label>
+                <input type="text" id="baix-e" placeholder="-">
+            </div>
+        </div>
+        <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
+            <button style="background: #28a745;" onclick="generarTabBaix()">Generar Tabulatura</button>
+            <button class="tancar-modal" style="margin-top: 0;" onclick="tancarModalBaix()">Cancel·lar</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // 1. Títol
+    // 1. Títol Cançó
     function actualitzarTitol() {
         const input = document.getElementById('titolInput').value;
         document.getElementById('titolMostrat').innerText = input || "TÍTOL DE LA CANÇÓ";
     }
 
-    // 2. Gestionar quines seccions es veuen i organitzar el salt de pàgina per al PDF
+    // 2. Gestionar Seccions (Salts de pàgina per a impressió)
     function actualitzarTitolsSeccions() {
-        const seccions = ['guitarra', 'teclat', 'bateria'];
+        const seccions = ['guitarra', 'teclat', 'baix', 'bateria'];
         let primeraVisio = false;
 
         seccions.forEach(inst => {
@@ -240,44 +227,112 @@
             const grid = document.getElementById(`seccio-${inst}`);
             
             if (grid.children.length > 0) {
-                wrap.style.display = 'block'; // Mostrem la secció perquè té imatges
-                
-                // Si és la primera secció que trobem amb imatges, es queda amb el títol (no salta de pàgina)
+                wrap.style.display = 'block';
                 if (!primeraVisio) {
                     wrap.classList.remove('seccio-nova-pagina');
                     primeraVisio = true;
                 } else {
-                    // Les següents seccions aniran a una pàgina nova en imprimir
                     wrap.classList.add('seccio-nova-pagina');
                 }
             } else {
-                wrap.style.display = 'none'; // Amaguem la secció si l'hem buidat
+                wrap.style.display = 'none';
                 wrap.classList.remove('seccio-nova-pagina');
             }
         });
     }
 
-    // 3. Afegir Acords (Guitarra / Teclat)
+    // 3. Afegir Acord amb Imatge (Guitarra/Teclat)
     function afegirAcord() {
         const instrument = document.getElementById('instrument').value;
         const selectAcord = document.getElementById('acord');
-        const acordBase = selectAcord.value;
         const textLlegible = selectAcord.options[selectAcord.selectedIndex].text;
-        
-        let nomFitxer = acordBase;
-        if (instrument === 'teclat') { nomFitxer = 'T' + acordBase; }
+        let nomFitxer = selectAcord.value;
+        if (instrument === 'teclat') { nomFitxer = 'T' + nomFitxer; }
 
-        crearElementVisual(instrument, textLlegible, `img/${nomFitxer}.png`);
+        const img = document.createElement('img');
+        img.src = `img/${nomFitxer}.png`;
+        img.onerror = function() { this.onerror = null; this.alt = "⚠️ Imatge no trobada"; this.style.border = "2px dashed red"; };
+
+        crearContenidor(instrument, textLlegible, img);
     }
 
-    // 4. Afegir Bateria
-    function afegirBateria(numeroPatro) {
-        crearElementVisual('bateria', `Patró de Bateria ${numeroPatro}`, `img/dors patrons de bateria ${numeroPatro}.png`);
+    // 4. Bateria
+    function obrirModalBateria() { document.getElementById('modalBateria').style.display = 'flex'; carregarGaleriaBateria(); }
+    function tancarModalBateria() { document.getElementById('modalBateria').style.display = 'none'; }
+    function afegirBateria(num) {
+        const img = document.createElement('img');
+        img.src = `img/dors patrons de bateria ${num}.png`;
+        crearContenidor('bateria', `Patró ${num}`, img);
         tancarModalBateria();
     }
 
-    // 5. Funció genèrica per dibuixar la capsa (Acords o Bateria)
-    function crearElementVisual(instrument, titolText, rutaImatge) {
+    let galeriaCarregada = false;
+    function carregarGaleriaBateria() {
+        if (galeriaCarregada) return;
+        const cont = document.getElementById('galeria-bateria');
+        for (let i = 1; i <= 42; i++) {
+            const div = document.createElement('div'); div.className = 'bateria-opcio'; div.onclick = () => afegirBateria(i);
+            const img = document.createElement('img'); img.src = `img/dors patrons de bateria ${i}.png`;
+            img.onerror = () => div.style.display = 'none';
+            const text = document.createElement('p'); text.innerText = `Patró ${i}`; text.style.margin = "5px 0 0 0";
+            div.appendChild(img); div.appendChild(text); cont.appendChild(div);
+        }
+        galeriaCarregada = true;
+    }
+
+    // 5. Baix Elèctric
+    function obrirModalBaix() { document.getElementById('modalBaix').style.display = 'flex'; }
+    function tancarModalBaix() { document.getElementById('modalBaix').style.display = 'none'; }
+    
+    function generarTabBaix() {
+        const titolTab = document.getElementById('baix-titol').value || 'Baix';
+        const notes = [
+            document.getElementById('baix-g').value.trim(),
+            document.getElementById('baix-d').value.trim(),
+            document.getElementById('baix-a').value.trim(),
+            document.getElementById('baix-e').value.trim()
+        ];
+
+        // Creem l'estructura visual de la tabulatura
+        const tabDiv = document.createElement('div');
+        tabDiv.className = 'tab-baix';
+        
+        const lletres = document.createElement('div');
+        lletres.className = 'tab-esquerra';
+        lletres.innerHTML = 'T<br>A<br>B';
+        
+        const linies = document.createElement('div');
+        linies.className = 'tab-linies';
+
+        notes.forEach(nota => {
+            const corda = document.createElement('div');
+            corda.className = 'corda-linea';
+            if (nota !== '' && nota !== '-') {
+                const span = document.createElement('span');
+                span.className = 'nota-numero';
+                span.innerText = nota;
+                corda.appendChild(span);
+            }
+            linies.appendChild(corda);
+        });
+
+        tabDiv.appendChild(lletres);
+        tabDiv.appendChild(linies);
+
+        crearContenidor('baix', titolTab, tabDiv);
+        
+        // Netejar inputs per a la propera vegada
+        document.getElementById('baix-titol').value = '';
+        document.getElementById('baix-g').value = '';
+        document.getElementById('baix-d').value = '';
+        document.getElementById('baix-a').value = '';
+        document.getElementById('baix-e').value = '';
+        
+        tancarModalBaix();
+    }
+
+    // 6. Funció genèrica per muntar i enviar a la graella
+    function crearContenidor(instrument, titolText, elementInterior) {
         const div = document.createElement('div');
         div.className = 'acord-item';
 
@@ -290,61 +345,12 @@
         const titol = document.createElement('h3');
         titol.innerText = titolText;
 
-        const img = document.createElement('img');
-        img.src = rutaImatge;
-        img.onerror = function() { 
-            this.onerror = null; 
-            this.alt = "⚠️ Falta la imatge"; 
-            this.style.border = "2px dashed red";
-        };
-
         div.appendChild(btnEliminar);
         div.appendChild(titol);
-        div.appendChild(img);
+        div.appendChild(elementInterior);
 
-        // Enviar a la secció corresponent (Graella)
         document.getElementById(`seccio-${instrument}`).appendChild(div);
-        
-        // Actualitzar visibilitat de títols i salts de pàgina
         actualitzarTitolsSeccions();
-    }
-
-    // 6. Lògica del Modal de Bateria
-    function obrirModalBateria() {
-        document.getElementById('modalBateria').style.display = 'flex';
-        carregarGaleriaBateria();
-    }
-
-    function tancarModalBateria() {
-        document.getElementById('modalBateria').style.display = 'none';
-    }
-
-    let galeriaCarregada = false;
-    function carregarGaleriaBateria() {
-        if (galeriaCarregada) return; // Només carreguem els 42 patrons una vegada
-        const contenidor = document.getElementById('galeria-bateria');
-        
-        for (let i = 1; i <= 42; i++) {
-            const div = document.createElement('div');
-            div.className = 'bateria-opcio';
-            div.onclick = function() { afegirBateria(i); };
-
-            const img = document.createElement('img');
-            img.src = `img/dors patrons de bateria ${i}.png`;
-            img.alt = `Patró ${i}`;
-            
-            // Si el fitxer no existeix, simplement l'amaguem perquè no molesti
-            img.onerror = function() { div.style.display = 'none'; };
-
-            const text = document.createElement('p');
-            text.innerText = `Patró ${i}`;
-            text.style.margin = "5px 0 0 0";
-
-            div.appendChild(img);
-            div.appendChild(text);
-            contenidor.appendChild(div);
-        }
-        galeriaCarregada = true;
     }
 </script>
 
