@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Diagrames Musicals</title>
+    <style>
+        /* --- ESTILS DE LA PÀGINA --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .contenidor {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* --- ZONA DE CONTROLS --- */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .grup-control {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        label { 
+            font-weight: bold; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+            color: #555;
+        }
+        input, select, button {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            transition: background 0.2s;
+            padding: 10px 20px;
+        }
+        button:hover { background-color: #0056b3; }
+        .btn-imprimir { background-color: #28a745; }
+        .btn-imprimir:hover { background-color: #1e7e34; }
+        
+        /* --- ZONA DE LA PARTITURA / QUADRÍCULA --- */
+        .titol-canco { 
+            text-align: center; 
+            margin-top: 10px; 
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-transform: uppercase; 
+            color: #222;
+        }
+        .quadricula {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columnes per fila */
+            gap: 20px;
+        }
+        .acord-item {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background-color: #fff;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .acord-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            color: #444;
+        }
+        .acord-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+        .eliminar-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: 0;
+        }
+        .eliminar-btn:hover { background: #c82333; }
+        
+        /* --- ESTILS PER QUAN S'IMPRIMEIX --- */
+        @media print {
+            .controls, .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .contenidor { box-shadow: none; padding: 0; max-width: 100%; }
+            .acord-item { 
+                break-inside: avoid; 
+                border: 1px solid #ccc;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenidor">
+    <h1 class="no-print">🎸 Generador de Diagrames Musicals</h1>
+
+    <div class="controls no-print">
+        <div class="grup-control">
+            <label for="titolInput">Títol de la cançó:</label>
+            <input type="text" id="titolInput" placeholder="Ex: Urras - Adala" onkeyup="actualitzarTitol()">
+        </div>
+
+        <div class="grup-control">
+            <label for="instrument">Instrument:</label>
+            <select id="instrument">
+                <option value="guitarra">Guitarra</option>
+                <option value="teclat">Teclat</option>
+            </select>
+        </div>
+
+        <div class="grup-control">
+            <label for="acord">Acord:</label>
+            <select id="acord">
+                <optgroup label="Acords Majors">
+                    <option value="C">C (Do Major)</option>
+                    <option value="Csostingut o Dbemoll">C# / Db Major</option>
+                    <option value="D">D (Re Major)</option>
+                    <option value="Dsostingut o Ebemoll">D# / Eb Major</option>
+                    <option value="E">E (Mi Major)</option>
+                    <option value="F">F (Fa Major)</option>
+                    <option value="Fsostingut o Gbemoll">F# / Gb Major</option>
+                    <option value="G">G (Sol Major)</option>
+                    <option value="Gsostingut o Abemoll">G# / Ab Major</option>
+                    <option value="A">A (La Major)</option>
+                    <option value="Asostingut o Bbemoll">A# / Bb Major</option>
+                    <option value="B">B (Si Major)</option>
+                </optgroup>
+                
+                <optgroup label="Acords Menors">
+                    <option value="C-">C- (Do Menor)</option>
+                    <option value="Csostingut- o Dbemoll-">C#- / Db- Menor</option>
+                    <option value="D-">D- (Re Menor)</option>
+                    <option value="Dsostingut- o Ebemoll-">D#- / Eb- Menor</option>
+                    <option value="E-">E- (Mi Menor)</option>
+                    <option value="F-">F- (Fa Menor)</option>
+                    <option value="Fsostingut- o Gbemoll-">F#- / Gb- Menor</option>
+                    <option value="G-">G- (Sol Menor)</option>
+                    <option value="Gsostingut- o Abemoll-">G#- / Ab- Menor</option>
+                    <option value="A-">A- (La Menor)</option>
+                    <option value="Asostingut- o Bbemoll-">A#- / Bb- Menor</option>
+                    <option value="B-">B- (Si Menor)</option>
+                </optgroup>
+
+                <optgroup label="Power Chords">
+                    <option value="A5">A5</option>
+                    <option value="D5">D5</option>
+                    <option value="E5">E5</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <button onclick="afegirAcord()">+ Afegir</button>
+        <button class="btn-imprimir" onclick="window.print()">🖨️ PDF</button>
+    </div>
+
+    <h2 id="titolMostrat" class="titol-canco">TÍTOL DE LA CANÇÓ</h2>
+    
+    <div class="quadricula" id="partitura">
+        </div>
+</div>
+
+<script>
+    // 1. Actualitzar el títol a temps real
+    function actualitzarTitol() {
+        const input = document.getElementById('titolInput').value;
+        document.getElementById('titolMostrat').innerText = input || "TÍTOL DE LA CANÇÓ";
+    }
+
+    // 2. Afegir els acords
+    function afegirAcord() {
+        const instrument = document.getElementById('instrument').value;
+        const selectAcord = document.getElementById('acord');
+        const acordBase = selectAcord.value;
+        const textLlegible = selectAcord.options[selectAcord.selectedIndex].text;
+        
+        let nomFitxer = acordBase;
+        let etiquetaVisual = textLlegible;
+
+        // Lògica de noms per teclat vs guitarra
+        if (instrument === 'teclat') {
+            nomFitxer = 'T' + acordBase; // Afegeix la T pel teclat
+            etiquetaVisual = 'Teclat: ' + textLlegible;
+        } else {
+            etiquetaVisual = 'Guitarra: ' + textLlegible;
+        }
+
+        // RUTA DE LA IMATGE: Assegura't que són .png
+        // Si les teves imatges són .jpg, canvia ".png" per ".jpg" a la línia de sota.
+        const rutaImatge = `img/${nomFitxer}.png`;
+
+        // Crear el contenidor
+        const div = document.createElement('div');
+        div.className = 'acord-item';
+
+        // Botó d'eliminar
+        const btnEliminar = document.createElement('button');
+        btnEliminar.innerText = 'X';
+        btnEliminar.className = 'eliminar-btn no-print';
+        btnEliminar.title = "Eliminar aquest acord";
+        btnEliminar.onclick = function() { div.remove(); };
+
+        // Títol de l'acord
+        const titol = document.createElement('h3');
+        titol.innerText = etiquetaVisual;
+
+        // Imatge de l'acord
+        const img = document.createElement('img');
+        img.src = rutaImatge;
+        img.alt = nomFitxer;
+        
+        // Què fer si no troba la imatge a la carpeta
+        img.onerror = function() { 
+            this.onerror = null; 
+            this.alt = "⚠️ Imatge no trobada";
+            this.style.border = "2px dashed red";
+            this.style.padding = "20px";
+            
+            // Afegim un text d'ajuda visual si falla
+            const errorText = document.createElement('p');
+            errorText.style.color = "red";
+            errorText.style.fontSize = "12px";
+            errorText.innerText = `Falta el fitxer:\nimg/${nomFitxer}.png`;
+            div.appendChild(errorText);
+        };
+
+        // Construir l'element sencer
+        div.appendChild(btnEliminar);
+        div.appendChild(titol);
+        div.appendChild(img);
+
+        // Inserir-ho a la pàgina
+        document.getElementById('partitura').appendChild(div);
+    }
+</script>
+
+</body>
+</html>
