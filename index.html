@@ -7,7 +7,7 @@
     <style>
         /* --- ESTILS DE LA PÀGINA --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f6; color: #333; }
-        .contenidor { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .contenidor { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
         
         /* --- ZONA DE CONTROLS --- */
         .controls { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; align-items: flex-end; background: #e9ecef; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
@@ -22,7 +22,7 @@
         .btn-imprimir { background-color: #28a745; }
         .btn-netejar { background-color: #dc3545; }
         
-        .titol-canco { text-align: center; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; display: block; }
+        .titol-canco { text-align: center; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; }
         .titol-seccio { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #444; margin-top: 20px; }
 
         /* Graelles */
@@ -40,39 +40,30 @@
         .modal-graella { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
         .bateria-opcio { border: 1px solid #ddd; padding: 10px; cursor: pointer; border-radius: 5px; }
         .bateria-opcio:hover { border-color: #fd7e14; background: #fff5eb; }
-        .bateria-opcio img { max-width: 100%; height: auto; }
 
         /* Baix */
         .corda-llarga { display: flex; align-items: center; margin-bottom: 8px; font-family: monospace; }
-        .corda-llarga span { font-weight: bold; width: 25px; }
         .corda-llarga input { flex-grow: 1; margin-left: 10px; color: #d90429; font-weight: bold; }
         .tab-baix { display: flex; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 6px; background: #fdfdfd; }
         .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 15px; margin-right: 15px; line-height: 1.6; }
         .tab-linies { font-family: monospace; font-size: 16px; line-height: 1.6; white-space: pre; color: #d90429; text-align: left; flex-grow: 1; }
 
-        /* Amaguem el títol repetit a la pantalla, només és per al PDF */
+        /* Títol repetit PDF */
         .titol-repro { display: none; }
 
-        /* --- IMPRESSIÓ I PDF (DIN A4 LANDSCAPE) --- */
+        /* --- IMPRESSIÓ I PDF --- */
         @media print {
             @page { size: A4 landscape; margin: 10mm; }
             .no-print { display: none !important; }
             body { padding: 0; background: white; }
             .contenidor { box-shadow: none; max-width: 100%; padding: 0; }
-            
-            /* Títol centrat a cada pàgina */
             .titol-repro { display: block; text-align: center; font-size: 2.2em; text-transform: uppercase; margin-bottom: 20px; }
-            
-            /* Salts de pàgina */
             .seccio-embolcall { break-before: page; }
             .seccio-embolcall:first-of-type { break-before: avoid; }
-            
             .graella { display: grid !important; gap: 15px; }
             .cols-2, #sec-bateria, #sec-baix { grid-template-columns: repeat(2, 1fr) !important; }
             .cols-4 { grid-template-columns: repeat(4, 1fr) !important; }
-
             .acord-item { break-inside: avoid; border: 1px solid #ccc; }
-            .acord-item img { max-height: 250px; }
         }
     </style>
 </head>
@@ -111,7 +102,8 @@
     <h2 id="titolMostrat" class="titol-canco">TÍTOL DE LA CANÇÓ</h2>
     
     <div id="wrap-guitarra" class="seccio-embolcall" style="display:none;">
-        <div class="titol-repro"></div> <h3 class="titol-seccio">🎸 Guitarra</h3>
+        <div class="titol-repro"></div>
+        <h3 class="titol-seccio">🎸 Guitarra</h3>
         <div class="graella cols-4" id="sec-guitarra"></div>
     </div>
     
@@ -132,9 +124,17 @@
         <h3 class="titol-seccio">🥁 Bateria</h3>
         <div class="graella cols-2" id="sec-bateria"></div>
     </div>
-</div>
 
-<div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
+    <div class="no-print" style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; font-size: 13px; color: #777;">
+        <p>Aquesta eina està sota una llicència 
+           <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ca" target="_blank" style="color: #007bff; text-decoration: none;">
+           Creative Commons Reconeixement-NoComercial-CompartirIgual 4.0 Internacional
+           </a>
+        </p>
+        <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-nc-sa.png" alt="CC BY-NC-SA" style="height: 31px; margin-top: 10px;">
+    </div>
+
+</div> <div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
     <div class="modal-contingut">
         <h2>🥁 Patrons de Bateria</h2>
         <div class="modal-graella" id="galeria-bateria"></div>
@@ -159,21 +159,15 @@
     function actualitzarTitol() {
         const text = document.getElementById('titolInput').value.toUpperCase() || "TÍTOL DE LA CANÇÓ";
         document.getElementById('titolMostrat').innerText = text;
-        // Actualitzem els títols ocults que es veuran a cada pàgina del PDF
         document.querySelectorAll('.titol-repro').forEach(el => el.innerText = text);
     }
-    
     function actualitzarVisibilitat() {
-        const ids = ['guitarra', 'teclat', 'baix', 'bateria'];
-        ids.forEach(id => {
+        ['guitarra', 'teclat', 'baix', 'bateria'].forEach(id => {
             const wrap = document.getElementById('wrap-' + id);
-            const teContingut = document.getElementById('sec-' + id).children.length > 0;
-            wrap.style.display = teContingut ? 'block' : 'none';
+            wrap.style.display = document.getElementById('sec-' + id).children.length > 0 ? 'block' : 'none';
         });
     }
-
-    function netejarTot() { if(confirm("Vols esborrar tota la partitura?")) { ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); actualitzarVisibilitat(); } }
-
+    function netejarTot() { if(confirm("Netejar tota la pàgina?")) { ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); actualitzarVisibilitat(); } }
     function afegirAcord() {
         const inst = document.getElementById('instrument').value;
         const sel = document.getElementById('acord');
@@ -181,18 +175,11 @@
         if (inst === 'teclat') fitxer = 'T' + fitxer;
         const img = document.createElement('img');
         img.src = `img/${fitxer}.png`;
-        
-        // Per a guitarra i teclat, NO posem títol h3 (ja surt a la imatge)
         crearItem(inst, null, img);
     }
-
-    function obrirModal(id) { 
-        document.getElementById(id).style.display = 'flex'; 
-        if (id === 'modalBateria') carregarBateria(); 
-    }
+    function obrirModal(id) { document.getElementById(id).style.display = 'flex'; if (id === 'modalBateria') carregarBateria(); }
     function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
     function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
-
     function carregarBateria() {
         const cont = document.getElementById('galeria-bateria');
         if (cont.children.length > 0) return;
@@ -207,7 +194,6 @@
             cont.appendChild(d);
         }
     }
-
     function generarBaix() {
         const titol = document.getElementById('baix-titol').value || 'Baix';
         const tab = document.createElement('div'); tab.className = 'tab-baix';
@@ -215,7 +201,6 @@
         crearItem('baix', titol, tab);
         tancarModal('modalBaix');
     }
-
     function crearItem(inst, text, contingut) {
         const item = document.createElement('div'); item.className = 'acord-item';
         let html = `<button class="eliminar-btn no-print" onclick="this.parentElement.remove(); actualitzarVisibilitat();">X</button>`;
