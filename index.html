@@ -5,75 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Diagrames Musicals</title>
     <style>
-        /* --- ESTILS DE LA PÀGINA --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #f4f7f6; color: #333; }
-        .contenidor { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .contenidor { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
-        /* --- ZONA DE CONTROLS --- */
         .controls { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; align-items: flex-end; background: #e9ecef; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
         .grup-control { display: flex; flex-direction: column; flex-grow: 1; }
         label { font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
         input, select, button { padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         
-        button { background-color: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; transition: background 0.2s; padding: 10px 20px; }
+        button { background-color: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; padding: 10px 20px; }
         button:hover { background-color: #0056b3; }
         .btn-bateria { background-color: #fd7e14; }
-        .btn-bateria:hover { background-color: #e86e04; }
         .btn-baix { background-color: #6f42c1; }
-        .btn-baix:hover { background-color: #59339d; }
         .btn-imprimir { background-color: #28a745; }
-        .btn-imprimir:hover { background-color: #1e7e34; }
         .btn-netejar { background-color: #dc3545; }
-        .btn-netejar:hover { background-color: #c82333; }
         
-        /* --- ZONA DE LA PARTITURA --- */
-        .titol-canco { text-align: center; margin-top: 10px; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; color: #222; }
+        .titol-canco { text-align: center; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; }
         .titol-seccio { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #444; margin-top: 40px; }
 
-        /* Graelles per pantalla */
-        .graella-guitarra { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-        .graella-teclat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .graella-baix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .graella-bateria { display: grid; grid-template-columns: 1fr; gap: 20px; justify-items: center; }
+        /* Graelles per defecte (Pantalla) */
+        .graella { display: grid; gap: 20px; width: 100%; }
+        .cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .cols-2 { grid-template-columns: repeat(2, 1fr); }
 
-        .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; background-color: #fff; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); width: 100%; box-sizing: border-box; }
-        .acord-item h3 { margin: 0 0 10px 0; font-size: 1.1em; color: #444; }
-        .acord-item img { max-width: 100%; height: auto; border-radius: 4px; }
-        .eliminar-btn { position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10;}
+        .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; position: relative; background: white; }
+        .acord-item h3 { margin: 0 0 10px 0; font-size: 1.1em; }
+        .acord-item img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
+        .eliminar-btn { position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10; font-weight: bold; }
 
-        /* --- MODALS --- */
+        /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 80%; max-width: 650px; max-height: 80%; overflow-y: auto; text-align: center; }
-        .corda-llarga { display: flex; align-items: center; margin-bottom: 8px; }
-        .corda-llarga span { font-family: monospace; font-weight: bold; width: 30px; }
-        .corda-llarga input { flex-grow: 1; font-family: monospace; padding: 8px; color: #d90429; }
+        .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 800px; max-height: 85%; overflow-y: auto; }
+        .modal-graella { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .bateria-opcio { border: 1px solid #ddd; padding: 10px; cursor: pointer; border-radius: 5px; }
+        .bateria-opcio:hover { border-color: #fd7e14; background: #fff5eb; }
+        .bateria-opcio img { max-width: 100%; height: auto; }
 
-        /* --- DISSENY TAB FINAL --- */
-        .tab-baix { display: flex; align-items: center; margin-top: 15px; background: #fdfdfd; padding: 15px; border: 1px solid #ccc; border-radius: 6px; }
-        .tab-esquerra { font-family: monospace; font-weight: bold; line-height: 1.6; padding-right: 15px; border-right: 2px solid #333; margin-right: 15px; }
-        .tab-linies { font-family: monospace; font-size: 16px; line-height: 1.6; white-space: pre; color: #d90429; text-align: left; }
+        /* Baix */
+        .corda-llarga { display: flex; align-items: center; margin-bottom: 8px; font-family: monospace; }
+        .corda-llarga input { flex-grow: 1; margin-left: 10px; color: #d90429; font-weight: bold; }
+        .tab-baix { display: flex; align-items: center; padding: 15px; border: 1px solid #ccc; border-radius: 6px; background: #fdfdfd; }
+        .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 15px; margin-right: 15px; line-height: 1.6; }
+        .tab-linies { font-family: monospace; font-size: 16px; line-height: 1.6; white-space: pre; color: #d90429; text-align: left; flex-grow: 1; }
 
-        /* --- IMPRESSIÓ I PDF (DIN A4 LANDSCAPE) --- */
         @media print {
             @page { size: A4 landscape; margin: 10mm; }
-            .controls, .no-print { display: none !important; }
-            body { background: white; padding: 0; }
-            .contenidor { box-shadow: none; padding: 0; max-width: 100%; }
-            .seccio-nova-pagina { break-before: page; page-break-before: always; }
-            
-            /* Graelles optimitzades per a horitzontal */
-            .graella-teclat, .graella-bateria, .graella-baix { 
-                display: grid !important; 
-                grid-template-columns: repeat(2, 1fr) !important; 
-                gap: 15px !important; 
-            }
-            .graella-guitarra { 
-                display: grid !important; 
-                grid-template-columns: repeat(4, 1fr) !important; 
-            }
-
-            .acord-item { break-inside: avoid; border: 1px solid #ccc; padding: 10px; }
-            .acord-item img { max-height: 250px; object-fit: contain; }
+            .no-print { display: none !important; }
+            body { padding: 0; background: white; }
+            .contenidor { box-shadow: none; max-width: 100%; padding: 0; }
+            .seccio-nova-pagina { break-before: page; }
+            .graella { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; }
+            .cols-4 { grid-template-columns: repeat(4, 1fr) !important; } /* Guitarra manté 4 */
+            .acord-item { border: 1px solid #ccc; break-inside: avoid; }
+            .acord-item img { max-height: 220px; }
         }
     </style>
 </head>
@@ -84,128 +68,78 @@
 
     <div class="controls no-print">
         <div class="grup-control">
-            <label for="titolInput">Títol de la cançó:</label>
+            <label>Títol de la cançó:</label>
             <input type="text" id="titolInput" placeholder="Ex: Urras - Adala" onkeyup="actualitzarTitol()">
         </div>
         <div class="grup-control">
-            <label for="instrument">Instrument:</label>
+            <label>Instrument:</label>
             <select id="instrument">
                 <option value="guitarra">Guitarra</option>
                 <option value="teclat">Teclat</option>
             </select>
         </div>
         <div class="grup-control">
-            <label for="acord">Acord:</label>
+            <label>Acord:</label>
             <select id="acord">
-                <optgroup label="Acords Majors">
-                    <option value="C">C (Do Major)</option>
-                    <option value="Csostingut o Dbemoll">C# / Db Major</option>
-                    <option value="D">D (Re Major)</option>
-                    <option value="Dsostingut o Ebemoll">D# / Eb Major</option>
-                    <option value="E">E (Mi Major)</option>
-                    <option value="F">F (Fa Major)</option>
-                    <option value="Fsostingut o Gbemoll">F# / Gb Major</option>
-                    <option value="G">G (Sol Major)</option>
-                    <option value="Gsostingut o Abemoll">G# / Ab Major</option>
-                    <option value="A">A (La Major)</option>
-                    <option value="Asostingut o Bbemoll">A# / Bb Major</option>
-                    <option value="B">B (Si Major)</option>
-                </optgroup>
-                <optgroup label="Acords Menors">
-                    <option value="C-">C- (Do Menor)</option>
-                    <option value="Csostingut- o Dbemoll-">C#- / Db- Menor</option>
-                    <option value="D-">D- (Re Menor)</option>
-                    <option value="Dsostingut- o Ebemoll-">D#- / Eb- Menor</option>
-                    <option value="E-">E- (Mi Menor)</option>
-                    <option value="F-">F- (Fa Menor)</option>
-                    <option value="Fsostingut- o Gbemoll-">F#- / Gb- Menor</option>
-                    <option value="G-">G- (Sol Menor)</option>
-                    <option value="Gsostingut- o Abemoll-">G#- / Ab- Menor</option>
-                    <option value="A-">A- (La Menor)</option>
-                    <option value="Asostingut- o Bbemoll-">A#- / Bb- Menor</option>
-                    <option value="B-">B- (Si Menor)</option>
-                </optgroup>
-                <optgroup label="Power Chords">
-                    <option value="A5">A5</option>
-                    <option value="D5">D5</option>
-                    <option value="E5">E5</option>
-                </optgroup>
+                <optgroup label="Majors"><option value="C">C</option><option value="Csostingut o Dbemoll">C#/Db</option><option value="D">D</option><option value="Dsostingut o Ebemoll">D#/Eb</option><option value="E">E</option><option value="F">F</option><option value="Fsostingut o Gbemoll">F#/Gb</option><option value="G">G</option><option value="Gsostingut o Abemoll">G#/Ab</option><option value="A">A</option><option value="Asostingut o Bbemoll">A#/Bb</option><option value="B">B</option></optgroup>
+                <optgroup label="Menors"><option value="C-">C-</option><option value="Csostingut- o Dbemoll-">C#-/Db-</option><option value="D-">D-</option><option value="Dsostingut- o Ebemoll-">D#-/Eb-</option><option value="E-">E-</option><option value="F-">F-</option><option value="Fsostingut- o Gbemoll-">F#-/Gb-</option><option value="G-">G-</option><option value="Gsostingut- o Abemoll-">G#-/Ab-</option><option value="A-">A-</option><option value="Asostingut- o Bbemoll-">A#-/Bb-</option><option value="B-">B-</option></optgroup>
+                <optgroup label="Power"><option value="A5">A5</option><option value="D5">D5</option><option value="E5">E5</option></optgroup>
             </select>
         </div>
         <button onclick="afegirAcord()">Afegir Acord</button>
-        <button class="btn-baix" onclick="obrirModalBaix()">Tab de Baix</button>
-        <button class="btn-bateria" onclick="obrirModalBateria()">Afegir Bateria</button>
+        <button class="btn-baix" onclick="obrirModal('modalBaix')">Tab de Baix</button>
+        <button class="btn-bateria" onclick="obrirModal('modalBateria')">Bateria</button>
         <button class="btn-imprimir" onclick="window.print()">PDF</button>
         <button class="btn-netejar no-print" onclick="netejarTot()">Netejar</button>
     </div>
 
     <h2 id="titolMostrat" class="titol-canco">TÍTOL DE LA CANÇÓ</h2>
     
-    <div id="wrap-guitarra" style="display: none;">
-        <h3 class="titol-seccio">Guitarra</h3>
-        <div class="graella-guitarra" id="seccio-guitarra"></div>
-    </div>
-    <div id="wrap-teclat" style="display: none;">
-        <h3 class="titol-seccio">Teclats</h3>
-        <div class="graella-teclat" id="seccio-teclat"></div>
-    </div>
-    <div id="wrap-baix" style="display: none;">
-        <h3 class="titol-seccio">Baix Elèctric (TAB)</h3>
-        <div class="graella-baix" id="seccio-baix"></div>
-    </div>
-    <div id="wrap-bateria" style="display: none;">
-        <h3 class="titol-seccio">Bateria</h3>
-        <div class="graella-bateria" id="seccio-bateria"></div>
-    </div>
+    <div id="wrap-guitarra" style="display:none;"><h3 class="titol-seccio">Guitarra</h3><div class="graella cols-4" id="sec-guitarra"></div></div>
+    <div id="wrap-teclat" style="display:none;"><h3 class="titol-seccio">Teclats</h3><div class="graella cols-2" id="sec-teclat"></div></div>
+    <div id="wrap-baix" style="display:none;"><h3 class="titol-seccio">Baix Elèctric</h3><div class="graella cols-2" id="sec-baix"></div></div>
+    <div id="wrap-bateria" style="display:none;"><h3 class="titol-seccio">Bateria</h3><div class="graella cols-2" id="sec-bateria"></div></div>
 </div>
 
-<div id="modalBateria" class="modal-overlay no-print">
+<div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
     <div class="modal-contingut">
-        <h2>Tria un patró de bateria</h2>
+        <h2>Patrons de Bateria</h2>
         <div class="modal-graella" id="galeria-bateria"></div>
-        <button class="tancar-modal" onclick="tancarModalBateria()">Cancel·lar</button>
+        <button onclick="tancarModal('modalBateria')" style="margin-top:20px; background:#666;">Tancar</button>
     </div>
 </div>
 
-<div id="modalBaix" class="modal-overlay no-print">
+<div id="modalBaix" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBaix')">
     <div class="modal-contingut">
         <h2>Crear Tab de Baix</h2>
-        <input type="text" id="baix-titol" placeholder="Nom de l'acord / nota" style="width:100%; margin-bottom:15px;">
+        <input type="text" id="baix-titol" placeholder="Nom de l'acord" style="width:100%; margin-bottom:15px;">
         <div class="corda-llarga"><span>G|</span><input type="text" id="baix-g" value="------------------------"></div>
         <div class="corda-llarga"><span>D|</span><input type="text" id="baix-d" value="------------------------"></div>
         <div class="corda-llarga"><span>A|</span><input type="text" id="baix-a" value="------------------------"></div>
         <div class="corda-llarga"><span>E|</span><input type="text" id="baix-e" value="------------------------"></div>
-        <button style="background: #28a745; margin-top:20px;" onclick="generarTabBaix()">Crear Tabulatura</button>
-        <button class="tancar-modal" onclick="tancarModalBaix()">Cancel·lar</button>
+        <button style="background:#28a745; margin-top:20px;" onclick="generarBaix()">Afegir a Partitura</button>
+        <button onclick="tancarModal('modalBaix')" style="margin-left:10px; background:#666;">Cancel·lar</button>
     </div>
 </div>
 
 <script>
-    function actualitzarTitol() {
-        const input = document.getElementById('titolInput').value;
-        document.getElementById('titolMostrat').innerText = input || "TÍTOL DE LA CANÇÓ";
-    }
-
-    function actualitzarTitolsSeccions() {
-        const seccions = ['guitarra', 'teclat', 'baix', 'bateria'];
+    function actualitzarTitol() { document.getElementById('titolMostrat').innerText = document.getElementById('titolInput').value.toUpperCase() || "TÍTOL DE LA CANÇÓ"; }
+    
+    function actualitzarVisibilitat() {
+        const ids = ['guitarra', 'teclat', 'baix', 'bateria'];
         let primera = true;
-        seccions.forEach(inst => {
-            const wrap = document.getElementById(`wrap-${inst}`);
-            const grid = document.getElementById(`seccio-${inst}`);
-            if (grid.children.length > 0) {
-                wrap.style.display = 'block';
+        ids.forEach(id => {
+            const wrap = document.getElementById('wrap-' + id);
+            const teContingut = document.getElementById('sec-' + id).children.length > 0;
+            wrap.style.display = teContingut ? 'block' : 'none';
+            if (teContingut) {
                 if (primera) { wrap.classList.remove('seccio-nova-pagina'); primera = false; }
                 else { wrap.classList.add('seccio-nova-pagina'); }
-            } else { wrap.style.display = 'none'; }
+            }
         });
     }
 
-    function netejarTot() {
-        if(confirm("Vols esborrar tota la partitura?")) {
-            ['seccio-guitarra','seccio-teclat','seccio-baix','seccio-bateria'].forEach(id => document.getElementById(id).innerHTML = '');
-            actualitzarTitolsSeccions();
-        }
-    }
+    function netejarTot() { if(confirm("Netejar tota la pàgina?")) { ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); actualitzarVisibilitat(); } }
 
     function afegirAcord() {
         const inst = document.getElementById('instrument').value;
@@ -214,48 +148,45 @@
         if (inst === 'teclat') fitxer = 'T' + fitxer;
         const img = document.createElement('img');
         img.src = `img/${fitxer}.png`;
-        crearContenidor(inst, sel.options[sel.selectedIndex].text, img);
+        crearItem(inst, sel.options[sel.selectedIndex].text, img);
     }
 
-    function obrirModalBateria() { document.getElementById('modalBateria').style.display = 'flex'; carregarGaleria(); }
-    function tancarModalBateria() { document.getElementById('modalBateria').style.display = 'none'; }
-    function afegirBateria(num) {
-        const img = document.createElement('img');
-        img.src = `img/dors patrons de bateria ${num}.png`;
-        crearContenidor('bateria', `Patró ${num}`, img);
-        tancarModalBateria();
+    function obrirModal(id) { 
+        document.getElementById(id).style.display = 'flex'; 
+        if (id === 'modalBateria') carregarBateria(); 
     }
+    function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
+    function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
 
-    function carregarGaleria() {
+    function carregarBateria() {
         const cont = document.getElementById('galeria-bateria');
         if (cont.children.length > 0) return;
         for (let i = 1; i <= 42; i++) {
-            const d = document.createElement('div'); d.className = 'bateria-opcio'; d.onclick = () => afegirBateria(i);
-            const im = document.createElement('img'); im.src = `img/dors patrons de bateria ${i}.png`;
-            im.onerror = () => d.style.display = 'none';
-            d.appendChild(im); cont.appendChild(d);
+            const d = document.createElement('div'); d.className = 'bateria-opcio';
+            d.innerHTML = `<img src="img/dors patrons de bateria ${i}.png" onerror="this.parentElement.style.display='none'"><div>Patró ${i}</div>`;
+            d.onclick = () => {
+                const img = document.createElement('img'); img.src = `img/dors patrons de bateria ${i}.png`;
+                crearItem('bateria', `Patró ${i}`, img);
+                tancarModal('modalBateria');
+            };
+            cont.appendChild(d);
         }
     }
 
-    function obrirModalBaix() { document.getElementById('modalBaix').style.display = 'flex'; }
-    function tancarModalBaix() { document.getElementById('modalBaix').style.display = 'none'; }
-    function generarTabBaix() {
-        const t = document.getElementById('baix-titol').value || 'Baix';
-        const tabDiv = document.createElement('div'); tabDiv.className = 'tab-baix';
-        const linies = document.createElement('div'); linies.className = 'tab-linies';
-        linies.innerHTML = `<span>G|</span>${document.getElementById('baix-g').value}\n<span>D|</span>${document.getElementById('baix-d').value}\n<span>A|</span>${document.getElementById('baix-a').value}\n<span>E|</span>${document.getElementById('baix-e').value}`;
-        tabDiv.innerHTML = '<div class="tab-esquerra">T<br>A<br>B</div>';
-        tabDiv.appendChild(linies);
-        crearContenidor('baix', t, tabDiv);
-        tancarModalBaix();
+    function generarBaix() {
+        const titol = document.getElementById('baix-titol').value || 'Baix';
+        const tab = document.createElement('div'); tab.className = 'tab-baix';
+        tab.innerHTML = `<div class="tab-esquerra">T<br>A<br>B</div><div class="tab-linies">G|${document.getElementById('baix-g').value}\nD|${document.getElementById('baix-d').value}\nA|${document.getElementById('baix-a').value}\nE|${document.getElementById('baix-e').value}</div>`;
+        crearItem('baix', titol, tab);
+        tancarModal('modalBaix');
     }
 
-    function crearContenidor(inst, txt, el) {
-        const d = document.createElement('div'); d.className = 'acord-item';
-        d.innerHTML = `<button class="eliminar-btn no-print" onclick="this.parentElement.remove(); actualitzarTitolsSeccions();">X</button><h3>${txt}</h3>`;
-        d.appendChild(el);
-        document.getElementById(`seccio-${inst}`).appendChild(d);
-        actualitzarTitolsSeccions();
+    function crearItem(inst, text, contingut) {
+        const item = document.createElement('div'); item.className = 'acord-item';
+        item.innerHTML = `<button class="eliminar-btn no-print" onclick="this.parentElement.remove(); actualitzarVisibilitat();">X</button><h3>${text}</h3>`;
+        item.appendChild(contingut);
+        document.getElementById('sec-' + inst).appendChild(item);
+        actualitzarVisibilitat();
     }
 </script>
 </body>
