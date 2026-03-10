@@ -39,12 +39,7 @@
             flex-direction: column;
             flex-grow: 1;
         }
-        label { 
-            font-weight: bold; 
-            margin-bottom: 8px; 
-            font-size: 14px; 
-            color: #555;
-        }
+        label { font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
         input, select, button {
             padding: 10px 12px;
             border: 1px solid #ccc;
@@ -63,21 +58,27 @@
         button:hover { background-color: #0056b3; }
         .btn-imprimir { background-color: #28a745; }
         .btn-imprimir:hover { background-color: #1e7e34; }
+        .btn-bateria { background-color: #fd7e14; }
+        .btn-bateria:hover { background-color: #e86e04; }
         
-        /* --- ZONA DE LA PARTITURA / QUADRÍCULA --- */
+        /* --- ZONA DE LA PARTITURA / SECCIONS --- */
         .titol-canco { 
-            text-align: center; 
-            margin-top: 10px; 
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-transform: uppercase; 
-            color: #222;
+            text-align: center; margin-top: 10px; margin-bottom: 30px;
+            font-size: 2.5em; text-transform: uppercase; color: #222;
         }
-        .quadricula {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 columnes per fila */
-            gap: 20px;
+        .titol-seccio {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            color: #444;
+            margin-top: 40px;
+            display: none; /* S'amaga si està buida */
         }
+
+        /* Graelles diferents per a cada instrument */
+        .graella-guitarra { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .graella-teclat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; } /* 2 columnes per a format horitzontal */
+        .graella-bateria { display: grid; grid-template-columns: repeat(1, 1fr); gap: 20px; } /* 1 columna, imatge molt gran */
+
         .acord-item {
             border: 2px solid #eee;
             border-radius: 10px;
@@ -87,47 +88,41 @@
             position: relative;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .acord-item h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.1em;
-            color: #444;
-        }
-        .acord-item img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-        .eliminar-btn {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            padding: 0;
-        }
-        .eliminar-btn:hover { background: #c82333; }
+        .acord-item h3 { margin: 0 0 10px 0; font-size: 1.1em; color: #444; }
+        .acord-item img { max-width: 100%; height: auto; border-radius: 4px; }
         
-        /* --- ESTILS PER QUAN S'IMPRIMEIX --- */
+        .eliminar-btn {
+            position: absolute; top: -10px; right: -10px;
+            background: #dc3545; color: white; border: none; border-radius: 50%;
+            width: 30px; height: 30px; cursor: pointer; font-size: 14px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- FINESTRA EMERGENT (MODAL BATERIA) --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;
+        }
+        .modal-contingut {
+            background: white; padding: 20px; border-radius: 10px;
+            width: 80%; max-height: 80%; overflow-y: auto; text-align: center;
+        }
+        .modal-graella {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;
+        }
+        .bateria-opcio {
+            border: 2px solid transparent; cursor: pointer; transition: 0.2s;
+        }
+        .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.05); }
+        .bateria-opcio img { max-width: 100%; height: auto; border: 1px solid #ccc; }
+        .tancar-modal { margin-top: 20px; background: #6c757d; }
+        
+        /* --- IMPRESSIÓ --- */
         @media print {
             .controls, .no-print { display: none !important; }
             body { background: white; padding: 0; }
             .contenidor { box-shadow: none; padding: 0; max-width: 100%; }
-            .acord-item { 
-                break-inside: avoid; 
-                border: 1px solid #ccc;
-                box-shadow: none;
-            }
+            .acord-item { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
         }
     </style>
 </head>
@@ -167,7 +162,6 @@
                     <option value="Asostingut o Bbemoll">A# / Bb Major</option>
                     <option value="B">B (Si Major)</option>
                 </optgroup>
-                
                 <optgroup label="Acords Menors">
                     <option value="C-">C- (Do Menor)</option>
                     <option value="Csostingut- o Dbemoll-">C#- / Db- Menor</option>
@@ -182,7 +176,6 @@
                     <option value="Asostingut- o Bbemoll-">A#- / Bb- Menor</option>
                     <option value="B-">B- (Si Menor)</option>
                 </optgroup>
-
                 <optgroup label="Power Chords">
                     <option value="A5">A5</option>
                     <option value="D5">D5</option>
@@ -191,24 +184,48 @@
             </select>
         </div>
 
-        <button onclick="afegirAcord()">+ Afegir</button>
+        <button onclick="afegirAcord()">+ Afegir Acord</button>
+        <button class="btn-bateria" onclick="obrirModalBateria()">🥁 Afegir Bateria</button>
         <button class="btn-imprimir" onclick="window.print()">🖨️ PDF</button>
     </div>
 
     <h2 id="titolMostrat" class="titol-canco">TÍTOL DE LA CANÇÓ</h2>
     
-    <div class="quadricula" id="partitura">
-        </div>
+    <h3 id="titol-guitarra" class="titol-seccio">🎸 Guitarra</h3>
+    <div class="graella-guitarra" id="seccio-guitarra"></div>
+
+    <h3 id="titol-teclat" class="titol-seccio">🎹 Teclats</h3>
+    <div class="graella-teclat" id="seccio-teclat"></div>
+
+    <h3 id="titol-bateria" class="titol-seccio">🥁 Bateria</h3>
+    <div class="graella-bateria" id="seccio-bateria"></div>
+</div>
+
+<div id="modalBateria" class="modal-overlay no-print">
+    <div class="modal-contingut">
+        <h2>Tria un patró de bateria</h2>
+        <p>Fes clic a la imatge per afegir-la a la partitura.</p>
+        <div class="modal-graella" id="galeria-bateria">
+            </div>
+        <button class="tancar-modal" onclick="tancarModalBateria()">Tancar / Cancel·lar</button>
+    </div>
 </div>
 
 <script>
-    // 1. Actualitzar el títol a temps real
+    // 1. Títol
     function actualitzarTitol() {
         const input = document.getElementById('titolInput').value;
         document.getElementById('titolMostrat').innerText = input || "TÍTOL DE LA CANÇÓ";
     }
 
-    // 2. Afegir els acords
+    // 2. Comprovar si cal mostrar el títol de la secció
+    function actualitzarTitolsSeccions() {
+        document.getElementById('titol-guitarra').style.display = document.getElementById('seccio-guitarra').children.length > 0 ? 'block' : 'none';
+        document.getElementById('titol-teclat').style.display = document.getElementById('seccio-teclat').children.length > 0 ? 'block' : 'none';
+        document.getElementById('titol-bateria').style.display = document.getElementById('seccio-bateria').children.length > 0 ? 'block' : 'none';
+    }
+
+    // 3. Afegir Acords (Guitarra / Teclat)
     function afegirAcord() {
         const instrument = document.getElementById('instrument').value;
         const selectAcord = document.getElementById('acord');
@@ -216,62 +233,85 @@
         const textLlegible = selectAcord.options[selectAcord.selectedIndex].text;
         
         let nomFitxer = acordBase;
-        let etiquetaVisual = textLlegible;
+        
+        if (instrument === 'teclat') { nomFitxer = 'T' + acordBase; }
 
-        // Lògica de noms per teclat vs guitarra
-        if (instrument === 'teclat') {
-            nomFitxer = 'T' + acordBase; // Afegeix la T pel teclat
-            etiquetaVisual = 'Teclat: ' + textLlegible;
-        } else {
-            etiquetaVisual = 'Guitarra: ' + textLlegible;
-        }
+        crearElementVisual(instrument, textLlegible, `img/${nomFitxer}.png`);
+    }
 
-        // RUTA DE LA IMATGE: Assegura't que són .png
-        // Si les teves imatges són .jpg, canvia ".png" per ".jpg" a la línia de sota.
-        const rutaImatge = `img/${nomFitxer}.png`;
+    // 4. Afegir Bateria
+    function afegirBateria(numeroPatro) {
+        crearElementVisual('bateria', `Patró de Bateria ${numeroPatro}`, `img/dors patrons de bateria ${numeroPatro}.png`);
+        tancarModalBateria();
+    }
 
-        // Crear el contenidor
+    // 5. Funció genèrica per dibuixar la capsa
+    function crearElementVisual(instrument, titolText, rutaImatge) {
         const div = document.createElement('div');
         div.className = 'acord-item';
 
-        // Botó d'eliminar
         const btnEliminar = document.createElement('button');
         btnEliminar.innerText = 'X';
         btnEliminar.className = 'eliminar-btn no-print';
-        btnEliminar.title = "Eliminar aquest acord";
-        btnEliminar.onclick = function() { div.remove(); };
+        btnEliminar.onclick = function() { div.remove(); actualitzarTitolsSeccions(); };
 
-        // Títol de l'acord
         const titol = document.createElement('h3');
-        titol.innerText = etiquetaVisual;
+        titol.innerText = titolText;
 
-        // Imatge de l'acord
         const img = document.createElement('img');
         img.src = rutaImatge;
-        img.alt = nomFitxer;
-        
-        // Què fer si no troba la imatge a la carpeta
         img.onerror = function() { 
             this.onerror = null; 
-            this.alt = "⚠️ Imatge no trobada";
+            this.alt = "Falta imatge"; 
             this.style.border = "2px dashed red";
-            this.style.padding = "20px";
-            
-            // Afegim un text d'ajuda visual si falla
-            const errorText = document.createElement('p');
-            errorText.style.color = "red";
-            errorText.style.fontSize = "12px";
-            errorText.innerText = `Falta el fitxer:\nimg/${nomFitxer}.png`;
-            div.appendChild(errorText);
         };
 
-        // Construir l'element sencer
         div.appendChild(btnEliminar);
         div.appendChild(titol);
         div.appendChild(img);
 
-        // Inserir-ho a la pàgina
-        document.getElementById('partitura').appendChild(div);
+        // Enviar a la secció corresponent
+        document.getElementById(`seccio-${instrument}`).appendChild(div);
+        actualitzarTitolsSeccions();
+    }
+
+    // 6. Lògica del Modal de Bateria
+    function obrirModalBateria() {
+        document.getElementById('modalBateria').style.display = 'flex';
+        carregarGaleriaBateria();
+    }
+
+    function tancarModalBateria() {
+        document.getElementById('modalBateria').style.display = 'none';
+    }
+
+    let galeriaCarregada = false;
+    function carregarGaleriaBateria() {
+        if (galeriaCarregada) return; // Només les carreguem un cop
+        const contenidor = document.getElementById('galeria-bateria');
+        
+        // Bucle per carregar els 42 patrons
+        for (let i = 1; i <= 42; i++) {
+            const div = document.createElement('div');
+            div.className = 'bateria-opcio';
+            div.onclick = function() { afegirBateria(i); };
+
+            const img = document.createElement('img');
+            img.src = `img/dors patrons de bateria ${i}.png`;
+            img.alt = `Patró ${i}`;
+            
+            // Si el fitxer no existeix, amaguem l'opció perquè no es vegi trencat
+            img.onerror = function() { div.style.display = 'none'; };
+
+            const text = document.createElement('p');
+            text.innerText = `Patró ${i}`;
+            text.style.margin = "5px 0 0 0";
+
+            div.appendChild(img);
+            div.appendChild(text);
+            contenidor.appendChild(div);
+        }
+        galeriaCarregada = true;
     }
 </script>
 
