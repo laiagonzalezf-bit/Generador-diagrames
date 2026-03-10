@@ -24,6 +24,8 @@
         .btn-baix:hover { background-color: #59339d; }
         .btn-imprimir { background-color: #28a745; }
         .btn-imprimir:hover { background-color: #1e7e34; }
+        .btn-netejar { background-color: #dc3545; }
+        .btn-netejar:hover { background-color: #c82333; }
         
         /* --- ZONA DE LA PARTITURA / SECCIONS --- */
         .titol-canco { text-align: center; margin-top: 10px; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; color: #222; }
@@ -32,8 +34,11 @@
         /* Graelles */
         .graella-guitarra { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
         .graella-teclat { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .graella-bateria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .graella-baix { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        
+        /* La bateria es centra perquè quedi millor */
+        .graella-bateria { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .graella-bateria .acord-item { max-width: 60%; width: 100%; }
 
         .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; background-color: #fff; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .acord-item h3 { margin: 0 0 10px 0; font-size: 1.1em; color: #444; }
@@ -51,13 +56,16 @@
         .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.05); }
         .bateria-opcio img { max-width: 100%; height: auto; border: 1px solid #ccc; }
         
-        /* Modal Baix (Formulari) */
-        .formulari-baix { display: grid; grid-template-columns: 1fr; gap: 15px; text-align: left; margin-top: 20px; }
-        .input-corda { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
-        .input-corda label { margin: 0; width: 120px; }
-        .input-corda input { width: 60px; text-align: center; }
+        /* --- NOU DISENY INTERACTIU PEL BAIX --- */
+        .tab-interactiu { background: #fdfdfd; border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-top: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .corda-interactiva { position: relative; height: 30px; display: flex; align-items: center; justify-content: center; }
+        .corda-interactiva::before { content: ''; position: absolute; left: 30px; right: 0; top: 50%; height: 2px; background-color: #555; z-index: 1; }
+        .nom-corda { position: absolute; left: 0; font-family: monospace; font-weight: bold; font-size: 18px; color: #333; }
+        .corda-interactiva input { position: relative; z-index: 2; width: 45px; height: 30px; text-align: center; font-family: monospace; font-size: 20px; font-weight: bold; border: 2px solid #007bff; border-radius: 6px; background: white; padding: 0; color: #d90429; transition: border-color 0.2s; }
+        .corda-interactiva input:focus { outline: none; border-color: #ff4d4d; box-shadow: 0 0 5px rgba(255, 77, 77, 0.5); }
+        .corda-interactiva input::placeholder { color: #ccc; font-weight: normal; }
 
-        /* --- DISSENY TABULATURA BAIX (Generat amb Codi) --- */
+        /* --- DISSENY TABULATURA BAIX FINAL (La que es genera) --- */
         .tab-baix { display: flex; align-items: center; margin-top: 15px; background: #fdfdfd; padding: 15px 10px; border: 1px solid #ccc; border-radius: 6px; }
         .tab-esquerra { font-family: monospace; font-weight: bold; font-size: 16px; line-height: 1.2; padding-right: 15px; border-right: 2px solid #333; margin-right: 15px; color: #333; }
         .tab-linies { flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; height: 90px; }
@@ -67,15 +75,15 @@
 
         /* --- IMPRESSIÓ I PDF (DIN A4 HORITZONTAL) --- */
         @media print {
-            /* Hem afegit 'landscape' per forçar l'orientació horitzontal */
             @page { size: A4 landscape; margin: 15mm; }
-            
             .controls, .no-print { display: none !important; }
             body { background: white; padding: 0; }
             .contenidor { box-shadow: none; padding: 0; max-width: 100%; }
             .acord-item { break-inside: avoid; border: 1px solid #ccc; box-shadow: none; }
             
-            /* Lògica de salt de pàgina per a cada secció */
+            /* Ajust de mides per evitar que els teclats surtin del full */
+            .graella-teclat .acord-item img { max-height: 180px; object-fit: contain; }
+            
             .seccio-nova-pagina { break-before: page; page-break-before: always; }
         }
     </style>
@@ -142,6 +150,7 @@
         <button class="btn-baix" onclick="obrirModalBaix()">🎸 Tab de Baix</button>
         <button class="btn-bateria" onclick="obrirModalBateria()">🥁 Afegir Bateria</button>
         <button class="btn-imprimir" onclick="window.print()">🖨️ PDF</button>
+        <button class="btn-netejar no-print" onclick="netejarTot()">🗑️ Netejar</button>
     </div>
 
     <h2 id="titolMostrat" class="titol-canco">TÍTOL DE LA CANÇÓ</h2>
@@ -177,34 +186,36 @@
 </div>
 
 <div id="modalBaix" class="modal-overlay no-print">
-    <div class="modal-contingut" style="max-width: 400px;">
+    <div class="modal-contingut" style="max-width: 450px;">
         <h2>🎸 Crear Tab de Baix</h2>
-        <div class="formulari-baix">
-            <div class="grup-control">
-                <label>Nom de l'acord / nota (Títol):</label>
-                <input type="text" id="baix-titol" placeholder="Ex: A- o Riff Principal">
+        <p style="color: #666; margin-bottom: 20px;">Escriu el número del trast directament sobre la corda:</p>
+        
+        <div style="text-align: left;">
+            <label style="font-weight: bold; font-size: 14px; color: #555;">Títol de l'acord / nota:</label>
+            <input type="text" id="baix-titol" placeholder="Ex: A- o Riff" style="width: 100%; box-sizing: border-box; margin-top: 5px;">
+        </div>
+
+        <div class="tab-interactiu">
+            <div class="corda-interactiva">
+                <span class="nom-corda">G</span>
+                <input type="text" id="baix-g" placeholder="-" maxlength="2">
             </div>
-            
-            <p style="margin: 10px 0 0 0; font-weight: bold; color: #555;">Números de trast:</p>
-            <div class="input-corda">
-                <label>Corda 1 (G - aguda):</label>
-                <input type="text" id="baix-g" placeholder="-">
+            <div class="corda-interactiva">
+                <span class="nom-corda">D</span>
+                <input type="text" id="baix-d" placeholder="-" maxlength="2">
             </div>
-            <div class="input-corda">
-                <label>Corda 2 (D):</label>
-                <input type="text" id="baix-d" placeholder="-">
+            <div class="corda-interactiva">
+                <span class="nom-corda">A</span>
+                <input type="text" id="baix-a" placeholder="-" maxlength="2">
             </div>
-            <div class="input-corda">
-                <label>Corda 3 (A):</label>
-                <input type="text" id="baix-a" placeholder="-">
-            </div>
-            <div class="input-corda">
-                <label>Corda 4 (E - greu):</label>
-                <input type="text" id="baix-e" placeholder="-">
+            <div class="corda-interactiva">
+                <span class="nom-corda">E</span>
+                <input type="text" id="baix-e" placeholder="-" maxlength="2">
             </div>
         </div>
+        
         <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
-            <button style="background: #28a745;" onclick="generarTabBaix()">Generar Tabulatura</button>
+            <button style="background: #28a745;" onclick="generarTabBaix()">Crear Acord</button>
             <button class="tancar-modal" style="margin-top: 0;" onclick="tancarModalBaix()">Cancel·lar</button>
         </div>
     </div>
@@ -241,7 +252,18 @@
         });
     }
 
-    // 3. Afegir Acord amb Imatge (Guitarra/Teclat)
+    // 3. Netejar tota la partitura d'un sol cop
+    function netejarTot() {
+        if(confirm("Segur que vols esborrar tots els acords de la pantalla?")) {
+            document.getElementById('seccio-guitarra').innerHTML = '';
+            document.getElementById('seccio-teclat').innerHTML = '';
+            document.getElementById('seccio-baix').innerHTML = '';
+            document.getElementById('seccio-bateria').innerHTML = '';
+            actualitzarTitolsSeccions();
+        }
+    }
+
+    // 4. Afegir Acord amb Imatge (Guitarra/Teclat)
     function afegirAcord() {
         const instrument = document.getElementById('instrument').value;
         const selectAcord = document.getElementById('acord');
@@ -256,7 +278,7 @@
         crearContenidor(instrument, textLlegible, img);
     }
 
-    // 4. Bateria
+    // 5. Bateria
     function obrirModalBateria() { document.getElementById('modalBateria').style.display = 'flex'; carregarGaleriaBateria(); }
     function tancarModalBateria() { document.getElementById('modalBateria').style.display = 'none'; }
     function afegirBateria(num) {
@@ -280,7 +302,7 @@
         galeriaCarregada = true;
     }
 
-    // 5. Baix Elèctric
+    // 6. Baix Elèctric (Disseny Interactiu)
     function obrirModalBaix() { document.getElementById('modalBaix').style.display = 'flex'; }
     function tancarModalBaix() { document.getElementById('modalBaix').style.display = 'none'; }
     
@@ -293,7 +315,7 @@
             document.getElementById('baix-e').value.trim()
         ];
 
-        // Creem l'estructura visual de la tabulatura
+        // Creem l'estructura visual de la tabulatura final
         const tabDiv = document.createElement('div');
         tabDiv.className = 'tab-baix';
         
@@ -331,7 +353,7 @@
         tancarModalBaix();
     }
 
-    // 6. Funció genèrica per muntar i enviar a la graella
+    // 7. Funció genèrica per muntar i enviar a la graella
     function crearContenidor(instrument, titolText, elementInterior) {
         const div = document.createElement('div');
         div.className = 'acord-item';
