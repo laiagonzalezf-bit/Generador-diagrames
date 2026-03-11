@@ -15,11 +15,14 @@
         label { font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
         input, select, button { padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         
-        button { background-color: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; padding: 10px 20px; }
+        button { background-color: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; padding: 10px 20px; transition: 0.2s; }
         button:hover { background-color: #0056b3; }
         .btn-bateria { background-color: #fd7e14; }
+        .btn-bateria:hover { background-color: #e86e04; }
         .btn-baix { background-color: #6f42c1; }
+        .btn-baix:hover { background-color: #59339d; }
         .btn-imprimir { background-color: #28a745; }
+        .btn-imprimir:hover { background-color: #218838; }
         .btn-netejar { background-color: #dc3545; }
         
         .titol-canco { text-align: center; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; }
@@ -33,103 +36,162 @@
         .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; position: relative; background: white; }
         .acord-item img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
         
-        .eliminar-btn { 
-            position: absolute; top: -10px; right: -10px; 
-            background: #dc3545; color: white; border: none; border-radius: 50%; 
-            width: 28px; height: 28px; cursor: pointer; z-index: 10; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: bold; line-height: 1; padding: 0;
+        /* Botons Editar/Eliminar */
+        .botons-targeta { position: absolute; top: -12px; right: -12px; display: flex; gap: 5px; z-index: 10; }
+        .btn-targeta { 
+            width: 28px; height: 28px; border-radius: 50%; border: none; color: white;
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 14px; font-weight: bold; cursor: pointer; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+        .btn-eliminar { background: #dc3545; }
+        .btn-eliminar:hover { background: #c82333; }
+        .btn-editar { background: #ffc107; font-size: 12px; color: #333; }
+        .btn-editar:hover { background: #e0a800; }
 
         /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
         .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; text-align: center; }
+        
+        /* Graella del Modal de Bateria */
         .modal-graella { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-        .bateria-opcio { border: 1px solid #ddd; padding: 8px; cursor: pointer; border-radius: 5px; background: #f9f9f9; transition: transform 0.2s; }
-        .bateria-opcio:hover { border-color: #fd7e14; background: #fff5eb; transform: scale(1.02); }
+        .bateria-opcio { position: relative; border: 2px solid #ddd; padding: 8px; cursor: pointer; border-radius: 5px; background: #f9f9f9; transition: all 0.2s; }
+        .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.02); }
         .bateria-opcio img { width: 100%; height: 100px; object-fit: contain; background: white; border-radius: 3px; }
-        .bateria-opcio div { font-size: 12px; margin-top: 5px; font-weight: bold; color: #555; }
+        
+        /* Efecte de bateria seleccionada */
+        .bateria-opcio.seleccionat { border-color: #28a745; background: #e8f5e9; }
+        .bateria-opcio.seleccionat::after {
+            content: '✅';
+            position: absolute;
+            top: -10px; right: -10px;
+            background: white; border-radius: 50%; width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 12px;
+        }
 
-        /* Baix */
-        .corda-llarga { display: flex; align-items: center; margin-bottom: 8px; font-family: monospace; }
-        .corda-llarga input { flex-grow: 1; margin-left: 10px; color: #d90429; font-weight: bold; }
-        .tab-baix { display: flex; align-items: center; justify-content: center; padding: 15px; border: 1px solid #ccc; border-radius: 6px; background: #fdfdfd; width: 100%; box-sizing: border-box; }
-        .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 15px; margin-right: 15px; line-height: 1.6; }
-        .tab-linies { font-family: monospace; font-size: 16px; line-height: 1.6; white-space: pre; color: #d90429; text-align: left; }
+        /* --- PAL DEL BAIX FLUID --- */
+        .pal-wrapper { 
+            background: #2c2c2c; padding: 10px 5px 10px 0; border-radius: 6px; 
+            position: relative; width: 100%; box-sizing: border-box; margin-bottom: 15px;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        }
+        .pal-nums { display: flex; margin-left: 25px; color: #aaa; font-size: 10px; font-weight: bold; margin-bottom: 4px; }
+        .pal-num { flex: 1; text-align: center; }
+        .pal-num.cejilla-num { flex: 0 0 20px; }
+
+        .pal-cordes { position: relative; }
+        .pal-marques { position: absolute; top: 0; bottom: 0; left: 45px; right: 0; display: flex; z-index: 0; pointer-events: none; }
+        .pal-marca-espai { flex: 1; position: relative; }
+        .pal-punt-marca { position: absolute; width: 10px; height: 10px; background: rgba(255,255,255,0.2); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .pal-marca-espai.doble .pal-punt-marca:nth-child(1) { top: 25%; }
+        .pal-marca-espai.doble .pal-punt-marca:nth-child(2) { top: 75%; }
+
+        .pal-corda { display: flex; align-items: center; height: 22px; position: relative; }
+        .pal-nom-corda { flex: 0 0 25px; text-align: center; color: white; font-family: monospace; font-size: 13px; font-weight: bold; z-index: 3; }
+        .pal-linia { position: absolute; left: 25px; right: 0; background: #999; z-index: 1; box-shadow: 0 1px 1px rgba(0,0,0,0.8); }
+        .corda-g .pal-linia { height: 1px; }
+        .corda-d .pal-linia { height: 2px; }
+        .corda-a .pal-linia { height: 3px; }
+        .corda-e .pal-linia { height: 4px; }
+
+        .pal-trast { flex: 1; height: 100%; border-right: 1px solid #555; position: relative; z-index: 2; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .pal-trast:hover { background: rgba(255, 255, 255, 0.15); }
+        .pal-trast.cejilla { flex: 0 0 20px; border-right: 4px solid #ccc; background: #1a1a1a; }
+        
+        .pal-punt-nota { width: 16px; height: 16px; background: #007bff; border-radius: 50%; color: white; display: none; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; border: 1px solid white; }
+        .pal-trast.actiu .pal-punt-nota { display: flex; }
+
+        .acord-item .pal-wrapper { pointer-events: none; margin-bottom: 10px; }
+
+        /* --- TABULATURA TEXT --- */
+        .tab-controls { background: #fdfdfd; padding: 15px; border-radius: 6px; border: 1px solid #ddd; text-align: left;}
+        .corda-tab { display: flex; align-items: center; margin-bottom: 5px; }
+        .corda-tab span { font-family: monospace; font-weight: bold; width: 30px; font-size: 16px; color: #333; }
+        .corda-tab input { flex-grow: 1; font-family: monospace; font-size: 16px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; color: #d90429; letter-spacing: 1px; }
+        .corda-tab input:focus { outline: none; border-color: #6f42c1; }
+
+        .tab-baix { padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 6px; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center;}
+        .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 10px; margin-right: 10px; line-height: 1.5; font-size: 14px; }
+        .tab-linies { font-family: monospace; font-size: 14px; line-height: 1.5; white-space: pre; color: #d90429; text-align: left; overflow: hidden;}
 
         .titol-repro { display: none; }
 
         /* =========================================================
-           IMPRESSIÓ I PDF (SÚPER ADAPTIU A4 HORITZONTAL) 
+           IMPRESSIÓ I PDF: LA SOLUCIÓ DEFINITIVA CONTRA FULLS EN BLANC
            ========================================================= */
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
+            @page { size: A4 landscape; margin: 10mm; } 
+            
+            body, html { padding: 0; margin: 0; background: white; height: 100%; }
+            .contenidor { box-shadow: none; max-width: 100%; padding: 0; margin: 0; border: none; height: 100%; }
+            
             .no-print, .titol-seccio { display: none !important; } 
-            body { padding: 0; background: white; }
-            .contenidor { box-shadow: none; max-width: 100%; padding: 0; border: none; }
+            
+            .seccio-embolcall { display: none; } /* Amaguem tot per defecte al PDF */
+
+            /* Configurem exactament com es veu una secció amb acords */
+            .seccio-embolcall.seccio-activa { 
+                display: flex !important; 
+                flex-direction: column; 
+                justify-content: flex-start; 
+                height: 98vh; /* 98% de l'alçada visual, deixem 2% per evitar que faci desbordament a un altre full */
+                max-height: 98vh;
+                overflow: hidden; /* Això assassina literalment qualsevol pàgina en blanc extra */
+                page-break-after: always;
+                break-after: page;
+                box-sizing: border-box; 
+                padding-bottom: 5mm;
+            }
+            
+            /* L'última secció NO fa salt de pàgina */
+            .seccio-embolcall.seccio-activa:last-of-type { 
+                page-break-after: avoid !important;
+                break-after: auto !important;
+            }
             
             .titol-repro { 
                 display: block; 
                 text-align: center; 
                 font-size: 2.2em; 
                 text-transform: uppercase; 
-                margin-bottom: 20px; 
+                margin: 0 0 15px 0; 
                 font-weight: bold; 
+                flex: 0 0 auto; 
             }
-            
-            .seccio-embolcall.seccio-activa { 
-                display: flex !important; 
-                flex-direction: column; 
-                height: 95vh; 
-                page-break-after: always; 
-                box-sizing: border-box;
-                padding-bottom: 10px;
-            }
-            .seccio-embolcall.seccio-activa:last-of-type {
-                page-break-after: auto; 
-            }
-            
+
             .graella { 
                 display: flex !important; 
                 flex-wrap: wrap !important; 
                 justify-content: center !important; 
-                align-content: center !important;   
+                align-content: center !important; 
                 gap: 15px !important; 
-                flex-grow: 1; 
-                width: 100%;
+                flex: 1 1 auto; 
+                width: 100%; 
             }
 
             .acord-item { 
-                /* MAGIC RULE: Bloqueja el creixement perquè totes siguin IDÈNTIQUES */
                 flex: 0 0 auto !important; 
                 break-inside: avoid; 
                 border: 1px solid #ccc; 
                 padding: 10px; 
-                box-sizing: border-box;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
+                box-sizing: border-box; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: center; 
             }
             
-            .acord-item img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain; 
-            }
+            #sec-guitarra .acord-item { width: calc(25% - 15px); max-height: 120mm; }
+            #sec-guitarra .acord-item img { width: 100%; max-height: 100mm; object-fit: contain; }
 
-            /* --- MIDES EXACTES PER INSTRUMENT --- */
-            /* Guitarres: 4 per fila */
-            #sec-guitarra .acord-item { width: calc(25% - 15px); height: 35vh; }
+            #sec-teclat .acord-item { width: calc(50% - 15px); max-height: 70mm; }
+            #sec-teclat .acord-item img { width: 100%; max-height: 55mm; object-fit: contain; }
+
+            #sec-bateria .acord-item { width: calc(50% - 15px); max-height: 70mm; } 
+            #sec-bateria .acord-item img { width: 100%; max-height: 55mm; object-fit: contain; }
             
-            /* Teclats: 2 per fila (Molt grans i clars) */
-            #sec-teclat .acord-item { width: calc(50% - 15px); height: 35vh; }
-            
-            /* Baix: 2 per fila */
-            #sec-baix .acord-item { width: calc(50% - 15px); height: 22vh; }
-            
-            /* Bateria: 2 per fila (Poden cabre 3 files tranquil·lament, 6 patrons en total) */
-            #sec-bateria .acord-item { width: calc(50% - 15px); height: 28vh; } 
+            #sec-baix .acord-item { width: 100%; max-height: 60mm; justify-content: center; }
+            .tab-baix { width: 100%; }
         }
     </style>
 </head>
@@ -158,8 +220,8 @@
                 <optgroup label="Power"><option value="A5">A5</option><option value="D5">D5</option><option value="E5">E5</option></optgroup>
             </select>
         </div>
-        <button onclick="afegirAcord()">➕ Afegir</button>
-        <button class="btn-baix" onclick="obrirModal('modalBaix')">🎸 Tab Baix</button>
+        <button onclick="afegirAcord()">➕ Afegir Acord</button>
+        <button class="btn-baix" onclick="obrirModalBaixNova()">🎸 Tab Baix</button>
         <button class="btn-bateria" onclick="obrirModal('modalBateria')">🥁 Bateria</button>
         <button class="btn-imprimir" onclick="window.print()">🖨️ PDF</button>
         <button class="btn-netejar no-print" onclick="netejarTot()">🗑️ Netejar</button>
@@ -203,26 +265,47 @@
 
 <div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
     <div class="modal-contingut">
-        <h2 style="margin-top:0;">🥁 Tria un patró de bateria</h2>
+        <h2 style="margin-top:0;">🥁 Tria patrons de bateria</h2>
+        <p style="font-size: 14px; color: #666; margin-top: -10px;">Fes clic per afegir-los o deseleccionar-los. Pots triar-ne diversos a la vegada.</p>
         <div class="modal-graella" id="galeria-bateria"></div>
-        <button onclick="tancarModal('modalBateria')" style="margin-top:30px; background:#666; border-radius:8px; color:white; padding:10px 20px; border:none; cursor:pointer; font-weight:bold;">Tancar finestra</button>
+        <button onclick="tancarModal('modalBateria')" style="margin-top:30px; background:#666; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Tancar finestra</button>
     </div>
 </div>
 
-<div id="modalBaix" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBaix')">
-    <div class="modal-contingut">
-        <h2>🎸 Crear Tab de Baix</h2>
-        <input type="text" id="baix-titol" placeholder="Nom de l'acord / riff" style="width:100%; margin-bottom:15px; text-align:center; font-weight:bold; padding:8px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box;">
-        <div class="corda-llarga"><span>G|</span><input type="text" id="baix-g" value="------------------------"></div>
-        <div class="corda-llarga"><span>D|</span><input type="text" id="baix-d" value="------------------------"></div>
-        <div class="corda-llarga"><span>A|</span><input type="text" id="baix-a" value="------------------------"></div>
-        <div class="corda-llarga"><span>E|</span><input type="text" id="baix-e" value="------------------------"></div>
-        <button style="background:#28a745; margin-top:20px; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;" onclick="generarBaix()">Afegir a Partitura</button>
-        <button onclick="tancarModal('modalBaix')" style="margin-left:10px; background:#666; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;">Cancel·lar</button>
+<div id="modalBaix" class="modal-overlay no-print" onclick="tancarSiForaBaix(event)">
+    <div class="modal-contingut" style="max-width: 800px;">
+        <h2 style="margin-top:0; color:#6f42c1;">🎸 Tabulatura de Baix</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Fes clic al pal per crear una seqüència de notes, o escriu a les línies inferiors.</p>
+        
+        <input type="text" id="baix-titol" placeholder="Ex: Riff Principal / D-" style="width:100%; margin-bottom:15px; text-align:center; font-weight:bold; font-size:16px; padding:10px; border:2px solid #ccc; border-radius:6px; box-sizing:border-box;">
+        
+        <div id="fretboard-actiu" class="pal-wrapper">
+            <div class="pal-nums" id="numeros-trasts">
+                <div class="pal-num cejilla-num">0</div>
+            </div>
+            <div class="pal-cordes">
+                <div class="pal-marques" id="marques-pal"></div>
+                <div id="cordes-contenidor"></div>
+            </div>
+        </div>
+
+        <div class="tab-controls">
+            <div class="corda-tab"><span>G|</span><input type="text" id="tab-G" value="------------------------" data-corda="G" oninput="actualitzarPalDesDeTab()"></div>
+            <div class="corda-tab"><span>D|</span><input type="text" id="tab-D" value="------------------------" data-corda="D" oninput="actualitzarPalDesDeTab()"></div>
+            <div class="corda-tab"><span>A|</span><input type="text" id="tab-A" value="------------------------" data-corda="A" oninput="actualitzarPalDesDeTab()"></div>
+            <div class="corda-tab"><span>E|</span><input type="text" id="tab-E" value="------------------------" data-corda="E" oninput="actualitzarPalDesDeTab()"></div>
+        </div>
+
+        <div style="margin-top:20px;">
+            <button id="btn-guardar-baix" style="background:#28a745; margin-top:20px; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;" onclick="generarBaix()">✅ Afegir a Partitura</button>
+            <button style="background:#dc3545; margin-left:10px;" onclick="netejarModalBaix()">🗑️ Netejar</button>
+            <button onclick="tancarModalBaix()" style="margin-left:10px; background:#666; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;">Cancel·lar</button>
+        </div>
     </div>
 </div>
 
 <script>
+    // --- LÒGICA GENERAL ---
     function actualitzarTitol() {
         const text = document.getElementById('titolInput').value.toUpperCase() || "TÍTOL DE LA CANÇÓ";
         document.getElementById('titolMostrat').innerText = text;
@@ -233,11 +316,9 @@
         ['guitarra', 'teclat', 'baix', 'bateria'].forEach(id => {
             const wrap = document.getElementById('wrap-' + id);
             if (document.getElementById('sec-' + id).children.length > 0) {
-                wrap.style.display = 'block';
-                wrap.classList.add('seccio-activa'); 
+                wrap.style.display = 'block'; wrap.classList.add('seccio-activa'); 
             } else {
-                wrap.style.display = 'none';
-                wrap.classList.remove('seccio-activa');
+                wrap.style.display = 'none'; wrap.classList.remove('seccio-activa');
             }
         });
     }
@@ -246,6 +327,7 @@
         if(confirm("Vols netejar tota la pàgina?")) { 
             ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); 
             actualitzarVisibilitat(); 
+            actualitzarSeleccioBateria(); 
         } 
     }
     
@@ -259,42 +341,221 @@
         crearItem(inst, null, img);
     }
     
-    function obrirModal(id) { document.getElementById(id).style.display = 'flex'; if (id === 'modalBateria') carregarBateria(); }
+    function obrirModal(id) { 
+        document.getElementById(id).style.display = 'flex'; 
+        if (id === 'modalBateria') {
+            carregarBateria(); 
+            actualitzarSeleccioBateria(); 
+        }
+    }
     function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
     function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
     
+    // Ara el botó fa ON / OFF
     function carregarBateria() {
         const cont = document.getElementById('galeria-bateria');
         if (cont.children.length > 0) return;
         for (let i = 1; i <= 42; i++) {
             const d = document.createElement('div'); d.className = 'bateria-opcio';
-            d.innerHTML = `<img src="img/dors patrons de bateria ${i}.png" onerror="this.parentElement.style.display='none'"><div>Patró ${i}</div>`;
+            const nomArxiu = `img/dors patrons de bateria ${i}.png`;
+            d.innerHTML = `<img src="${nomArxiu}" onerror="this.parentElement.style.display='none'"><div>Patró ${i}</div>`;
+            
             d.onclick = () => {
-                const img = document.createElement('img'); img.src = `img/dors patrons de bateria ${i}.png`;
-                crearItem('bateria', `Patró ${i}`, img);
-                tancarModal('modalBateria');
+                const imatgesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item img'));
+                // Comprovem si la imatge ja s'havia afegit a la partitura
+                const imatgeExistent = imatgesAfegides.find(img => img.getAttribute('src') === nomArxiu);
+                
+                if (imatgeExistent) {
+                    // Si ja hi era, la traiem de la partitura (Deseleccionar)
+                    imatgeExistent.closest('.acord-item').remove();
+                } else {
+                    // Si no hi era, l'afegim
+                    const img = document.createElement('img'); img.src = nomArxiu;
+                    crearItem('bateria', `Patró ${i}`, img);
+                }
+                actualitzarVisibilitat();
+                actualitzarSeleccioBateria(); // Actualitzem els verds del modal
             };
             cont.appendChild(d);
         }
     }
-    
-    function generarBaix() {
-        const titol = document.getElementById('baix-titol').value || 'Baix';
-        const tab = document.createElement('div'); tab.className = 'tab-baix';
-        tab.innerHTML = `<div class="tab-esquerra">T<br>A<br>B</div><div class="tab-linies"><span style="color:#333">G|</span>${document.getElementById('baix-g').value}\n<span style="color:#333">D|</span>${document.getElementById('baix-d').value}\n<span style="color:#333">A|</span>${document.getElementById('baix-a').value}\n<span style="color:#333">E|</span>${document.getElementById('baix-e').value}</div>`;
-        crearItem('baix', titol, tab);
-        tancarModal('modalBaix');
+
+    function actualitzarSeleccioBateria() {
+        const bateriesAfegides = Array.from(document.querySelectorAll('#sec-bateria img')).map(img => img.getAttribute('src'));
+        
+        document.querySelectorAll('.bateria-opcio').forEach(div => {
+            const imatgeModal = div.querySelector('img').getAttribute('src');
+            if (bateriesAfegides.includes(imatgeModal)) {
+                div.classList.add('seleccionat');
+            } else {
+                div.classList.remove('seleccionat');
+            }
+        });
     }
     
-    function crearItem(inst, text, contingut) {
-        const item = document.createElement('div'); item.className = 'acord-item';
-        let html = `<button class="eliminar-btn no-print" onclick="this.parentElement.remove(); actualitzarVisibilitat();">X</button>`;
-        if (text) html += `<h3>${text}</h3>`;
+    // --- LÒGICA BAIX INTERACTIU I EDICIÓ ---
+    const NUM_TRASTS = 15;
+    const CORDES = ['G', 'D', 'A', 'E'];
+    let cartaBaixEnEdicio = null; 
+
+    function inicialitzarPal() {
+        const trastsNum = document.getElementById('numeros-trasts');
+        const marques = document.getElementById('marques-pal');
+        const cordesCont = document.getElementById('cordes-contenidor');
+
+        for (let i = 1; i <= NUM_TRASTS; i++) {
+            trastsNum.innerHTML += `<div class="pal-num">${i}</div>`;
+            let marcaHTML = `<div class="pal-marca-espai">`;
+            if ([3, 5, 7, 9, 15].includes(i)) marcaHTML += `<div class="pal-punt-marca"></div>`;
+            else if (i === 12) marcaHTML = `<div class="pal-marca-espai doble"><div class="pal-punt-marca"></div><div class="pal-punt-marca"></div>`;
+            marcaHTML += `</div>`;
+            marques.innerHTML += marcaHTML;
+        }
+
+        CORDES.forEach(corda => {
+            let fila = `<div class="pal-corda corda-${corda.toLowerCase()}">`;
+            fila += `<div class="pal-nom-corda">${corda}</div><div class="pal-linia"></div>`;
+            fila += `<div class="pal-trast cejilla" data-corda="${corda}" data-trast="0" onclick="clicTrast(this)"><div class="pal-punt-nota">0</div></div>`;
+            for (let i = 1; i <= NUM_TRASTS; i++) {
+                fila += `<div class="pal-trast" data-corda="${corda}" data-trast="${i}" onclick="clicTrast(this)"><div class="pal-punt-nota">${i}</div></div>`;
+            }
+            fila += `</div>`;
+            cordesCont.innerHTML += fila;
+        });
+    }
+
+    function clicTrast(element) {
+        const corda = element.getAttribute('data-corda');
+        const trast = element.getAttribute('data-trast');
+        afegirNotaATabulatura(corda, trast);
+        actualitzarPalDesDeTab();
+    }
+
+    function afegirNotaATabulatura(corda, trast) {
+        let maxLength = 0;
+        for (let c of CORDES) {
+            let textNet = document.getElementById(`tab-${c}`).value.replace(/-+$/, '');
+            if (textNet.length > maxLength) maxLength = textNet.length;
+        }
+        if (maxLength < 2) maxLength = 2;
+
+        for (let c of CORDES) {
+            let input = document.getElementById(`tab-${c}`);
+            let textNet = input.value.replace(/-+$/, '');
+            while (textNet.length < maxLength) textNet += '-';
+            textNet += '--'; 
+            textNet += (c === corda) ? trast : '-'.repeat(trast.toString().length);
+            textNet += '--';
+            input.value = textNet + "------------------------";
+        }
+    }
+
+    function actualitzarPalDesDeTab() {
+        document.querySelectorAll('#fretboard-actiu .pal-trast').forEach(t => t.classList.remove('actiu'));
+        CORDES.forEach(corda => {
+            const numeros = document.getElementById(`tab-${corda}`).value.match(/\d+/g);
+            if (numeros) {
+                [...new Set(numeros)].forEach(num => {
+                    if (num >= 0 && num <= NUM_TRASTS) {
+                        const el = document.querySelector(`#fretboard-actiu .pal-trast[data-corda="${corda}"][data-trast="${num}"]`);
+                        if(el) el.classList.add('actiu');
+                    }
+                });
+            }
+        });
+    }
+
+    function obrirModalBaixNova() {
+        cartaBaixEnEdicio = null;
+        document.getElementById('btn-guardar-baix').innerHTML = "✅ Afegir a Partitura";
+        netejarModalBaix();
+        document.getElementById('modalBaix').style.display = 'flex';
+    }
+
+    function editarBaix(item) {
+        cartaBaixEnEdicio = item; 
+        document.getElementById('baix-titol').value = item.dataset.titol || '';
+        document.getElementById('tab-G').value = item.dataset.g;
+        document.getElementById('tab-D').value = item.dataset.d;
+        document.getElementById('tab-A').value = item.dataset.a;
+        document.getElementById('tab-E').value = item.dataset.e;
+        actualitzarPalDesDeTab(); 
+        document.getElementById('btn-guardar-baix').innerHTML = "💾 Actualitzar Partitura";
+        document.getElementById('modalBaix').style.display = 'flex';
+    }
+
+    function netejarModalBaix() {
+        document.getElementById('baix-titol').value = '';
+        document.querySelectorAll('#fretboard-actiu .pal-trast').forEach(t => t.classList.remove('actiu'));
+        CORDES.forEach(c => document.getElementById(`tab-${c}`).value = "------------------------");
+    }
+
+    function tancarModalBaix() { tancarModal('modalBaix'); cartaBaixEnEdicio = null; }
+    function tancarSiForaBaix(e) { if (e.target.id === 'modalBaix') tancarModalBaix(); }
+
+    function generarBaix() {
+        const titol = document.getElementById('baix-titol').value || 'Baix';
+        const valG = document.getElementById('tab-G').value;
+        const valD = document.getElementById('tab-D').value;
+        const valA = document.getElementById('tab-A').value;
+        const valE = document.getElementById('tab-E').value;
+
+        const HTMLPal = document.getElementById('fretboard-actiu').innerHTML;
+        
+        if (cartaBaixEnEdicio) {
+            cartaBaixEnEdicio.dataset.g = valG;
+            cartaBaixEnEdicio.dataset.d = valD;
+            cartaBaixEnEdicio.dataset.a = valA;
+            cartaBaixEnEdicio.dataset.e = valE;
+            cartaBaixEnEdicio.dataset.titol = titol;
+            cartaBaixEnEdicio.querySelector('.titol-item').innerText = titol;
+            cartaBaixEnEdicio.querySelector('.pal-wrapper').innerHTML = HTMLPal;
+            cartaBaixEnEdicio.querySelector('.tab-linies').innerHTML = `<span style="color:#333">G|</span>${valG}\n<span style="color:#333">D|</span>${valD}\n<span style="color:#333">A|</span>${valA}\n<span style="color:#333">E|</span>${valE}`;
+        } else {
+            const palGenerat = document.createElement('div');
+            palGenerat.className = 'pal-wrapper';
+            palGenerat.innerHTML = HTMLPal;
+
+            const tabGenerada = document.createElement('div'); 
+            tabGenerada.className = 'tab-baix';
+            tabGenerada.innerHTML = `<div class="tab-esquerra">T<br>A<br>B</div><div class="tab-linies"><span style="color:#333">G|</span>${valG}\n<span style="color:#333">D|</span>${valD}\n<span style="color:#333">A|</span>${valA}\n<span style="color:#333">E|</span>${valE}</div>`;
+            
+            const wrapperFinal = document.createElement('div');
+            wrapperFinal.style.width = "100%";
+            wrapperFinal.appendChild(palGenerat);
+            wrapperFinal.appendChild(tabGenerada);
+
+            crearItem('baix', titol, wrapperFinal, {g: valG, d: valD, a: valA, e: valE});
+        }
+        tancarModalBaix();
+    }
+
+    function crearItem(inst, text, contingut, dadesBaix = null) {
+        const item = document.createElement('div'); 
+        item.className = 'acord-item';
+        
+        let htmlBotons = `<div class="botons-targeta no-print">`;
+        if (dadesBaix) {
+            item.dataset.g = dadesBaix.g;
+            item.dataset.d = dadesBaix.d;
+            item.dataset.a = dadesBaix.a;
+            item.dataset.e = dadesBaix.e;
+            item.dataset.titol = text;
+            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBaix(this.closest('.acord-item'))" title="Editar">✏️</button>`;
+        }
+        htmlBotons += `<button class="btn-targeta btn-eliminar" onclick="this.closest('.acord-item').remove(); actualitzarVisibilitat(); actualitzarSeleccioBateria();" title="Eliminar">X</button></div>`;
+        
+        let html = htmlBotons;
+        if (text) html += `<h3 class="titol-item" style="margin-top:5px; margin-bottom:15px; width:100%; text-align:center;">${text}</h3>`;
+        
         item.innerHTML = html;
         item.appendChild(contingut);
         document.getElementById('sec-' + inst).appendChild(item);
         actualitzarVisibilitat();
     }
+
+    // Arrancada inicial
+    inicialitzarPal();
 </script>
 </body>
 </html>
