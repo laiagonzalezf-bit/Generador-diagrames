@@ -17,8 +17,12 @@
         
         button { background-color: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; padding: 10px 20px; transition: 0.2s; }
         button:hover { background-color: #0056b3; }
+        .btn-guitarra-custom { background-color: #17a2b8; }
+        .btn-guitarra-custom:hover { background-color: #117a8b; }
         .btn-bateria { background-color: #fd7e14; }
         .btn-bateria:hover { background-color: #e86e04; }
+        .btn-bateria-custom { background-color: #d35400; }
+        .btn-bateria-custom:hover { background-color: #a84300; }
         .btn-baix { background-color: #6f42c1; }
         .btn-baix:hover { background-color: #59339d; }
         .btn-imprimir { background-color: #28a745; }
@@ -29,13 +33,17 @@
         .titol-seccio { border-bottom: 2px solid #ccc; padding-bottom: 5px; color: #444; margin-top: 20px; }
 
         /* Graelles a la Pantalla Web */
-        .graella { display: grid; gap: 20px; width: 100%; margin-top: 15px; }
-        .cols-4 { grid-template-columns: repeat(4, 1fr); }
-        .cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .graella { display: flex; flex-wrap: wrap; gap: 20px; width: 100%; margin-top: 15px; }
 
         .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; position: relative; background: white; }
         .acord-item img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
         
+        /* Mides PANTALLA Web */
+        #sec-guitarra .acord-item { width: calc(25% - 15px); }
+        #sec-teclat .acord-item, #sec-bateria .acord-item { width: calc(50% - 10px); }
+        #sec-baix .acord-item { width: 100%; }
+        #sec-bateria .acord-item.custom-bat { width: 100%; }
+
         /* Botons Editar/Eliminar */
         .botons-targeta { position: absolute; top: -12px; right: -12px; display: flex; gap: 5px; z-index: 10; }
         .btn-targeta { 
@@ -49,7 +57,7 @@
         .btn-editar:hover { background: #e0a800; }
 
         /* Modals */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto; }
         .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; text-align: center; }
         
         /* Graella del Modal de Bateria */
@@ -58,16 +66,95 @@
         .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.02); }
         .bateria-opcio img { width: 100%; height: 100px; object-fit: contain; background: white; border-radius: 3px; }
         
-        /* Efecte de bateria seleccionada */
         .bateria-opcio.seleccionat { border-color: #28a745; background: #e8f5e9; }
         .bateria-opcio.seleccionat::after {
-            content: '✅';
-            position: absolute;
-            top: -10px; right: -10px;
-            background: white; border-radius: 50%; width: 24px; height: 24px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 12px;
+            content: '✅'; position: absolute; top: -10px; right: -10px;
+            background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 12px;
         }
+
+        /* --- NOU DISSENYADOR D'ACORDS GUITARRA --- */
+        .chord-editor-wrapper { display: flex; justify-content: center; user-select: none; margin: 20px 0; width: 100%; }
+        .chord-visual { display: flex; flex-direction: column; align-items: center; }
+        .chord-nut-markers { display: flex; justify-content: space-between; width: 144px; margin-bottom: 5px; margin-left: 28px; }
+        .nut-marker { width: 24px; text-align: center; font-weight: bold; font-family: sans-serif; cursor: pointer; height: 24px; line-height: 24px; font-size: 16px; color: #333; }
+        .nut-marker:hover { background: #eee; border-radius: 50%; }
+
+        .fret-start-label { width: 20px; text-align: right; padding-right: 8px; font-weight: bold; font-size: 16px; line-height: 32px; margin-top: 0; color: #333; }
+
+        .chord-fretboard {
+            width: 120px; /* 5 columns of 24px */
+            height: 160px; /* 5 rows of 32px */
+            position: relative;
+            background: white;
+            border-left: 2px solid #333;
+            border-top: 6px solid #333; /* Cejilla */
+            margin-bottom: 10px;
+        }
+        .chord-fretboard.fret-offset { border-top: 2px solid #333; }
+
+        .chord-grid-bg {
+            display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr);
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+        }
+        .chord-grid-cell { border-right: 2px solid #333; border-bottom: 2px solid #333; }
+
+        .chord-click-overlay {
+            position: absolute; top: 0; left: -12px; right: -12px; bottom: 0;
+            display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr);
+            z-index: 10;
+        }
+        .chord-click-zone { display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .chord-click-zone:hover { background: rgba(0,0,0,0.05); }
+
+        .chord-dot {
+            width: 20px; height: 20px; border-radius: 50%; background: #333; color: white;
+            display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; font-family: sans-serif; pointer-events: none; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Estils un cop l'acord està guardat a la carta */
+        .acord-item .chord-editor-wrapper { 
+            pointer-events: none; 
+            margin: 10px 0 20px 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+        }
+        .acord-item .chord-visual { 
+            transform: scale(1.35); /* El fem més gran, però centrat perfectament */
+            transform-origin: center center; 
+            margin: 0; 
+        }
+        .acord-item .nut-marker { cursor: default; }
+        .acord-item .chord-click-zone { cursor: default; }
+        .acord-item .chord-click-zone:hover { background: transparent; }
+
+        /* --- SEQÜENCIADOR VISUAL DE BATERIA --- */
+        .drum-grid { 
+            display: flex; justify-content: center; 
+            padding: 20px 10px; background: #fff; border-radius: 8px; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+            gap: 2px;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        }
+        .drum-col { display: flex; flex-direction: column; align-items: center; width: 28px; }
+        .drum-col.beat-end { margin-right: 12px; }
+        .drum-label { font-weight: bold; font-size: 22px; height: 35px; color: #000; font-family: sans-serif; }
+        .drum-line-container { position: relative; display: flex; flex-direction: column; gap: 12px; align-items: center; width: 100%; padding-top: 5px; }
+        .drum-vertical-line { position: absolute; top: 12px; bottom: 12px; left: 50%; transform: translateX(-50%); width: 2px; z-index: 1; }
+        .drum-vertical-line.fort { border-left: 2px dashed #444; }
+        .drum-vertical-line.fluix { border-left: 2px dashed #ccc; }
+        .drum-dot-wrap { height: 24px; display: flex; align-items: center; justify-content: center; z-index: 2; width: 100%; }
+        .drum-dot { border-radius: 50%; transition: 0.1s; background: #eee; border: 1px solid #ddd; box-sizing: border-box; }
+        .drum-dot.large-step { width: 24px; height: 24px; }
+        .drum-dot.small-step { width: 14px; height: 14px; }
+        .drum-dot.clicable { cursor: pointer; }
+        .drum-dot.clicable:hover { transform: scale(1.15); border-color: #999; }
+        .drum-dot.hh.actiu { background: #ffdb58; border-color: #f1c40f; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .drum-dot.sn.actiu { background: #77dd77; border-color: #2ecc71; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .drum-dot.bd.actiu { background: #33b5e5; border-color: #0099cc; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .acord-item .drum-grid { background: transparent; box-shadow: none; padding: 10px; margin-bottom: 0; }
+        .acord-item .drum-dot:not(.actiu) { background: transparent; border: none; }
 
         /* --- PAL DEL BAIX FLUID --- */
         .pal-wrapper { 
@@ -78,14 +165,12 @@
         .pal-nums { display: flex; margin-left: 25px; color: #aaa; font-size: 10px; font-weight: bold; margin-bottom: 4px; }
         .pal-num { flex: 1; text-align: center; }
         .pal-num.cejilla-num { flex: 0 0 20px; }
-
         .pal-cordes { position: relative; }
         .pal-marques { position: absolute; top: 0; bottom: 0; left: 45px; right: 0; display: flex; z-index: 0; pointer-events: none; }
         .pal-marca-espai { flex: 1; position: relative; }
         .pal-punt-marca { position: absolute; width: 10px; height: 10px; background: rgba(255,255,255,0.2); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .pal-marca-espai.doble .pal-punt-marca:nth-child(1) { top: 25%; }
         .pal-marca-espai.doble .pal-punt-marca:nth-child(2) { top: 75%; }
-
         .pal-corda { display: flex; align-items: center; height: 22px; position: relative; }
         .pal-nom-corda { flex: 0 0 25px; text-align: center; color: white; font-family: monospace; font-size: 13px; font-weight: bold; z-index: 3; }
         .pal-linia { position: absolute; left: 25px; right: 0; background: #999; z-index: 1; box-shadow: 0 1px 1px rgba(0,0,0,0.8); }
@@ -93,14 +178,11 @@
         .corda-d .pal-linia { height: 2px; }
         .corda-a .pal-linia { height: 3px; }
         .corda-e .pal-linia { height: 4px; }
-
         .pal-trast { flex: 1; height: 100%; border-right: 1px solid #555; position: relative; z-index: 2; cursor: pointer; display: flex; justify-content: center; align-items: center; }
         .pal-trast:hover { background: rgba(255, 255, 255, 0.15); }
         .pal-trast.cejilla { flex: 0 0 20px; border-right: 4px solid #ccc; background: #1a1a1a; }
-        
         .pal-punt-nota { width: 16px; height: 16px; background: #007bff; border-radius: 50%; color: white; display: none; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; border: 1px solid white; }
         .pal-trast.actiu .pal-punt-nota { display: flex; }
-
         .acord-item .pal-wrapper { pointer-events: none; margin-bottom: 10px; }
 
         /* --- TABULATURA TEXT --- */
@@ -109,7 +191,6 @@
         .corda-tab span { font-family: monospace; font-weight: bold; width: 30px; font-size: 16px; color: #333; }
         .corda-tab input { flex-grow: 1; font-family: monospace; font-size: 16px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; color: #d90429; letter-spacing: 1px; }
         .corda-tab input:focus { outline: none; border-color: #6f42c1; }
-
         .tab-baix { padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 6px; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center;}
         .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 10px; margin-right: 10px; line-height: 1.5; font-size: 14px; }
         .tab-linies { font-family: monospace; font-size: 14px; line-height: 1.5; white-space: pre; color: #d90429; text-align: left; overflow: hidden;}
@@ -117,79 +198,55 @@
         .titol-repro { display: none; }
 
         /* =========================================================
-           IMPRESSIÓ I PDF: DEFINITIUS PER A A4 HORITZONTAL
+           IMPRESSIÓ I PDF (CENTRATGE VERTICAL PERFECTE)
            ========================================================= */
         @media print {
-            /* Restaurem la mida d'A4 i els marges normals per forçar el navegador */
-            @page { size: A4 landscape; margin: 10mm; } 
+            @page { size: A4 landscape; margin: 0; } 
             
-            body { padding: 0; margin: 0; background: white; }
-            .contenidor { box-shadow: none; max-width: 100%; padding: 0; margin: 0; border: none; }
+            body, html { padding: 0; margin: 0; background: white; width: 100%; height: 100%; }
+            .contenidor { box-shadow: none; max-width: 100%; padding: 0; margin: 0; border: none; height: 100%; }
             
             .no-print, .titol-seccio { display: none !important; } 
-            
             .seccio-embolcall { display: none; } 
 
             .seccio-embolcall.seccio-activa { 
-                display: flex !important; 
-                flex-direction: column; 
-                justify-content: flex-start; /* Fixa el títol a la part de dalt */
-                height: 175mm; /* Alçada segura en mil·límetres que impedeix sobrepassar el full */
-                box-sizing: border-box; 
+                display: flex !important; flex-direction: column; 
+                justify-content: center; align-items: center;     
+                width: 100%; height: 100vh; padding: 10mm 15mm; 
+                box-sizing: border-box; page-break-after: always;
+                break-after: page; overflow: hidden; 
             }
-            
-            /* LA MÀGIA ANTI-FULLS BLANCS: 
-               Es fa un salt de pàgina ABANS de cada instrument (menys del primer).
-               Així és impossible que sobri una pàgina buida al final! */
-            .seccio-embolcall.seccio-activa ~ .seccio-embolcall.seccio-activa {
-                page-break-before: always !important;
-                break-before: page !important;
+            .seccio-embolcall.seccio-activa:last-of-type { 
+                page-break-after: avoid !important; break-after: auto !important;
             }
             
             .titol-repro { 
-                display: block; 
-                text-align: center; 
-                font-size: 2.2em; 
-                text-transform: uppercase; 
-                margin: 0 0 15px 0; 
-                font-weight: bold; 
-                flex: 0 0 auto; 
+                display: block; text-align: center; font-size: 2.2em; 
+                text-transform: uppercase; margin: 0 0 25px 0; 
+                font-weight: bold; flex: 0 0 auto; 
             }
 
             .graella { 
-                display: flex !important; 
-                flex-wrap: wrap !important; 
-                justify-content: center !important; 
-                align-content: center !important; /* Centra el bloc d'acords dins l'espai restant */
-                gap: 15px !important; 
-                flex: 1 1 auto; 
-                width: 100%; 
+                display: flex !important; flex-wrap: wrap !important; justify-content: center !important; 
+                align-content: flex-start !important; gap: 15px !important; flex: 0 0 auto; width: 100%; box-sizing: border-box;
             }
 
             .acord-item { 
-                flex: 0 0 auto !important; 
-                break-inside: avoid; 
-                border: 1px solid #ccc; 
-                padding: 10px; 
-                box-sizing: border-box; 
-                display: flex; 
-                flex-direction: column; 
-                align-items: center; 
-                justify-content: center; 
+                flex: 0 0 auto !important; break-inside: avoid; border: 1px solid #ccc; padding: 10px; 
+                box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                min-height: 0; min-width: 0; overflow: hidden;
             }
             
-            /* MIDES EXACTES MIL·LIMÈTRIQUES (Cap targeta pot trencar els límits) */
+            .acord-item img { width: 100%; height: 100%; object-fit: contain; min-height: 0; }
             
+            /* MIDES EXACTES D'IMPRESSIÓ */
             #sec-guitarra .acord-item { width: calc(25% - 15px); max-height: 120mm; }
-            #sec-guitarra .acord-item img { width: 100%; max-height: 100mm; object-fit: contain; }
-
-            #sec-teclat .acord-item { width: calc(50% - 15px); max-height: 70mm; }
-            #sec-teclat .acord-item img { width: 100%; max-height: 55mm; object-fit: contain; }
-
-            #sec-bateria .acord-item { width: calc(50% - 15px); max-height: 70mm; } 
-            #sec-bateria .acord-item img { width: 100%; max-height: 55mm; object-fit: contain; }
+            #sec-teclat .acord-item { width: calc(50% - 15px); max-height: 60mm; }
             
-            #sec-baix .acord-item { width: 100%; max-height: 60mm; justify-content: center; }
+            #sec-bateria .acord-item { width: calc(50% - 15px); max-height: 60mm; } 
+            #sec-bateria .acord-item.custom-bat { width: 100%; max-height: 70mm; justify-content: center; padding: 5px; }
+            
+            #sec-baix .acord-item { width: 100%; max-height: 60mm; justify-content: flex-start; }
             .tab-baix { width: 100%; }
         }
     </style>
@@ -197,7 +254,7 @@
 <body>
 
 <div class="contenidor">
-    <h1 class="no-print" style="text-align:center;">🎸 Generador de Diagrames Musicals</h1>
+    <h1 class="no-print" style="text-align:center;">Generador de Diagrames Musicals</h1>
 
     <div class="controls no-print">
         <div class="grup-control">
@@ -219,9 +276,12 @@
                 <optgroup label="Power"><option value="A5">A5</option><option value="D5">D5</option><option value="E5">E5</option></optgroup>
             </select>
         </div>
+        
         <button onclick="afegirAcord()">➕ Afegir Acord</button>
         <button class="btn-baix" onclick="obrirModalBaixNova()">🎸 Tab Baix</button>
-        <button class="btn-bateria" onclick="obrirModal('modalBateria')">🥁 Bateria</button>
+        <button class="btn-bateria" onclick="obrirModal('modalBateria')">🥁 Bateria (Imatges)</button>
+        <button class="btn-guitarra-custom" onclick="obrirModalGuitarraCustomNova()">🛠️ Crea Acord</button>
+        <button class="btn-bateria-custom" onclick="obrirModalBateriaCustomNova()">🛠️ Crea Bateria</button>
         <button class="btn-imprimir" onclick="window.print()">🖨️ PDF</button>
         <button class="btn-netejar no-print" onclick="netejarTot()">🗑️ Netejar</button>
     </div>
@@ -231,25 +291,25 @@
     <div id="wrap-guitarra" class="seccio-embolcall" style="display:none;">
         <div class="titol-repro"></div>
         <h3 class="titol-seccio no-print">🎸 Guitarra</h3>
-        <div class="graella cols-4" id="sec-guitarra"></div>
+        <div class="graella" id="sec-guitarra"></div>
     </div>
     
     <div id="wrap-teclat" class="seccio-embolcall" style="display:none;">
         <div class="titol-repro"></div>
         <h3 class="titol-seccio no-print">🎹 Teclats</h3>
-        <div class="graella cols-2" id="sec-teclat"></div>
+        <div class="graella" id="sec-teclat"></div>
     </div>
     
     <div id="wrap-baix" class="seccio-embolcall" style="display:none;">
         <div class="titol-repro"></div>
         <h3 class="titol-seccio no-print">🎸 Baix Elèctric</h3>
-        <div class="graella cols-2" id="sec-baix"></div>
+        <div class="graella" id="sec-baix"></div>
     </div>
     
     <div id="wrap-bateria" class="seccio-embolcall" style="display:none;">
         <div class="titol-repro"></div>
         <h3 class="titol-seccio no-print">🥁 Bateria</h3>
-        <div class="graella cols-2" id="sec-bateria"></div>
+        <div class="graella" id="sec-bateria"></div>
     </div>
 
     <div class="no-print" style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; font-size: 13px; color: #777;">
@@ -262,12 +322,76 @@
     </div>
 </div>
 
+<div id="modalGuitarraCustom" class="modal-overlay no-print" onclick="tancarSiForaGuitCustom(event)">
+    <div class="modal-contingut" style="max-width: 450px;">
+        <h2 style="margin-top:0; color:#17a2b8;">🛠️ Dissenyador d'Acords</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Fes clic al pal per posar dits (Punt, 1, 2, 3, 4, T). A dalt per O/X.</p>
+        
+        <input type="text" id="guit-custom-titol" placeholder="Nom de l'acord (ex: Cmaj7)" style="width:100%; margin-bottom:20px; text-align:center; font-weight:bold; font-size:16px; padding:10px; border:2px solid #ccc; border-radius:6px; box-sizing:border-box;">
+        
+        <div class="chord-editor-wrapper" id="guit-editor-wrapper">
+            <div style="display:flex; align-items:flex-start; justify-content:center; gap: 5px;">
+                <div style="margin-top: 30px;">
+                    <label style="font-size:11px; display:block; color:#666; text-align:center;">Trast</label>
+                    <input type="number" id="guit-fret-start" value="1" min="1" max="20" style="width:45px; text-align:center;" onchange="updateGuitFretStart()">
+                </div>
+                <div id="guit-editor-visual" class="chord-visual">
+                    <div class="chord-nut-markers">
+                        <div class="nut-marker" data-string="5" onclick="toggleNut(this)"></div>
+                        <div class="nut-marker" data-string="4" onclick="toggleNut(this)"></div>
+                        <div class="nut-marker" data-string="3" onclick="toggleNut(this)"></div>
+                        <div class="nut-marker" data-string="2" onclick="toggleNut(this)"></div>
+                        <div class="nut-marker" data-string="1" onclick="toggleNut(this)"></div>
+                        <div class="nut-marker" data-string="0" onclick="toggleNut(this)"></div>
+                    </div>
+                    <div style="display: flex;">
+                        <div id="guit-fret-label" class="fret-start-label"></div>
+                        <div class="chord-fretboard" id="guit-fretboard">
+                            <div class="chord-grid-bg">
+                                <div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div>
+                                <div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div>
+                                <div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div>
+                                <div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div>
+                                <div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div><div class="chord-grid-cell"></div>
+                            </div>
+                            <div class="chord-click-overlay" id="guit-click-overlay"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:20px;">
+            <button id="btn-guardar-guit-custom" style="background:#28a745; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;" onclick="generarGuitarraCustom()">✅ Afegir a Partitura</button>
+            <button style="background:#dc3545; margin-left:10px; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;" onclick="netejarModalGuitarraCustom()">🗑️ Netejar</button>
+            <button onclick="tancarModalGuitarraCustom()" style="margin-left:10px; background:#666; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;">Cancel·lar</button>
+        </div>
+    </div>
+</div>
+
 <div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
     <div class="modal-contingut">
         <h2 style="margin-top:0;">🥁 Tria patrons de bateria</h2>
         <p style="font-size: 14px; color: #666; margin-top: -10px;">Fes clic per afegir-los o treure'ls (es marcaran en verd).</p>
         <div class="modal-graella" id="galeria-bateria"></div>
         <button onclick="tancarModal('modalBateria')" style="margin-top:30px; background:#666; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Tancar finestra</button>
+    </div>
+</div>
+
+<div id="modalBateriaCustom" class="modal-overlay no-print" onclick="tancarSiForaBatCustom(event)">
+    <div class="modal-contingut" style="max-width: 900px;">
+        <h2 style="margin-top:0; color:#d35400;">🛠️ Dissenyador de Bateria</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Fes clic als cercles per col·locar el Plat (groc), la Caixa (verd) o el Bombo (blau).</p>
+        
+        <input type="text" id="bat-custom-titol" placeholder="Ex: Ritme Principal" style="width:100%; margin-bottom:20px; text-align:center; font-weight:bold; font-size:16px; padding:10px; border:2px solid #ccc; border-radius:6px; box-sizing:border-box;">
+        
+        <div id="sequencer-editor"></div>
+
+        <div style="margin-top:30px;">
+            <button id="btn-guardar-bat-custom" style="background:#28a745; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;" onclick="generarBateriaCustom()">✅ Afegir a Partitura</button>
+            <button style="background:#dc3545; margin-left:10px; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;" onclick="netejarModalBateriaCustom()">🗑️ Netejar</button>
+            <button onclick="tancarModalBateriaCustom()" style="margin-left:10px; background:#666; color:white; font-weight:bold; border:none; border-radius:6px; padding:10px 20px; cursor:pointer;">Cancel·lar</button>
+        </div>
     </div>
 </div>
 
@@ -350,6 +474,145 @@
     function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
     function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
     
+    // --- GUITARRA DISSENYADOR CUSTOM ---
+    let cartaGuitCustomEnEdicio = null;
+    const fingerCycle = ['', '●', '1', '2', '3', '4', 'T'];
+    const nutCycle = ['', 'O', 'X'];
+
+    function inicialitzarGuitarraCustom() {
+        const overlay = document.getElementById('guit-click-overlay');
+        overlay.innerHTML = '';
+        for (let r = 0; r < 5; r++) {
+            for (let c = 0; c < 6; c++) {
+                const zone = document.createElement('div');
+                zone.className = 'chord-click-zone';
+                zone.dataset.str = 5 - c; // 5 to 0 (E to E)
+                zone.dataset.fret = r + 1;
+                zone.onclick = function() { cycleFinger(this); };
+                overlay.appendChild(zone);
+            }
+        }
+    }
+
+    function cycleFinger(el) {
+        let current = el.dataset.finger || '';
+        let idx = fingerCycle.indexOf(current);
+        let nextIdx = (idx + 1) % fingerCycle.length;
+        let nextVal = fingerCycle[nextIdx];
+        el.dataset.finger = nextVal;
+        
+        if (nextVal !== '') {
+            const str = el.dataset.str;
+            const parent = el.parentElement;
+            Array.from(parent.children).forEach(sibling => {
+                if (sibling !== el && sibling.dataset.str === str) {
+                    sibling.dataset.finger = '';
+                    sibling.innerHTML = '';
+                }
+            });
+        }
+        el.innerHTML = nextVal ? `<div class="chord-dot">${nextVal === '●' ? '' : nextVal}</div>` : '';
+    }
+
+    function toggleNut(el) {
+        let current = el.dataset.val || '';
+        let idx = nutCycle.indexOf(current);
+        let nextIdx = (idx + 1) % nutCycle.length;
+        let nextVal = nutCycle[nextIdx];
+        el.dataset.val = nextVal;
+        el.innerText = nextVal;
+    }
+
+    function updateGuitFretStart() {
+        const input = document.getElementById('guit-fret-start');
+        const val = parseInt(input.value) || 1;
+        const label = document.getElementById('guit-fret-label');
+        const fretboard = document.getElementById('guit-fretboard');
+        
+        if (val > 1) {
+            label.innerText = val + "fr";
+            fretboard.classList.add('fret-offset');
+        } else {
+            label.innerText = "";
+            fretboard.classList.remove('fret-offset');
+        }
+    }
+
+    function obrirModalGuitarraCustomNova() {
+        cartaGuitCustomEnEdicio = null;
+        document.getElementById('btn-guardar-guit-custom').innerHTML = "✅ Afegir a Partitura";
+        netejarModalGuitarraCustom();
+        document.getElementById('modalGuitarraCustom').style.display = 'flex';
+    }
+
+    function netejarModalGuitarraCustom() {
+        document.getElementById('guit-custom-titol').value = '';
+        document.getElementById('guit-fret-start').value = 1;
+        updateGuitFretStart();
+        document.querySelectorAll('#guit-editor-visual .nut-marker').forEach(el => { el.dataset.val = ''; el.innerText = ''; });
+        document.querySelectorAll('#guit-editor-visual .chord-click-zone').forEach(el => { el.dataset.finger = ''; el.innerHTML = ''; });
+    }
+
+    function tancarModalGuitarraCustom() { tancarModal('modalGuitarraCustom'); cartaGuitCustomEnEdicio = null; }
+    function tancarSiForaGuitCustom(e) { if (e.target.id === 'modalGuitarraCustom') tancarModalGuitarraCustom(); }
+
+    function generarGuitarraCustom() {
+        const titol = document.getElementById('guit-custom-titol').value || 'Acord';
+        
+        const visualClone = document.createElement('div');
+        visualClone.className = 'chord-visual';
+        visualClone.innerHTML = document.getElementById('guit-editor-visual').innerHTML;
+        
+        visualClone.querySelectorAll('.nut-marker, .chord-click-zone').forEach(el => el.removeAttribute('onclick'));
+        
+        // LA CLAU DE LA CORRECCIÓ DE L'ERROR D'EDICIÓ ESTÀ AQUÍ:
+        // Abans agafava ".chord-click-zone" de TOTA la web (inclosos els ja generats). 
+        // Ara només agafa els del "#guit-editor-visual".
+        const guitData = {
+            fretStart: document.getElementById('guit-fret-start').value,
+            nuts: Array.from(document.querySelectorAll('#guit-editor-visual .nut-marker')).map(n => n.dataset.val || ''),
+            dots: Array.from(document.querySelectorAll('#guit-editor-visual .chord-click-zone')).map(z => z.dataset.finger || '')
+        };
+
+        if (cartaGuitCustomEnEdicio) {
+            cartaGuitCustomEnEdicio.dataset.guitData = JSON.stringify(guitData);
+            cartaGuitCustomEnEdicio.dataset.titol = titol;
+            cartaGuitCustomEnEdicio.querySelector('.titol-item').innerText = titol;
+            const container = cartaGuitCustomEnEdicio.querySelector('.chord-editor-wrapper');
+            container.innerHTML = '';
+            container.appendChild(visualClone);
+        } else {
+            const wrapperFinal = document.createElement('div');
+            wrapperFinal.className = "chord-editor-wrapper";
+            wrapperFinal.appendChild(visualClone);
+            crearItem('guitarra', titol, wrapperFinal, null, null, guitData);
+        }
+        tancarModalGuitarraCustom();
+    }
+
+    function editarGuitarraCustom(item) {
+        cartaGuitCustomEnEdicio = item;
+        document.getElementById('guit-custom-titol').value = item.dataset.titol || '';
+        
+        const guitData = JSON.parse(item.dataset.guitData);
+        document.getElementById('guit-fret-start').value = guitData.fretStart;
+        updateGuitFretStart();
+        
+        const nuts = document.querySelectorAll('#guit-editor-visual .nut-marker');
+        guitData.nuts.forEach((val, i) => { nuts[i].dataset.val = val; nuts[i].innerText = val; });
+        
+        const dots = document.querySelectorAll('#guit-click-overlay .chord-click-zone');
+        guitData.dots.forEach((val, i) => { 
+            dots[i].dataset.finger = val; 
+            dots[i].innerHTML = val ? `<div class="chord-dot">${val === '●' ? '' : val}</div>` : '';
+        });
+        
+        document.getElementById('btn-guardar-guit-custom').innerHTML = "💾 Actualitzar Partitura";
+        document.getElementById('modalGuitarraCustom').style.display = 'flex';
+    }
+
+
+    // --- BATERIA IMATGES (TOGGLE) ---
     function carregarBateria() {
         const cont = document.getElementById('galeria-bateria');
         if (cont.children.length > 0) return;
@@ -359,7 +622,7 @@
             d.innerHTML = `<img src="${nomArxiu}" onerror="this.parentElement.style.display='none'"><div>Patró ${i}</div>`;
             
             d.onclick = () => {
-                const imatgesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item img'));
+                const imatgesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item:not(.custom-bat) img'));
                 const imatgeExistent = imatgesAfegides.find(img => img.getAttribute('src') === nomArxiu);
                 
                 if (imatgeExistent) {
@@ -377,8 +640,7 @@
     }
 
     function actualitzarSeleccioBateria() {
-        const bateriesAfegides = Array.from(document.querySelectorAll('#sec-bateria img')).map(img => img.getAttribute('src'));
-        
+        const bateriesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item:not(.custom-bat) img')).map(img => img.getAttribute('src'));
         document.querySelectorAll('.bateria-opcio').forEach(div => {
             const imatgeModal = div.querySelector('img').getAttribute('src');
             if (bateriesAfegides.includes(imatgeModal)) {
@@ -388,8 +650,109 @@
             }
         });
     }
+
+    // --- BATERIA SEQÜENCIADOR CUSTOM ---
+    let cartaBatCustomEnEdicio = null;
+
+    function inicialitzarSequenciador() {
+        const editor = document.getElementById('sequencer-editor');
+        let html = `<div class="drum-grid">`;
+        
+        for(let i=0; i<16; i++) {
+            let label = '';
+            if(i===0) label = '1';
+            if(i===4) label = '2';
+            if(i===8) label = '3';
+            if(i===12) label = '4';
+
+            let extraClass = (i===3 || i===7 || i===11) ? 'beat-end' : '';
+            let sizeClass = (i % 2 === 0) ? 'large-step' : 'small-step';
+            
+            let lineHtml = '';
+            if (i % 4 === 0) { lineHtml = `<div class="drum-vertical-line fort"></div>`; } 
+            else if (i % 4 === 2) { lineHtml = `<div class="drum-vertical-line fluix"></div>`; }
+
+            html += `<div class="drum-col ${extraClass}" data-step="${i}">
+                <div class="drum-label">${label}</div>
+                <div class="drum-line-container">
+                    ${lineHtml}
+                    <div class="drum-dot-wrap"><div class="drum-dot hh clicable ${sizeClass}" data-inst="HH" data-step="${i}" onclick="toggleSeqStep(this)"></div></div>
+                    <div class="drum-dot-wrap"><div class="drum-dot sn clicable ${sizeClass}" data-inst="SN" data-step="${i}" onclick="toggleSeqStep(this)"></div></div>
+                    <div class="drum-dot-wrap"><div class="drum-dot bd clicable ${sizeClass}" data-inst="BD" data-step="${i}" onclick="toggleSeqStep(this)"></div></div>
+                </div>
+            </div>`;
+        }
+        html += `</div>`;
+        editor.innerHTML = html;
+    }
+
+    function toggleSeqStep(el) {
+        el.classList.toggle('actiu');
+    }
+
+    function obrirModalBateriaCustomNova() {
+        cartaBatCustomEnEdicio = null;
+        document.getElementById('btn-guardar-bat-custom').innerHTML = "✅ Afegir a Partitura";
+        netejarModalBateriaCustom();
+        document.getElementById('modalBateriaCustom').style.display = 'flex';
+    }
+
+    function netejarModalBateriaCustom() {
+        document.getElementById('bat-custom-titol').value = '';
+        document.querySelectorAll('#sequencer-editor .drum-dot').forEach(s => s.classList.remove('actiu'));
+    }
+
+    function tancarModalBateriaCustom() { tancarModal('modalBateriaCustom'); cartaBatCustomEnEdicio = null; }
+    function tancarSiForaBatCustom(e) { if (e.target.id === 'modalBateriaCustom') tancarModalBateriaCustom(); }
+
+    function generarBateriaCustom() {
+        const titol = document.getElementById('bat-custom-titol').value || 'Patró Manual';
+        
+        const seqClone = document.createElement('div');
+        seqClone.innerHTML = document.getElementById('sequencer-editor').innerHTML;
+        
+        seqClone.querySelectorAll('.drum-dot').forEach(step => {
+            step.removeAttribute('onclick');
+            step.classList.remove('clicable');
+        });
+
+        const activeSteps = [];
+        document.querySelectorAll('#sequencer-editor .drum-dot.actiu').forEach(el => {
+            activeSteps.push({ inst: el.dataset.inst, step: el.dataset.step });
+        });
+
+        if (cartaBatCustomEnEdicio) {
+            cartaBatCustomEnEdicio.dataset.batData = JSON.stringify(activeSteps);
+            cartaBatCustomEnEdicio.dataset.titol = titol;
+            cartaBatCustomEnEdicio.querySelector('.titol-item').innerText = titol;
+            cartaBatCustomEnEdicio.querySelector('.contingut-custom').innerHTML = '';
+            cartaBatCustomEnEdicio.querySelector('.contingut-custom').appendChild(seqClone);
+        } else {
+            const wrapperFinal = document.createElement('div');
+            wrapperFinal.className = "contingut-custom";
+            wrapperFinal.style.width = "100%";
+            wrapperFinal.appendChild(seqClone);
+            crearItem('bateria', titol, wrapperFinal, null, activeSteps, null);
+        }
+        tancarModalBateriaCustom();
+    }
+
+    function editarBateriaCustom(item) {
+        cartaBatCustomEnEdicio = item;
+        document.getElementById('bat-custom-titol').value = item.dataset.titol || '';
+        netejarModalBateriaCustom();
+        
+        const activeSteps = JSON.parse(item.dataset.batData);
+        activeSteps.forEach(data => {
+            const el = document.querySelector(`#sequencer-editor .drum-dot[data-inst="${data.inst}"][data-step="${data.step}"]`);
+            if(el) el.classList.add('actiu');
+        });
+        
+        document.getElementById('btn-guardar-bat-custom').innerHTML = "💾 Actualitzar Partitura";
+        document.getElementById('modalBateriaCustom').style.display = 'flex';
+    }
     
-    // --- LÒGICA BAIX INTERACTIU I EDICIÓ ---
+    // --- LÒGICA BAIX INTERACTIU ---
     const NUM_TRASTS = 15;
     const CORDES = ['G', 'D', 'A', 'E'];
     let cartaBaixEnEdicio = null; 
@@ -526,11 +889,13 @@
         tancarModalBaix();
     }
 
-    function crearItem(inst, text, contingut, dadesBaix = null) {
+    // --- CREACIÓ GENERAL DE CARTES ---
+    function crearItem(inst, text, contingut, dadesBaix = null, dadesBat = null, dadesGuit = null) {
         const item = document.createElement('div'); 
         item.className = 'acord-item';
         
         let htmlBotons = `<div class="botons-targeta no-print">`;
+        
         if (dadesBaix) {
             item.dataset.g = dadesBaix.g;
             item.dataset.d = dadesBaix.d;
@@ -539,6 +904,18 @@
             item.dataset.titol = text;
             htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBaix(this.closest('.acord-item'))" title="Editar">✏️</button>`;
         }
+        if (dadesBat) {
+            item.classList.add('custom-bat'); 
+            item.dataset.batData = JSON.stringify(dadesBat);
+            item.dataset.titol = text;
+            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBateriaCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`;
+        }
+        if (dadesGuit) {
+            item.dataset.guitData = JSON.stringify(dadesGuit);
+            item.dataset.titol = text;
+            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarGuitarraCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`;
+        }
+        
         htmlBotons += `<button class="btn-targeta btn-eliminar" onclick="this.closest('.acord-item').remove(); actualitzarVisibilitat(); actualitzarSeleccioBateria();" title="Eliminar">X</button></div>`;
         
         let html = htmlBotons;
@@ -551,7 +928,9 @@
     }
 
     // Arrancada inicial
+    inicialitzarGuitarraCustom();
     inicialitzarPal();
+    inicialitzarSequenciador();
 </script>
 </body>
 </html>
