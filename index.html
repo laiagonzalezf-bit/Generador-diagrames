@@ -32,7 +32,16 @@
 
         .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; position: relative; background: white; }
         .acord-item img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
-        .eliminar-btn { position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; z-index: 10; font-weight: bold; }
+        
+        /* ✅ CORRECCIÓ BOTÓ ELIMINAR (Centrat perfecte) */
+        .eliminar-btn { 
+            position: absolute; top: -10px; right: -10px; 
+            background: #dc3545; color: white; border: none; border-radius: 50%; 
+            width: 30px; height: 30px; cursor: pointer; z-index: 10; 
+            font-weight: bold; font-family: Arial, sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0; line-height: 1; font-size: 16px;
+        }
 
         /* Modals */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
@@ -48,28 +57,23 @@
         .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 15px; margin-right: 15px; line-height: 1.6; }
         .tab-linies { font-family: monospace; font-size: 16px; line-height: 1.6; white-space: pre; color: #d90429; text-align: left; flex-grow: 1; }
 
-        /* Títol repetit PDF */
         .titol-repro { display: none; }
 
-        /* --- IMPRESSIÓ I PDF --- */
+        /* --- IMPRESSIÓ I PDF (DIN A4 LANDSCAPE) --- */
         @media print {
             @page { size: A4 landscape; margin: 10mm; }
-            .no-print, .titol-seccio { display: none !important; } /* Treiem el nom de l'instrument */
+            .no-print, .titol-seccio { display: none !important; } 
             body { padding: 0; background: white; }
             .contenidor { box-shadow: none; max-width: 100%; padding: 0; border: none; }
             .titol-repro { display: block; text-align: center; font-size: 2.2em; text-transform: uppercase; margin-bottom: 20px; }
             
-            /* Eliminem el salt de pàgina obligatori per defecte per intentar que càpiga tot */
             .seccio-embolcall { break-before: auto; margin-bottom: 20px; }
             
-            .graella { display: grid !important; gap: 10px; grid-template-rows: auto; }
-            
-            /* Forçat de columnes al PDF */
+            .graella { display: grid !important; gap: 10px !important; grid-template-rows: auto; }
             #sec-guitarra { grid-template-columns: repeat(4, 1fr) !important; }
             #sec-teclat, #sec-baix, #sec-bateria { grid-template-columns: repeat(2, 1fr) !important; }
 
             .acord-item { break-inside: avoid; border: 1px solid #eee; padding: 10px; }
-            /* Evitem que la bateria es deformi */
             #sec-bateria .acord-item img { width: 100%; max-height: 150px; object-fit: contain; }
         }
     </style>
@@ -211,6 +215,7 @@
     }
     function crearItem(inst, text, contingut) {
         const item = document.createElement('div'); item.className = 'acord-item';
+        // ✅ Botó amb Flexbox per centratge perfecte
         let html = `<button class="eliminar-btn no-print" onclick="this.parentElement.remove(); actualitzarVisibilitat();">X</button>`;
         if (text) html += `<h3>${text}</h3>`;
         item.innerHTML = html;
