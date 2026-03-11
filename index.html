@@ -117,36 +117,33 @@
         .titol-repro { display: none; }
 
         /* =========================================================
-           IMPRESSIÓ I PDF: LA SOLUCIÓ DEFINITIVA CONTRA FULLS EN BLANC
+           IMPRESSIÓ I PDF: DEFINITIUS PER A A4 HORITZONTAL
            ========================================================= */
         @media print {
+            /* Restaurem la mida d'A4 i els marges normals per forçar el navegador */
             @page { size: A4 landscape; margin: 10mm; } 
             
-            body, html { padding: 0; margin: 0; background: white; height: 100%; }
-            .contenidor { box-shadow: none; max-width: 100%; padding: 0; margin: 0; border: none; height: 100%; }
+            body { padding: 0; margin: 0; background: white; }
+            .contenidor { box-shadow: none; max-width: 100%; padding: 0; margin: 0; border: none; }
             
             .no-print, .titol-seccio { display: none !important; } 
             
-            .seccio-embolcall { display: none; } /* Amaguem tot per defecte al PDF */
+            .seccio-embolcall { display: none; } 
 
-            /* Configurem exactament com es veu una secció amb acords */
             .seccio-embolcall.seccio-activa { 
                 display: flex !important; 
                 flex-direction: column; 
-                justify-content: flex-start; 
-                height: 98vh; /* 98% de l'alçada visual, deixem 2% per evitar que faci desbordament a un altre full */
-                max-height: 98vh;
-                overflow: hidden; /* Això assassina literalment qualsevol pàgina en blanc extra */
-                page-break-after: always;
-                break-after: page;
+                justify-content: flex-start; /* Fixa el títol a la part de dalt */
+                height: 175mm; /* Alçada segura en mil·límetres que impedeix sobrepassar el full */
                 box-sizing: border-box; 
-                padding-bottom: 5mm;
             }
             
-            /* L'última secció NO fa salt de pàgina */
-            .seccio-embolcall.seccio-activa:last-of-type { 
-                page-break-after: avoid !important;
-                break-after: auto !important;
+            /* LA MÀGIA ANTI-FULLS BLANCS: 
+               Es fa un salt de pàgina ABANS de cada instrument (menys del primer).
+               Així és impossible que sobri una pàgina buida al final! */
+            .seccio-embolcall.seccio-activa ~ .seccio-embolcall.seccio-activa {
+                page-break-before: always !important;
+                break-before: page !important;
             }
             
             .titol-repro { 
@@ -163,7 +160,7 @@
                 display: flex !important; 
                 flex-wrap: wrap !important; 
                 justify-content: center !important; 
-                align-content: center !important; 
+                align-content: center !important; /* Centra el bloc d'acords dins l'espai restant */
                 gap: 15px !important; 
                 flex: 1 1 auto; 
                 width: 100%; 
@@ -180,6 +177,8 @@
                 align-items: center; 
                 justify-content: center; 
             }
+            
+            /* MIDES EXACTES MIL·LIMÈTRIQUES (Cap targeta pot trencar els límits) */
             
             #sec-guitarra .acord-item { width: calc(25% - 15px); max-height: 120mm; }
             #sec-guitarra .acord-item img { width: 100%; max-height: 100mm; object-fit: contain; }
@@ -266,7 +265,7 @@
 <div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
     <div class="modal-contingut">
         <h2 style="margin-top:0;">🥁 Tria patrons de bateria</h2>
-        <p style="font-size: 14px; color: #666; margin-top: -10px;">Fes clic per afegir-los o deseleccionar-los. Pots triar-ne diversos a la vegada.</p>
+        <p style="font-size: 14px; color: #666; margin-top: -10px;">Fes clic per afegir-los o treure'ls (es marcaran en verd).</p>
         <div class="modal-graella" id="galeria-bateria"></div>
         <button onclick="tancarModal('modalBateria')" style="margin-top:30px; background:#666; color:white; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">Tancar finestra</button>
     </div>
@@ -351,7 +350,6 @@
     function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
     function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
     
-    // Ara el botó fa ON / OFF
     function carregarBateria() {
         const cont = document.getElementById('galeria-bateria');
         if (cont.children.length > 0) return;
@@ -362,19 +360,17 @@
             
             d.onclick = () => {
                 const imatgesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item img'));
-                // Comprovem si la imatge ja s'havia afegit a la partitura
                 const imatgeExistent = imatgesAfegides.find(img => img.getAttribute('src') === nomArxiu);
                 
                 if (imatgeExistent) {
-                    // Si ja hi era, la traiem de la partitura (Deseleccionar)
                     imatgeExistent.closest('.acord-item').remove();
                 } else {
-                    // Si no hi era, l'afegim
-                    const img = document.createElement('img'); img.src = nomArxiu;
+                    const img = document.createElement('img'); 
+                    img.setAttribute('src', nomArxiu);
                     crearItem('bateria', `Patró ${i}`, img);
                 }
                 actualitzarVisibilitat();
-                actualitzarSeleccioBateria(); // Actualitzem els verds del modal
+                actualitzarSeleccioBateria(); 
             };
             cont.appendChild(d);
         }
