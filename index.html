@@ -33,22 +33,24 @@
         .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; position: relative; background: white; }
         .acord-item img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 4px; }
         
-        /* ✅ CORRECCIÓ BOTÓ ELIMINAR (Centrat perfecte) */
+        /* Botó eliminar corregit */
         .eliminar-btn { 
             position: absolute; top: -10px; right: -10px; 
             background: #dc3545; color: white; border: none; border-radius: 50%; 
-            width: 30px; height: 30px; cursor: pointer; z-index: 10; 
-            font-weight: bold; font-family: Arial, sans-serif;
+            width: 28px; height: 28px; cursor: pointer; z-index: 10; 
             display: flex; align-items: center; justify-content: center;
-            padding: 0; line-height: 1; font-size: 16px;
+            font-size: 14px; font-weight: bold; line-height: 1; padding: 0;
         }
 
-        /* Modals */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 800px; max-height: 85%; overflow-y: auto; text-align: center; }
-        .modal-graella { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        .bateria-opcio { border: 1px solid #ddd; padding: 10px; cursor: pointer; border-radius: 5px; }
-        .bateria-opcio:hover { border-color: #fd7e14; background: #fff5eb; }
+        /* Modals Corregit */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-contingut { background: white; padding: 25px; border-radius: 10px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; text-align: center; }
+        
+        .modal-graella { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .bateria-opcio { border: 1px solid #ddd; padding: 8px; cursor: pointer; border-radius: 5px; background: #f9f9f9; transition: transform 0.2s; }
+        .bateria-opcio:hover { border-color: #fd7e14; background: #fff5eb; transform: scale(1.02); }
+        .bateria-opcio img { width: 100%; height: 100px; object-fit: contain; background: white; border-radius: 3px; }
+        .bateria-opcio div { font-size: 12px; margin-top: 5px; font-weight: bold; color: #555; }
 
         /* Baix */
         .corda-llarga { display: flex; align-items: center; margin-bottom: 8px; font-family: monospace; }
@@ -59,29 +61,33 @@
 
         .titol-repro { display: none; }
 
-        /* --- IMPRESSIÓ I PDF (DIN A4 LANDSCAPE) --- */
+        /* --- IMPRESSIÓ I PDF (CADA INSTRUMENT A UNA PÀGINA NOVA) --- */
         @media print {
-            @page { size: A4 landscape; margin: 10mm; }
+            @page { size: A4 landscape; margin: 12mm; }
             .no-print, .titol-seccio { display: none !important; } 
             body { padding: 0; background: white; }
             .contenidor { box-shadow: none; max-width: 100%; padding: 0; border: none; }
-            .titol-repro { display: block; text-align: center; font-size: 2.2em; text-transform: uppercase; margin-bottom: 20px; }
             
-            .seccio-embolcall { break-before: auto; margin-bottom: 20px; }
+            /* Títol que apareix a CADA pàgina nova */
+            .titol-repro { display: block; text-align: center; font-size: 2.2em; text-transform: uppercase; margin-bottom: 25px; font-weight: bold; }
             
-            .graella { display: grid !important; gap: 10px !important; grid-template-rows: auto; }
+            /* Salt de pàgina obligatori per a cada instrument */
+            .seccio-nova-pagina { break-before: page; page-break-before: always; }
+            
+            .graella { display: grid !important; gap: 15px !important; }
             #sec-guitarra { grid-template-columns: repeat(4, 1fr) !important; }
             #sec-teclat, #sec-baix, #sec-bateria { grid-template-columns: repeat(2, 1fr) !important; }
 
             .acord-item { break-inside: avoid; border: 1px solid #eee; padding: 10px; }
-            #sec-bateria .acord-item img { width: 100%; max-height: 150px; object-fit: contain; }
+            #sec-bateria .acord-item img { width: 100%; max-height: 180px; object-fit: contain; }
+            #sec-teclat .acord-item img { width: 100%; max-height: 200px; object-fit: contain; }
         }
     </style>
 </head>
 <body>
 
 <div class="contenidor">
-    <h1 class="no-print">🎸 Generador de Diagrames Musicals</h1>
+    <h1 class="no-print" style="text-align:center;">🎸 Generador de Diagrames Musicals</h1>
 
     <div class="controls no-print">
         <div class="grup-control">
@@ -110,11 +116,10 @@
         <button class="btn-netejar no-print" onclick="netejarTot()">🗑️ Netejar</button>
     </div>
 
-    <h2 id="titolMostrat" class="titol-canco">TÍTOL DE LA CANÇÓ</h2>
+    <h2 id="titolMostrat" class="titol-canco no-print">TÍTOL DE LA CANÇÓ</h2>
     
     <div id="wrap-guitarra" class="seccio-embolcall" style="display:none;">
-        <div class="titol-repro"></div>
-        <h3 class="titol-seccio no-print">🎸 Guitarra</h3>
+        <div class="titol-repro"></div> <h3 class="titol-seccio no-print">🎸 Guitarra</h3>
         <div class="graella cols-4" id="sec-guitarra"></div>
     </div>
     
@@ -148,16 +153,16 @@
 
 <div id="modalBateria" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBateria')">
     <div class="modal-contingut">
-        <h2>🥁 Patrons de Bateria</h2>
+        <h2 style="margin-top:0;">🥁 Tria un patró de bateria</h2>
         <div class="modal-graella" id="galeria-bateria"></div>
-        <button onclick="tancarModal('modalBateria')" style="margin-top:20px; background:#666;">Tancar</button>
+        <button onclick="tancarModal('modalBateria')" style="margin-top:30px; background:#666; border-radius:8px;">Tancar finestra</button>
     </div>
 </div>
 
 <div id="modalBaix" class="modal-overlay no-print" onclick="tancarSiFora(event, 'modalBaix')">
     <div class="modal-contingut">
         <h2>🎸 Crear Tab de Baix</h2>
-        <input type="text" id="baix-titol" placeholder="Nom de l'acord" style="width:100%; margin-bottom:15px;">
+        <input type="text" id="baix-titol" placeholder="Nom de l'acord / riff" style="width:100%; margin-bottom:15px; text-align:center; font-weight:bold;">
         <div class="corda-llarga"><span>G|</span><input type="text" id="baix-g" value="------------------------"></div>
         <div class="corda-llarga"><span>D|</span><input type="text" id="baix-d" value="------------------------"></div>
         <div class="corda-llarga"><span>A|</span><input type="text" id="baix-a" value="------------------------"></div>
@@ -173,13 +178,30 @@
         document.getElementById('titolMostrat').innerText = text;
         document.querySelectorAll('.titol-repro').forEach(el => el.innerText = text);
     }
+    
     function actualitzarVisibilitat() {
+        let esPrimeraSeccio = true;
         ['guitarra', 'teclat', 'baix', 'bateria'].forEach(id => {
             const wrap = document.getElementById('wrap-' + id);
-            wrap.style.display = document.getElementById('sec-' + id).children.length > 0 ? 'block' : 'none';
+            if (document.getElementById('sec-' + id).children.length > 0) {
+                wrap.style.display = 'block';
+                // Si és la primera secció a imprimir, no fem salt de pàgina
+                if (esPrimeraSeccio) {
+                    wrap.classList.remove('seccio-nova-pagina');
+                    esPrimeraSeccio = false;
+                } else {
+                    // Les següents seccions salten a una nova pàgina
+                    wrap.classList.add('seccio-nova-pagina');
+                }
+            } else {
+                wrap.style.display = 'none';
+                wrap.classList.remove('seccio-nova-pagina');
+            }
         });
     }
-    function netejarTot() { if(confirm("Netejar tota la pàgina?")) { ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); actualitzarVisibilitat(); } }
+
+    function netejarTot() { if(confirm("Vols netejar tota la pàgina?")) { ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); actualitzarVisibilitat(); } }
+    
     function afegirAcord() {
         const inst = document.getElementById('instrument').value;
         const sel = document.getElementById('acord');
@@ -189,9 +211,11 @@
         img.src = `img/${fitxer}.png`;
         crearItem(inst, null, img);
     }
+    
     function obrirModal(id) { document.getElementById(id).style.display = 'flex'; if (id === 'modalBateria') carregarBateria(); }
     function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
     function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
+    
     function carregarBateria() {
         const cont = document.getElementById('galeria-bateria');
         if (cont.children.length > 0) return;
@@ -206,6 +230,7 @@
             cont.appendChild(d);
         }
     }
+    
     function generarBaix() {
         const titol = document.getElementById('baix-titol').value || 'Baix';
         const tab = document.createElement('div'); tab.className = 'tab-baix';
@@ -213,9 +238,9 @@
         crearItem('baix', titol, tab);
         tancarModal('modalBaix');
     }
+    
     function crearItem(inst, text, contingut) {
         const item = document.createElement('div'); item.className = 'acord-item';
-        // ✅ Botó amb Flexbox per centratge perfecte
         let html = `<button class="eliminar-btn no-print" onclick="this.parentElement.remove(); actualitzarVisibilitat();">X</button>`;
         if (text) html += `<h3>${text}</h3>`;
         item.innerHTML = html;
