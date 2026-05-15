@@ -160,10 +160,10 @@
         .bateria-opcio.seleccionat::after { content: '✅'; position: absolute; top: -10px; right: -10px; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 12px; }
 
         /* =========================================================
-           3. MÀGIA D'IMPRESSIÓ I PDF (L'AUTO-MAQUETADOR)
+           3. MÀGIA D'IMPRESSIÓ I PDF (L'AUTO-MAQUETADOR DINÀMIC)
            ========================================================= */
         @media print {
-            @page { size: A4 landscape; margin: 0; } 
+            @page { size: A4 portrait; margin: 0; } 
             body, html { padding: 0; margin: 0; background: white; width: 100%; height: 100%; display: block; overflow: visible;}
             
             /* Amaguem la interfície web */
@@ -175,8 +175,8 @@
             .seccio-embolcall.seccio-activa { 
                 display: flex !important; flex-direction: column !important; 
                 justify-content: center !important; align-items: center !important;     
-                width: 100vw !important; height: 100vh !important; /* Mides del PDF clauades */
-                padding: 10mm 15mm !important; box-sizing: border-box !important; 
+                width: 210mm !important; height: 297mm !important;
+                padding: 12mm 15mm !important; box-sizing: border-box !important; 
                 page-break-after: always !important; break-after: page !important; 
                 margin: 0 !important; border: none !important; border-radius: 0 !important; 
                 box-shadow: none !important; background: white !important; overflow: hidden !important;
@@ -185,43 +185,41 @@
             
             /* Títol al capdamunt de l'A4 */
             .titol-repro { 
-                display: block !important; text-align: center !important; font-size: 2.2em !important; 
-                text-transform: uppercase !important; font-weight: bold !important; color: #000 !important; 
-                margin: 0 0 20px 0 !important; padding-bottom: 10px !important; 
-                border-bottom: 2px solid #ddd !important; flex: 0 0 auto !important;
+                display: flex !important; align-items: baseline !important; justify-content: center !important;
+                gap: 12px !important; text-align: center !important;
+                font-size: 1.6em !important; font-weight: bold !important; color: #000 !important; 
+                margin: 0 0 14px 0 !important; padding-bottom: 10px !important; 
+                border-bottom: 2px solid #333 !important; flex: 0 0 auto !important; width: 100% !important;
+                text-transform: uppercase !important; letter-spacing: 1px !important;
             }
+            .titol-repro .titol-instrument { font-size: 1em !important; }
+            .titol-repro .titol-separador { color: #999 !important; font-weight: 300 !important; }
+            .titol-repro .titol-canco { font-size: 0.7em !important; font-weight: 400 !important; color: #444 !important; }
             
-            /* El Flexbox original salvador que ho encaixa tot bé */
+            /* La graella d'impressió — les mides exactes s'apliquen via JS (beforeprint) */
             .graella-web { 
                 display: flex !important; flex-wrap: wrap !important; justify-content: center !important; 
-                align-content: center !important; gap: 15px !important; flex: 0 0 auto !important; 
-                width: 100% !important; margin: 0 !important;
+                align-content: center !important; gap: 10px !important; flex: 1 1 auto !important; 
+                width: 100% !important; margin: 0 !important; align-items: center !important;
             }
 
-            /* Neteja de la targeta perquè s'imprimeixi perfecte */
+            /* Base de la targeta — les mides width/height s'apliquen inline via JS */
             .acord-item { 
                 flex: 0 0 auto !important; break-inside: avoid !important; border: 1px solid #ccc !important; 
-                padding: 10px !important; box-sizing: border-box !important; display: flex !important; 
+                padding: 8px !important; box-sizing: border-box !important; display: flex !important; 
                 flex-direction: column !important; align-items: center !important; justify-content: center !important; 
                 min-height: 0 !important; min-width: 0 !important; background: transparent !important; 
                 box-shadow: none !important; transform: none !important; margin: 0 !important;
+                overflow: hidden !important;
             }
-            .acord-item img { width: 100% !important; height: 100% !important; object-fit: contain !important; min-height: 0 !important; max-height: none !important; }
-            
-            /* --- LES MIDES D'IMPRESSIÓ QUE FUNCIONAVEN A LA PERFECCIÓ --- */
-            #sec-guitarra .acord-item { width: calc(25% - 15px) !important; max-height: 110mm !important; }
-            #sec-teclat .acord-item { width: calc(50% - 15px) !important; max-height: 60mm !important; }
-            
-            #sec-bateria .acord-item:not(.custom-bat) { width: calc(50% - 15px) !important; max-height: 60mm !important; } 
-            #sec-bateria .acord-item.custom-bat { width: 100% !important; max-height: 70mm !important; justify-content: center !important; padding: 5px !important; }
-            
-            #sec-baix .acord-item { width: 100% !important; max-height: 60mm !important; justify-content: flex-start !important; }
-            .tab-baix { width: 100% !important; }
+            .acord-item img { width: 100% !important; height: 100% !important; object-fit: contain !important; min-height: 0 !important; max-height: none !important; flex: 1 1 auto !important; }
+            .titol-item { flex: 0 0 auto !important; font-size: 11px !important; margin: 0 0 4px 0 !important; }
 
-            /* Escalat d'eines Custom només en PDF per assegurar que hi caben */
-            .acord-item.custom-guit .chord-editor-wrapper { transform: scale(0.85) !important; transform-origin: center center !important; margin: 0 !important; }
-            .acord-item.custom-bat .drum-grid { transform: scale(0.8) !important; transform-origin: center center !important; margin: 0 !important; padding: 5px !important; }
-            #sec-baix .pal-wrapper { transform: scale(0.85) !important; transform-origin: left center !important; margin-bottom: 5px !important; }
+            /* Escalat d'eines Custom */
+            .acord-item.custom-guit .chord-editor-wrapper { margin: 0 !important; }
+            .acord-item.custom-bat .drum-grid { margin: 0 !important; padding: 3px !important; }
+            #sec-baix .pal-wrapper { margin-bottom: 5px !important; }
+            .tab-baix { width: 100% !important; }
         }
     </style>
 </head>
@@ -273,8 +271,8 @@
         
         <div class="hr-div"></div>
         <label style="text-align: center; color: #28a745; display:block; margin-bottom:5px;">📄 Exportació</label>
-
-        <button class="btn-accio btn-imprimir" onclick="window.print()">🖨️ Imprimir PDF Ara</button>
+        <p style="font-size:11px; color:#888; text-align:center; margin:0 0 8px 0; line-height:1.4;">El sistema calcula automàticament la maquetació òptima per a cada full A4.</p>
+        <button class="btn-accio btn-imprimir" onclick="imprimirAra()">🖨️ Generar PDF / Imprimir</button>
         <button class="btn-accio btn-netejar" style="margin-top:10px;" onclick="netejarTot()">🗑️ Netejar Pissarra</button>
     </div>
 </div>
@@ -282,26 +280,26 @@
 <div class="workspace-container">
     <h2 id="titolMostrat" class="titol-canco-global no-print">TÍTOL DE LA CANÇÓ</h2>
     
-    <div id="wrap-guitarra" class="seccio-embolcall" style="display:none;" data-inst="guitarra">
-        <div class="titol-repro"></div>
+    <div id="wrap-guitarra" class="seccio-embolcall" style="display:none;" data-inst="guitarra" data-nom="Guitarra">
+        <div class="titol-repro"><span class="titol-instrument">Guitarra</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🎸 Guitarra</h3>
         <div class="graella-web" id="sec-guitarra"></div>
     </div>
     
-    <div id="wrap-teclat" class="seccio-embolcall" style="display:none;" data-inst="teclat">
-        <div class="titol-repro"></div>
+    <div id="wrap-teclat" class="seccio-embolcall" style="display:none;" data-inst="teclat" data-nom="Teclat">
+        <div class="titol-repro"><span class="titol-instrument">Teclat</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🎹 Teclats</h3>
         <div class="graella-web" id="sec-teclat"></div>
     </div>
     
-    <div id="wrap-baix" class="seccio-embolcall" style="display:none;" data-inst="baix">
-        <div class="titol-repro"></div>
+    <div id="wrap-baix" class="seccio-embolcall" style="display:none;" data-inst="baix" data-nom="Baix">
+        <div class="titol-repro"><span class="titol-instrument">Baix</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🎸 Baix Elèctric</h3>
         <div class="graella-web" id="sec-baix"></div>
     </div>
     
-    <div id="wrap-bateria" class="seccio-embolcall" style="display:none;" data-inst="bateria">
-        <div class="titol-repro"></div>
+    <div id="wrap-bateria" class="seccio-embolcall" style="display:none;" data-inst="bateria" data-nom="Bateria">
+        <div class="titol-repro"><span class="titol-instrument">Bateria</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🥁 Bateria</h3>
         <div class="graella-web" id="sec-bateria"></div>
     </div>
@@ -413,7 +411,7 @@
     function actualitzarTitol() {
         const text = document.getElementById('titolInput').value.toUpperCase() || "TÍTOL DE LA CANÇÓ";
         document.getElementById('titolMostrat').innerText = text;
-        document.querySelectorAll('.titol-repro').forEach(el => el.innerText = text);
+        document.querySelectorAll('.titol-repro .titol-canco').forEach(el => el.innerText = text);
     }
     
     function actualitzarVisibilitat() {
@@ -423,6 +421,7 @@
             
             if (graella.children.length > 0) {
                 wrap.style.display = 'block'; 
+                wrap.classList.add('seccio-activa');
                 
                 // Activar arrossegament a la web
                 if (!graella.dataset.sortable) {
@@ -434,6 +433,7 @@
                 }
             } else {
                 wrap.style.display = 'none'; 
+                wrap.classList.remove('seccio-activa');
             }
         });
     }
@@ -969,10 +969,96 @@
         actualitzarVisibilitat();
     }
 
+    function imprimirAra() {
+        const teContingut = ['guitarra', 'teclat', 'baix', 'bateria'].some(id => 
+            document.getElementById('sec-' + id).children.length > 0
+        );
+        if (!teContingut) {
+            alert('Afegeix algun element abans d\'imprimir.');
+            return;
+        }
+        // Assegura el títol actualitzat
+        actualitzarTitol();
+        window.print();
+    }
+
     // Arrancada inicial
     inicialitzarGuitarraCustom();
     inicialitzarPal();
     inicialitzarSequenciador();
+
+    // =========================================================
+    //  AUTO-MAQUETADOR DINÀMIC: càlcul de mides just abans d'imprimir
+    //  A4 portrait: 210mm x 297mm. Amb padding 12mm top+bot i 15mm lat.
+    //  Àrea útil aprox: 180mm ample x 255mm alt (menys títol ~18mm).
+    // =========================================================
+
+    // Configuració per instrument: [cols_preferides per N elements]
+    // cols(n) retorna quantes columnes usar per N elements
+    const printConfig = {
+        guitarra: {
+            cols: (n) => n <= 2 ? n : n <= 4 ? 2 : n <= 6 ? 3 : n <= 8 ? 4 : 4,
+            aspectRatio: 0.75, // ample/alt de cada targeta
+        },
+        teclat: {
+            cols: (n) => n === 1 ? 1 : n <= 4 ? 2 : 3,
+            aspectRatio: 1.2,
+        },
+        baix: {
+            cols: (n) => 1,
+            aspectRatio: 3.5,
+        },
+        bateria: {
+            cols: (n) => n === 1 ? 1 : 2,
+            aspectRatio: 2.0,
+        },
+    };
+
+    function calcularLayoutImpressio() {
+        // Dimensions A4 portrait en píxels (96dpi → 1px = 0.2646mm → 1mm = 3.7795px)
+        const MM = 3.7795;
+        const pageW = 180 * MM; // amplada útil (210 - 2*15mm)
+        const pageH = 255 * MM; // alçada útil (297 - 2*12mm, aprox menys títol 18mm)
+        const titolH = 22 * MM;
+        const gap = 10;
+
+        ['guitarra', 'teclat', 'baix', 'bateria'].forEach(inst => {
+            const graella = document.getElementById('sec-' + inst);
+            const items = Array.from(graella.querySelectorAll('.acord-item'));
+            if (!items.length) return;
+
+            const cfg = printConfig[inst];
+            const n = items.length;
+            const cols = cfg.cols(n);
+            const rows = Math.ceil(n / cols);
+
+            // Espai disponible per targeta
+            const itemW = (pageW - gap * (cols - 1)) / cols;
+            const itemH = (pageH - titolH - gap * (rows - 1)) / rows;
+
+            items.forEach(item => {
+                item.style.width = itemW + 'px';
+                item.style.height = itemH + 'px';
+            });
+        });
+    }
+
+    function netejarLayoutImpressio() {
+        document.querySelectorAll('.acord-item').forEach(item => {
+            item.style.width = '';
+            item.style.height = '';
+        });
+    }
+
+    window.addEventListener('beforeprint', () => {
+        // Actualitzar títol al print per si no s'ha fet
+        actualitzarTitol();
+        calcularLayoutImpressio();
+    });
+
+    window.addEventListener('afterprint', () => {
+        netejarLayoutImpressio();
+    });
 </script>
 </body>
 </html>
