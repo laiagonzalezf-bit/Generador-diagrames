@@ -206,7 +206,17 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .pg-bateria { display: grid; height: 100%; align-content: center; justify-items: center; gap: 8mm; }
 .bat-caixa { border: 0.4mm solid #000; padding: 3mm; display: flex; flex-direction: column; align-items: center; background: #fff; }
 .bat-titol { font-weight: bold; font-size: 11pt; margin-top: 2mm; }
-.pg-flux { display: flex; flex-direction: column; gap: 6mm; height: 100%; overflow: hidden; }
+.pg-flux { display: flex; flex-direction: column; gap: 5mm; height: 100%; overflow: hidden; }
+.sistema-baix + .sistema-baix { margin-top: 3mm; }
+.sec-baix .sistema-baix + .sistema-baix { margin-top: 10px; }
+.subtitol-pag { font-size: 11pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #555; border-bottom: 0.3mm solid #999; padding-bottom: 1mm; margin-bottom: 3mm; }
+.bat-fila { display: flex; gap: 6mm; justify-content: center; }
+.bat-fila { align-items: stretch; }
+.bat-fila .bat-caixa { flex: 0 0 auto; justify-content: center; }
+.pg-ritmica .sistema-baix { width: 86%; margin-left: auto; margin-right: auto; }
+.baix-opcions { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; margin: 10px 0; font-size: 13px; }
+.baix-opcions select { width: auto; padding: 6px; }
+#baix-preview { border: 1px solid #ddd; border-radius: 6px; padding: 8px; margin-top: 10px; background: #fff; min-height: 60px; }
 .bloc-flux { break-inside: avoid; }
 .bloc-flux .titol-bloc { font-size: 13pt; margin-bottom: 2mm; }
 .bloc-flux .abc-render svg { width: 100%; height: auto; }
@@ -280,6 +290,7 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
     <label class="check"><input type="checkbox" id="opt-logo" checked onchange="desar()"> Logo a la capçalera</label>
     <label class="check"><input type="checkbox" id="opt-inst" onchange="desar()"> Nom de l'instrument a la pàgina</label>
     <label class="check"><input type="checkbox" id="opt-pal" onchange="desar()"> Imprimir el pal del baix</label>
+    <label class="check"><input type="checkbox" id="opt-ritmica" checked onchange="desar()"> Baix i bateria a la mateixa pàgina</label>
 
     <button class="btn-accio btn-outline" id="btn-previsualitzar" onclick="togglePrevisualitzar()">👁️ Vista prèvia A4</button>
     <button class="btn-accio btn-imprimir" onclick="imprimirAra()">🖨️ Imprimir / PDF</button>
@@ -400,6 +411,12 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
       <div class="corda-tab"><span>A|</span><input type="text" id="tab-A" oninput="actualitzarPalDesDeTab()"></div>
       <div class="corda-tab"><span>E|</span><input type="text" id="tab-E" oninput="actualitzarPalDesDeTab()"></div>
     </div>
+    <div class="baix-opcions">
+      <label style="text-transform:none;display:flex;align-items:center;gap:6px">Figura de les notes
+        <select id="baix-figura" onchange="actualitzarPalDesDeTab()"><option value="negra">♩ negres</option><option value="blanca">𝅗𝅥 blanques</option><option value="rodona">𝅝 rodones</option><option value="cap">● només el cap</option></select></label>
+      <label class="check"><input type="checkbox" id="baix-noms" checked onchange="actualitzarPalDesDeTab()"> Nom de les notes a sobre (amb el color de l'acord)</label>
+    </div>
+    <div id="baix-preview"></div>
     <div style="margin-top:16px;display:flex;justify-content:center;gap:10px">
       <button class="btn-accio btn-outline" onclick="afegirBarraBaix()">➕ Línia de compàs</button>
       <button class="btn-accio btn-outline" onclick="desferBaix()">↩️ Desfer nota</button>
@@ -634,7 +651,7 @@ function contingut(it) {
     else if (it.tipus === 'notes') div.innerHTML = svgTeclat(it.notes);
     else if (it.tipus === 'melodia') { div.className = 'abc-render'; renderABC(div, it); }
   } else if (it.inst === 'baix') {
-    div.innerHTML = svgTab(it);
+    div.innerHTML = htmlBaix(it);
     div.dataset.tab = '1';
   } else if (it.inst === 'bateria') {
     if (it.tipus === 'img') div.appendChild(imatgeRetallada(`img/dors patrons de bateria ${it.num}.png`, 'bateria'));
@@ -792,6 +809,157 @@ function svgBateria(steps) {
   return s + '</svg>';
 }
 
+/* ---- Baix: pentagrama (clau de fa) + tabulatura, generats a partir de la tab ---- */
+const BASE_CORDA = { g: 55, d: 50, a: 45, e: 40 };   // notes escrites (MIDI) de les cordes a l'aire
+const LLETRA_IDX = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
+function llegirEventsTab(d) {
+  const cordes = ['g', 'd', 'a', 'e'];
+  const perCol = new Map(), barres = new Set();
+  cordes.forEach(c => {
+    const l = String(d[c] || ''); const re = /\d+|\|/g; let m;
+    while ((m = re.exec(l))) {
+      if (m[0] === '|') { barres.add(m.index); continue; }
+      if (!perCol.has(m.index)) perCol.set(m.index, []);
+      perCol.get(m.index).push({ corda: c, trast: +m[0] });
+    }
+  });
+  const ev = [];
+  perCol.forEach((notes, col) => ev.push({ col, notes }));
+  barres.forEach(col => ev.push({ col, barra: true }));
+  ev.sort((a, b) => a.col - b.col || (a.barra ? -1 : 1));
+  // treu barres duplicades o al principi
+  const net = [];
+  ev.forEach(e => { if (e.barra && (!net.length || net[net.length - 1].barra)) return; net.push(e); });
+  while (net.length && net[net.length - 1].barra) net.pop();
+  return net;
+}
+function infoNota(corda, trast) {
+  const midi = BASE_CORDA[corda] + trast;
+  const nom = NOTES_SOST[midi % 12];
+  const oct = Math.floor(midi / 12) - 1;
+  return { midi, nom, sost: nom.length > 1, diat: oct * 7 + LLETRA_IDX[nom[0]], semi: midi % 12 };
+}
+function colorsPerNota() {
+  const mapa = {}, cols = mapaColors();
+  items.filter(esAcord).forEach(it => { const p = parseAcord(it.nom); if (p && !(p.semi in mapa)) mapa[p.semi] = cols[clauItem(it)]; });
+  return mapa;
+}
+function sistemesBaix(ev, maxNotes) {
+  const sist = []; let act = [], n = 0, ultimaBarra = -1;
+  ev.forEach(e => {
+    act.push(e);
+    if (e.barra) { ultimaBarra = act.length - 1; return; }
+    n++;
+    if (n >= maxNotes) {
+      if (ultimaBarra > 0 && ultimaBarra < act.length - 1) {
+        const resta = act.slice(ultimaBarra + 1);
+        sist.push(act.slice(0, ultimaBarra)); act = resta;
+      } else { sist.push(act); act = []; }
+      n = act.filter(x => !x.barra).length; ultimaBarra = -1;
+    }
+  });
+  if (act.some(x => !x.barra)) sist.push(act);
+  return sist.map(s => { while (s.length && s[0].barra) s.shift(); while (s.length && s[s.length - 1].barra) s.pop(); return s; });
+}
+function svgSistemaBaix(ev, opts) {
+  const W = 1000, xIni = 95, xFi = W - 12, gap = 10, tabGap = 15;
+  const notesEv = ev.filter(e => !e.barra);
+  const infos = notesEv.map(e => e.notes.map(n => ({ ...n, ...infoNota(n.corda, n.trast) })));
+  const diats = infos.flat().map(i => i.diat);
+  // posició vertical: línia inferior (G2 = 18) a staffB
+  const dMax = Math.max(26, ...diats), dMin = Math.min(18, ...diats);
+  const noms = opts.noms;
+  const ambPlica = opts.figura === 'negra' || opts.figura === 'blanca';
+  // càlcul relatiu (línia inferior del pentagrama = 0)
+  const rel = dd => -(dd - 18) * gap / 2;
+  let sostre = -4 * gap;
+  infos.forEach(inf => {
+    const ys = inf.map(n => rel(n.diat));
+    sostre = Math.min(sostre, Math.min(...ys) - 8);
+    if (ambPlica && !(Math.min(...ys) < -2 * gap)) sostre = Math.min(sostre, Math.min(...ys) - 36);
+  });
+  const yNomsRel = sostre - 8;
+  const staffB = (noms ? 22 : 6) - yNomsRel;
+  const yNoms = staffB + yNomsRel;
+  const yNota = dd => staffB + rel(dd);
+  let terra = 0;
+  infos.forEach(inf => {
+    const ys = inf.map(n => rel(n.diat));
+    terra = Math.max(terra, Math.max(...ys) + 8);
+    if (ambPlica && Math.min(...ys) < -2 * gap) terra = Math.max(terra, Math.max(...ys) + 36);
+  });
+  const baixNotes = staffB + terra;
+  const tabTop = Math.max(staffB + 36, baixNotes + 12);
+  const H = tabTop + 3 * tabGap + 14;
+  // columnes
+  const nNotes = notesEv.length, nBarres = ev.length - nNotes;
+  const unitats = nNotes + nBarres * 0.5;
+  const slot = Math.min(90, (xFi - xIni - 20) / Math.max(unitats, 1));
+  let s = `<svg class="svg-diag" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">`;
+  // pentagrama
+  for (let i = 0; i < 5; i++) s += `<line x1="10" y1="${staffB - i * gap}" x2="${xFi}" y2="${staffB - i * gap}" stroke="#000" stroke-width="1.2"/>`;
+  // tab
+  for (let i = 0; i < 4; i++) s += `<line x1="10" y1="${tabTop + i * tabGap}" x2="${xFi}" y2="${tabTop + i * tabGap}" stroke="#555" stroke-width="1"/>`;
+  s += `<line x1="10" y1="${staffB - 4 * gap}" x2="10" y2="${tabTop + 3 * tabGap}" stroke="#000" stroke-width="2.5"/>`;
+  s += `<line x1="${xFi}" y1="${staffB - 4 * gap}" x2="${xFi}" y2="${staffB}" stroke="#000" stroke-width="1.5"/><line x1="${xFi}" y1="${tabTop}" x2="${xFi}" y2="${tabTop + 3 * tabGap}" stroke="#000" stroke-width="1.5"/>`;
+  // clau de fa (línia F3 = segona des de dalt)
+  const yF = staffB - 3 * gap, cx = 26;
+  s += `<path d="M${cx} ${yF} C${cx + 2} ${yF - 13} ${cx + 30} ${yF - 13} ${cx + 30} ${yF + 4} C${cx + 30} ${yF + 20} ${cx + 12} ${yF + 30} ${cx - 2} ${yF + 36}" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round"/>`;
+  s += `<circle cx="${cx + 3}" cy="${yF + 1}" r="5" fill="#000"/><circle cx="${cx + 40}" cy="${yF - 5}" r="2.6" fill="#000"/><circle cx="${cx + 40}" cy="${yF + 5}" r="2.6" fill="#000"/>`;
+  ['T', 'A', 'B'].forEach((l, i) => s += `<text x="${cx + 12}" y="${tabTop + 13 + i * 15}" font-size="17" font-weight="bold" text-anchor="middle">${l}</text>`);
+  // esdeveniments
+  let x = xIni + slot / 2, k = 0;
+  ev.forEach(e => {
+    if (e.barra) {
+      const xb = x - slot / 4;
+      s += `<line x1="${xb}" y1="${staffB - 4 * gap}" x2="${xb}" y2="${staffB}" stroke="#000" stroke-width="1.5"/><line x1="${xb}" y1="${tabTop}" x2="${xb}" y2="${tabTop + 3 * tabGap}" stroke="#000" stroke-width="1.5"/>`;
+      x += slot / 2; return;
+    }
+    const inf = infos[k++];
+    const buida = opts.figura === 'blanca' || opts.figura === 'rodona';
+    // línies addicionals
+    inf.forEach(n => {
+      for (let dd = 16; dd >= n.diat; dd -= 2) s += `<line x1="${x - 13}" y1="${yNota(dd)}" x2="${x + 13}" y2="${yNota(dd)}" stroke="#000" stroke-width="1.2"/>`;
+      for (let dd = 28; dd <= n.diat; dd += 2) s += `<line x1="${x - 13}" y1="${yNota(dd)}" x2="${x + 13}" y2="${yNota(dd)}" stroke="#000" stroke-width="1.2"/>`;
+    });
+    inf.forEach(n => {
+      const y = yNota(n.diat);
+      s += `<ellipse cx="${x}" cy="${y}" rx="7" ry="5.2" transform="rotate(-20 ${x} ${y})" fill="${buida ? '#fff' : '#000'}" stroke="#000" stroke-width="${buida ? 2 : 1}"/>`;
+      if (n.sost) {
+        const sx = x - 19;
+        s += `<path d="M${sx - 2} ${y - 9}V${y + 8}M${sx + 2} ${y - 8}V${y + 9}M${sx - 5} ${y - 2}L${sx + 5} ${y - 4}M${sx - 5} ${y + 4}L${sx + 5} ${y + 2}" stroke="#000" stroke-width="1.3"/>`;
+      }
+    });
+    if (opts.figura === 'negra' || opts.figura === 'blanca') {
+      const ys = inf.map(n => yNota(n.diat));
+      const mitja = staffB - 2 * gap;
+      const avall = Math.min(...ys) < mitja;
+      if (avall) s += `<line x1="${x - 6.5}" y1="${Math.min(...ys) + 1}" x2="${x - 6.5}" y2="${Math.max(...ys) + 34}" stroke="#000" stroke-width="1.6"/>`;
+      else s += `<line x1="${x + 6.5}" y1="${Math.max(...ys) - 1}" x2="${x + 6.5}" y2="${Math.min(...ys) - 34}" stroke="#000" stroke-width="1.6"/>`;
+    }
+    if (opts.noms) {
+      const n0 = inf.reduce((a, b) => (a.midi < b.midi ? a : b));
+      const col = opts.colors[n0.semi] || '#000';
+      const yTxt = yNoms;
+      s += `<text x="${x}" y="${yTxt}" font-size="18" font-weight="bold" fill="${col}" text-anchor="middle">${n0.nom}</text>`;
+    }
+    // números de la tab
+    inf.forEach(n => {
+      const y = tabTop + ['g', 'd', 'a', 'e'].indexOf(n.corda) * tabGap;
+      const w = 11 * String(n.trast).length + 6;
+      s += `<rect x="${x - w / 2}" y="${y - 8}" width="${w}" height="16" fill="#fff"/><text x="${x}" y="${y + 6}" font-size="17" font-weight="bold" text-anchor="middle">${n.trast}</text>`;
+    });
+    x += slot;
+  });
+  return s + '</svg>';
+}
+function htmlBaix(d, maxNotes = 16) {
+  const ev = llegirEventsTab(d);
+  if (!ev.some(e => !e.barra)) return '<p class="ajuda">(Tabulatura buida)</p>';
+  const opts = { figura: d.figura || 'negra', noms: d.noms !== false, colors: $('opt-colors').checked ? colorsPerNota() : {} };
+  return sistemesBaix(ev, maxNotes).map(sis => `<div class="sistema-baix">${svgSistemaBaix(sis, opts)}</div>`).join('');
+}
+
 function svgTab(d) {
   const linies = [d.g || '', d.d || '', d.a || '', d.e || ''];
   let len = 0;
@@ -913,6 +1081,58 @@ function paginesBateria(llista) {
     cos.appendChild(g);
   });
 }
+function caixaBateria(it, ampleMm) {
+  const b = document.createElement('div');
+  b.className = 'bat-caixa';
+  b.style.width = ampleMm + 'mm';
+  b.appendChild(contingut(it));
+  if (it.tipus === 'seq' && it.nom) { const t = document.createElement('div'); t.className = 'bat-titol'; t.textContent = it.nom; b.appendChild(t); }
+  return b;
+}
+function paginesRitmica(baix, bat) {
+  const blocs = [];
+  baix.forEach((it, i) => {
+    const b = document.createElement('div'); b.className = 'bloc-flux';
+    if (i === 0) b.innerHTML = '<div class="subtitol-pag">🎸 Baix</div>';
+    if (it.nom) { const t = document.createElement('div'); t.className = 'titol-bloc'; t.textContent = it.nom; b.appendChild(t); }
+    if ($('opt-pal').checked) b.appendChild(construirPal(it, false));
+    b.appendChild(contingut(it));
+    blocs.push(b);
+  });
+  const porFila = bat.length === 1 ? 1 : bat.length === 2 || bat.length === 4 ? 2 : 3;
+  const ample = porFila === 1 ? 95 : porFila === 2 ? 85 : 66;
+  trossos(bat, porFila).forEach((fila, i) => {
+    const b = document.createElement('div'); b.className = 'bloc-flux';
+    if (i === 0) b.innerHTML = '<div class="subtitol-pag">🥁 Bateria</div>';
+    const f = document.createElement('div'); f.className = 'bat-fila';
+    fila.forEach(it => f.appendChild(caixaBateria(it, ample)));
+    b.appendChild(f);
+    b.dataset.ample = ample;
+    blocs.push(b);
+  });
+  let cont = null;
+  const nova = () => { const cos = novaPagina('baix', false); cont = document.createElement('div'); cont.className = 'pg-flux pg-ritmica'; cos.appendChild(cont); };
+  nova();
+  const desborda = () => cont.scrollHeight > cont.clientHeight + 2;
+  const ajustar = (b, f) => {
+    if (b.dataset.ample) b.querySelectorAll('.bat-caixa').forEach(c => c.style.width = (b.dataset.ample * f) + 'mm');
+    else b.querySelectorAll('.sistema-baix').forEach(c => c.style.width = (86 * f) + '%');
+  };
+  blocs.forEach(b => {
+    cont.appendChild(b);
+    if (!desborda() || cont.children.length === 1) return;
+    // abans de passar de pàgina, provem de fer-ho tot una mica més petit
+    const tots = Array.from(cont.children);
+    for (const f of [0.92, 0.84, 0.76]) {
+      tots.forEach(x => ajustar(x, f));
+      if (!desborda()) return;
+    }
+    tots.forEach(x => ajustar(x, 1));
+    cont.removeChild(b); nova(); cont.appendChild(b);
+  });
+  // si la pàgina queda curta, repartim l'espai
+  $('pagines').querySelectorAll('.pg-flux').forEach(c => { if (c.scrollHeight <= c.clientHeight) c.style.justifyContent = 'space-evenly'; });
+}
 function paginesFlux(llista, inst) {
   if (!llista.length) return;
   let cos = null, cont = null;
@@ -940,8 +1160,9 @@ function construirPagines() {
   paginesGuitarra(items.filter(i => i.inst === 'guitarra'), colors);
   paginesTeclat(items.filter(i => i.inst === 'teclat' && i.tipus !== 'melodia'), colors);
   paginesFlux(items.filter(i => i.inst === 'teclat' && i.tipus === 'melodia'), 'teclat');
-  paginesFlux(items.filter(i => i.inst === 'baix'), 'baix');
-  paginesBateria(items.filter(i => i.inst === 'bateria'));
+  const baix = items.filter(i => i.inst === 'baix'), bat = items.filter(i => i.inst === 'bateria');
+  if ($('opt-ritmica').checked && baix.length && bat.length) paginesRitmica(baix, bat);
+  else { paginesFlux(baix, 'baix'); paginesBateria(bat); }
   pag.classList.remove('construint');
   paginesPendents = false;
   if (!pag.children.length && previ) pag.innerHTML = '<p style="color:#fff;text-align:center">Encara no hi ha cap diagrama.</p>';
@@ -1232,6 +1453,7 @@ function construirPal(dades, clicable) {
   return w;
 }
 function llegirTab() { const o = {}; CORDES.forEach(c => o[c.toLowerCase()] = $('tab-' + c).value); return o; }
+function opcionsBaixEditor() { return { figura: $('baix-figura').value, noms: $('baix-noms').checked }; }
 function escriureTab(o) { CORDES.forEach(c => $('tab-' + c).value = o[c.toLowerCase()] ?? TAB_BUIT); }
 function igualarTab() {  // totes les cordes amb la mateixa llargada (sense els guions finals)
   const t = {}; let ml = 0;
@@ -1250,23 +1472,27 @@ function afegirBarraBaix() {
   historialBaix.push(llegirTab());
   const t = igualarTab();
   CORDES.forEach(c => $('tab-' + c).value = t[c] + '-|-');
+  actualitzarPalDesDeTab();
 }
 function desferBaix() { if (historialBaix.length) { escriureTab(historialBaix.pop()); actualitzarPalDesDeTab(); } }
 function actualitzarPalDesDeTab() {
   const nou = construirPal(llegirTab(), true);
   $('fretboard-actiu').innerHTML = nou.innerHTML;
+  $('baix-preview').innerHTML = htmlBaix({ ...llegirTab(), ...opcionsBaixEditor() }, 12);
 }
 function obrirEditorBaix(it = null) {
   baixEditant = it ? it.id : null;
   historialBaix = [];
   $('baix-titol').value = it ? it.nom : '';
   escriureTab(it || {});
+  $('baix-figura').value = (it && it.figura) || 'negra';
+  $('baix-noms').checked = !(it && it.noms === false);
   actualitzarPalDesDeTab();
   botoGuardar('btn-guardar-baix', !!it);
   obrirModal('modalBaix');
 }
 function guardarBaix() {
-  const dades = { nom: $('baix-titol').value.trim(), ...llegirTab() };
+  const dades = { nom: $('baix-titol').value.trim(), ...llegirTab(), ...opcionsBaixEditor() };
   if (baixEditant) Object.assign(trobarItem(baixEditant), dades);
   else afegirItem({ inst: 'baix', tipus: 'tab', ...dades }, false);
   tancarModal('modalBaix');
@@ -1500,7 +1726,7 @@ const CLAU_LOCAL = 'generador-diagrames-v2';
 function estatActual() {
   return {
     versio: 2, titol: $('titolInput').value, artista: $('artistaInput').value, acords: $('acordsInput').value, ordre: $('ordreInput').value,
-    opcions: { ordre: $('opt-ordre').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, tapar: cordesTapades, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
+    opcions: { ordre: $('opt-ordre').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
     items: items.map(({ id, ...resta }) => resta)
   };
 }
@@ -1510,7 +1736,7 @@ function carregarEstat(e) {
   $('acordsInput').value = e.acords || ''; $('ordreInput').value = e.ordre || '';
   const o = e.opcions || {};
   $('opt-ordre').checked = o.ordre !== false; $('opt-colors').checked = o.colors !== false; $('opt-logo').checked = o.logo !== false;
-  $('opt-inst').checked = !!o.inst; $('opt-pal').checked = !!o.pal;
+  $('opt-inst').checked = !!o.inst; $('opt-pal').checked = !!o.pal; $('opt-ritmica').checked = o.ritmica !== false;
   cordesTapades = parseInt(o.tapar) || 0; taparPreguntat = 'tapar' in o; $('opt-tapar-doble').checked = !!o.taparDoble; modeTapar(o.taparMode === 'visibles' ? 'visibles' : 'tapar');
   items = []; idSeq = 1;
   e.items.forEach(it => afegirItem(it, false));
