@@ -14,7 +14,6 @@
            ========================================================= */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; color: #333; display: flex; height: 100vh; overflow: hidden; }
         
-        /* --- SIDEBAR (MENÚ LATERAL) --- */
         .sidebar { width: 320px; background: #fff; box-shadow: 2px 0 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; z-index: 100; overflow-y: auto; border-right: 1px solid #ddd; }
         .sidebar-header { padding: 20px; background: #2c3e50; color: white; text-align: center; }
         .sidebar-header h1 { margin: 0; font-size: 20px; letter-spacing: 1px; }
@@ -34,7 +33,6 @@
         .btn-netejar { background-color: #dc3545; color: white; border: none; }
         .btn-netejar:hover { background-color: #c82333; }
 
-        /* --- ZONA DE TREBALL WEB --- */
         .workspace-container { flex: 1; overflow-y: auto; padding: 40px; display: flex; flex-direction: column; align-items: center; }
         .titol-canco-global { text-align: center; margin-bottom: 30px; font-size: 2.5em; text-transform: uppercase; width: 100%; max-width: 1100px; }
         .titol-repro { display: none; } 
@@ -44,7 +42,6 @@
         
         .graella-web { display: flex; flex-wrap: wrap; gap: 20px; width: 100%; align-items: flex-start; justify-content: flex-start; }
         
-        /* Targetes de la web */
         .acord-item { border: 2px solid #eee; border-radius: 10px; padding: 15px; text-align: center; position: relative; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: grab; box-sizing: border-box; transition: box-shadow 0.2s, transform 0.2s; overflow: hidden; }
         .acord-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.1); transform: translateY(-2px); border-color: #ccc; }
         .acord-item:active { cursor: grabbing; }
@@ -65,50 +62,60 @@
         .btn-editar:hover { background: #e0a800; }
 
         /* =========================================================
-           2. ESTILS TECLAT CUSTOM I MELODIA
+           2. ESTILS TECLAT I PIANO ROLL (NOU)
            ========================================================= */
 
         /* --- EDITOR DE TECLAT (ACORDS) --- */
         .piano-editor-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .piano-keys-row { position: relative; display: flex; height: 120px; user-select: none; border-radius: 0 0 8px 8px; overflow: visible; }
         .pkey-white { width: 36px; height: 120px; border: 1.5px solid #888; border-top: none; background: #fff; border-radius: 0 0 5px 5px; cursor: pointer; position: relative; z-index: 1; box-sizing: border-box; transition: background 0.1s; flex-shrink: 0; }
-        .pkey-white:hover { background: #e8f4fd; }
         .pkey-white.actiu { background: #3498db !important; border-color: #2980b9; }
         .pkey-white .pkey-label { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: bold; color: #555; pointer-events: none; }
-        .pkey-white.actiu .pkey-label { color: white; }
-        .pkey-black { width: 22px; height: 72px; background: #222; border-radius: 0 0 4px 4px; cursor: pointer; position: absolute; z-index: 2; top: 0; transition: background 0.1s; }
-        .pkey-black:hover { background: #444; }
+        .pkey-black { width: 22px; height: 72px; background: #222; border-radius: 0 0 4px 4px; cursor: pointer; position: absolute; z-index: 2; top: 0; }
         .pkey-black.actiu { background: #2980b9 !important; }
-        .piano-titol-box { border: 2px solid #333; border-radius: 6px; font-size: 18px; font-weight: bold; padding: 4px 16px; text-align: center; min-width: 80px; }
 
-        /* Diagrama de teclat imprès (targeta) */
         .piano-diagram { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .piano-diagram-keys { position: relative; display: flex; height: 70px; }
         .pd-white { width: 22px; height: 70px; border: 1px solid #888; border-top: 3px solid #333; background: #fff; border-radius: 0 0 3px 3px; position: relative; z-index: 1; flex-shrink: 0; box-sizing: border-box; }
         .pd-white.actiu { background: #3498db; }
-        .pd-white .pd-label { position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: bold; color: #555; pointer-events: none; white-space: nowrap; }
-        .pd-white.actiu .pd-label { color: white; }
         .pd-black { width: 14px; height: 42px; background: #222; border-radius: 0 0 3px 3px; position: absolute; z-index: 2; top: 3px; }
         .pd-black.actiu { background: #2980b9; }
 
-        /* --- MELODIA TECLAT (SEQUENCIADOR VISUAL) --- */
-        .melodia-grid-wrap { overflow-x: auto; padding-bottom: 10px; }
-        .melodia-grid { display: flex; gap: 6px; align-items: flex-end; }
-        .melodia-pas { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-        .melodia-pas-num { font-size: 10px; color: #999; font-weight: bold; }
-        .melodia-piano-mini { position: relative; height: 80px; width: 32px; border-radius: 0 0 4px 4px; overflow: hidden; border: 1px solid #bbb; flex-shrink: 0; }
-        .melodia-white-key { position: absolute; background: #fff; border-bottom: 1px solid #bbb; box-sizing: border-box; transition: background 0.15s; }
-        .melodia-white-key.actiu { background: #3498db; }
-        .melodia-black-key { position: absolute; background: #333; z-index: 2; transition: background 0.15s; }
-        .melodia-black-key.actiu { background: #2980b9; }
-        .melodia-pas-label { font-size: 9px; color: #555; max-width: 32px; text-align: center; word-break: break-all; min-height: 12px; }
-        .melodia-pas.beat-start .melodia-piano-mini { border-color: #888; border-width: 2px; }
+        /* --- PIANO ROLL DRAG & DROP --- */
+        .pr-wrapper { display: flex; border: 1px solid #ccc; background: #fff; border-radius: 4px; overflow: hidden; width: 100%; max-width: 100%; overflow-x: auto; position: relative; }
+        .pr-keys { display: flex; flex-direction: column; width: 45px; border-right: 2px solid #555; background: #f8f9fa; flex-shrink: 0; position: sticky; left: 0; z-index: 10; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+        .pr-key { height: 30px; box-sizing: border-box; border-bottom: 1px solid #ccc; font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; user-select: none; }
+        .pr-key.black { background: #333; color: #fff; }
+        .pr-key.white { background: #fff; color: #333; }
+        
+        .pr-grid-container { display: flex; flex-direction: column; flex: 1; position: relative; min-width: 600px; background-color: #fff; border-right: 1px solid #ccc; }
+        .pr-row { display: flex; height: 30px; width: max-content; }
+        
+        /* Les cel·les ara tenen vores molt suaus i alternen el color per "pols" */
+        .pr-cell { 
+            width: 30px; height: 30px; flex-shrink: 0; box-sizing: border-box; 
+            border-right: 1px solid rgba(0,0,0,0.03); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+            cursor: crosshair; 
+        }
+        .pr-cell:hover { background: rgba(0,0,0,0.1) !important; }
+        
+        /* Estil Chrome Music Lab (Alternança de colors per temps/pols) */
+        .pr-cell.beat-odd { background-color: #ffffff; }
+        .pr-cell.beat-even { background-color: #f2f2f2; }
+        
+        /* Barra forta i negra només a l'inici del compàs */
+        .pr-cell.measure-start { border-left: 2px solid #333; }
+        
+        .pr-notes-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        .pr-note { position: absolute; height: 26px; top: 2px; background: #9b59b6; border-radius: 4px; border: 1px solid #8e44ad; box-sizing: border-box; display: flex; align-items: center; pointer-events: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background 0.1s; cursor: pointer; }
+        .pr-note:hover { background: #a569bd; }
+        .pr-note-handle { position: absolute; right: 0; top: 0; width: 12px; height: 100%; cursor: ew-resize; background: rgba(255,255,255,0.3); border-radius: 0 4px 4px 0; }
+        .pr-note-handle:hover { background: rgba(255,255,255,0.6); }
 
-        /* Catàleg acords - reutilitza estils existents */
         .cataleg-opcio { position: relative; border: 2px solid #ddd; padding: 8px; cursor: pointer; border-radius: 5px; background: #f9f9f9; transition: all 0.2s; text-align: center; }
         .cataleg-opcio:hover { border-color: #007bff; transform: scale(1.02); }
-        .cataleg-opcio img { width: 100%; height: 110px; object-fit: contain; background: white; border-radius: 3px; display: block; margin-bottom: 4px; }
-        .cataleg-opcio .cataleg-nom { font-size: 12px; font-weight: bold; }
+        .cataleg-opcio img { width: 100%; height: 110px; object-fit: contain; }
         .cataleg-opcio.seleccionat { border-color: #28a745; background: #e8f5e9; }
         .cataleg-opcio.seleccionat::after { content: '✅'; position: absolute; top: -10px; right: -10px; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 12px; }
 
@@ -118,25 +125,15 @@
         .chord-title-box { border: 2px solid #000; border-radius: 6px; font-size: 24px; font-weight: bold; padding: 2px 20px; margin-bottom: 10px; background: #fff; color: #000; font-family: Arial, sans-serif; text-align: center; min-width: 40px; display: inline-block; }
         .chord-nut-markers { display: flex; justify-content: space-between; width: 150px; margin-bottom: 3px; margin-left: 28px; }
         .nut-marker { width: 30px; text-align: center; font-weight: normal; font-family: Arial, sans-serif; cursor: pointer; height: 24px; line-height: 24px; font-size: 20px; color: #000; }
-        .nut-marker:hover { background: #eee; border-radius: 50%; }
         .fret-start-label { width: 26px; text-align: right; padding-right: 8px; font-weight: bold; font-size: 18px; line-height: 40px; margin-top: 0; color: #000; font-family: Arial, sans-serif; }
         .chord-fretboard { width: 150px; height: 200px; position: relative; background: white; border: 2px solid #000; border-top: 8px solid #000; }
-        .chord-fretboard.fret-offset { border-top: 2px solid #000; }
         .chord-grid-bg { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         .chord-grid-cell { border-right: 2px solid #000; border-bottom: 2px solid #000; }
-        .chord-grid-cell:nth-child(5n) { border-right: none; }
-        .chord-grid-cell:nth-last-child(-n+5) { border-bottom: none; }
         .chord-click-overlay { position: absolute; top: 0; left: -15px; right: -15px; bottom: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(5, 1fr); z-index: 10; }
         .chord-click-zone { display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .chord-click-zone:hover { background: rgba(0,0,0,0.05); }
         .chord-dot { width: 22px; height: 22px; border-radius: 50%; background: #000; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; font-family: Arial, sans-serif; pointer-events: none; }
-
         .acord-item.custom-guit .titol-item { display: none; } 
         .acord-item .chord-editor-wrapper { pointer-events: none; margin: 0; display: flex; align-items: center; justify-content: center; height: 100%; }
-        .acord-item .chord-visual { transform: scale(1); transform-origin: center center; }
-        .acord-item .nut-marker { cursor: default; }
-        .acord-item .chord-click-zone { cursor: default; }
-        .acord-item .chord-click-zone:hover { background: transparent; }
 
         /* --- BATERIA CUSTOM --- */
         .drum-grid { display: flex; justify-content: center; padding: 15px 0; background: #fff; border-radius: 8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); margin-bottom: 20px; gap: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -153,14 +150,11 @@
         .drum-dot.large-step { width: 18px; height: 18px; }
         .drum-dot.small-step { width: 10px; height: 10px; }
         .drum-dot.clicable { cursor: pointer; }
-        .drum-dot.clicable:hover { transform: scale(1.15); border-color: #999; }
         .drum-dot.hh.actiu { background: #ffdb58; border-color: #f1c40f; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .drum-dot.sn.actiu { background: #77dd77; border-color: #2ecc71; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .drum-dot.bd.actiu { background: #33b5e5; border-color: #0099cc; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
         .acord-item .drum-grid { background: transparent; box-shadow: none; padding: 5px; margin-bottom: 0; }
-        .acord-item .drum-dot:not(.actiu) { background: transparent; border: none; }
         .reproductor-controls { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; }
-        .tempo-slider-container { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; }
 
         /* --- BAIX TAB --- */
         .pal-wrapper { background: #2c2c2c; padding: 10px 5px 10px 0; border-radius: 6px; position: relative; width: 100%; box-sizing: border-box; margin-bottom: 15px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -191,7 +185,6 @@
         .corda-tab { display: flex; align-items: center; margin-bottom: 5px; width: 100%; }
         .corda-tab span { font-family: monospace; font-weight: bold; width: 30px; font-size: 16px; color: #333; }
         .corda-tab input { flex-grow: 1; font-family: monospace; font-size: 16px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; color: #d90429; letter-spacing: 1px; min-width: 0; }
-        .corda-tab input:focus { outline: none; border-color: #6f42c1; }
         .tab-baix { padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 6px; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; overflow: hidden;}
         .tab-esquerra { font-family: monospace; font-weight: bold; border-right: 2px solid #333; padding-right: 10px; margin-right: 10px; line-height: 1.5; font-size: 14px; }
         .tab-linies { font-family: monospace; font-size: 14px; line-height: 1.5; white-space: pre; color: #d90429; text-align: left; overflow: hidden;}
@@ -200,77 +193,25 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; overflow-y: auto; }
         .modal-contingut { background: white; padding: 30px; border-radius: 12px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .modal-graella { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-        .bateria-opcio { position: relative; border: 2px solid #ddd; padding: 8px; cursor: pointer; border-radius: 5px; background: #f9f9f9; transition: all 0.2s; }
-        .bateria-opcio:hover { border-color: #fd7e14; transform: scale(1.02); }
-        .bateria-opcio img { width: 100%; height: 100px; object-fit: contain; background: white; border-radius: 3px; }
-        .bateria-opcio.seleccionat { border-color: #28a745; background: #e8f5e9; }
-        .bateria-opcio.seleccionat::after { content: '✅'; position: absolute; top: -10px; right: -10px; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 12px; }
-
+        
         /* =========================================================
            3. MÀGIA D'IMPRESSIÓ (FLEXBOX HORITZONTAL PER INSTRUMENT)
            ========================================================= */
         @media print {
-            @page { 
-                size: A4 landscape; 
-                margin: 15mm 10mm; /* Marges de seguretat A4 */
-            } 
-            
-            body, html { 
-                padding: 0; margin: 0; background: white; width: 100%; height: 100%; display: block; overflow: visible;
-            }
-            
-            /* Amaguem tota la interfície no rellevant */
-            .sidebar, .controls-top, .botons-targeta, .no-print, .titol-seccio, .titol-canco-global { 
-                display: none !important; 
-            }
-            
-            .workspace-container { 
-                padding: 0 !important; margin: 0 !important; display: block !important; overflow: visible; height: auto !important;
-            }
-            
-            /* Cada instrument és un full A4 exacte sencer i flexible */
-            .seccio-embolcall.seccio-activa { 
-                display: flex !important; flex-direction: column !important; 
-                width: 100% !important; height: 100vh !important; /* Ocupa el 100% de la pàgina */
-                padding: 0 !important; box-sizing: border-box !important; 
-                page-break-after: always !important; break-after: page !important; 
-                margin: 0 !important; border: none !important; border-radius: 0 !important; 
-                box-shadow: none !important; background: white !important; overflow: hidden !important;
-            }
+            @page { size: A4 landscape; margin: 15mm 10mm; } 
+            body, html { padding: 0; margin: 0; background: white; width: 100%; height: 100%; display: block; overflow: visible; }
+            .sidebar, .controls-top, .botons-targeta, .no-print, .titol-seccio, .titol-canco-global { display: none !important; }
+            .workspace-container { padding: 0 !important; margin: 0 !important; display: block !important; overflow: visible; height: auto !important; }
+            .seccio-embolcall.seccio-activa { display: flex !important; flex-direction: column !important; width: 100% !important; height: 100vh !important; padding: 0 !important; box-sizing: border-box !important; page-break-after: always !important; break-after: page !important; margin: 0 !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; background: white !important; overflow: hidden !important; }
             .seccio-embolcall.seccio-activa:last-of-type { page-break-after: avoid !important; break-after: auto !important; }
-            
-            /* Títol general de dalt de la pàgina */
-            .titol-repro { 
-                display: flex !important; align-items: baseline !important; justify-content: center !important;
-                gap: 12px !important; text-align: center !important;
-                font-size: 1.6em !important; font-weight: bold !important; color: #000 !important; 
-                margin: 0 0 14px 0 !important; padding-bottom: 10px !important; 
-                border-bottom: 2px solid #333 !important; flex: 0 0 auto !important; width: 100% !important;
-                text-transform: uppercase !important; letter-spacing: 1px !important;
-            }
+            .titol-repro { display: flex !important; align-items: baseline !important; justify-content: center !important; gap: 12px !important; text-align: center !important; font-size: 1.6em !important; font-weight: bold !important; color: #000 !important; margin: 0 0 14px 0 !important; padding-bottom: 10px !important; border-bottom: 2px solid #333 !important; flex: 0 0 auto !important; width: 100% !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
             .titol-repro .titol-instrument { font-size: 1em !important; }
             .titol-repro .titol-separador { color: #999 !important; font-weight: 300 !important; }
             .titol-repro .titol-canco { font-size: 0.7em !important; font-weight: 400 !important; color: #444 !important; }
-            
-            /* Graella de flexbox automàtica */
-            .graella-web { 
-                display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; 
-                align-content: stretch !important; gap: 10px !important; flex: 1 1 auto !important; 
-                width: 100% !important; margin: 0 !important; align-items: stretch !important;
-            }
-
-            /* Targetes que s'adapten soles */
-            .acord-item { 
-                flex: 1 1 auto !important; break-inside: avoid !important; border: 1px solid #ccc !important; 
-                padding: 8px !important; box-sizing: border-box !important; display: flex !important; 
-                flex-direction: column !important; align-items: center !important; justify-content: center !important; 
-                min-width: 22% !important; /* Aproximadament 4 per fila */
-                background: transparent !important; box-shadow: none !important; transform: none !important; margin: 0 !important;
-            }
-            
+            .graella-web { display: flex !important; flex-wrap: wrap !important; justify-content: flex-start !important; align-content: stretch !important; gap: 10px !important; flex: 1 1 auto !important; width: 100% !important; margin: 0 !important; align-items: stretch !important; }
+            .acord-item { flex: 1 1 auto !important; break-inside: avoid !important; border: 1px solid #ccc !important; padding: 8px !important; box-sizing: border-box !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; min-width: 22% !important; background: transparent !important; box-shadow: none !important; transform: none !important; margin: 0 !important; }
             .acord-item img { width: 100% !important; height: 100% !important; object-fit: contain !important; flex: 1 1 auto !important; }
             .titol-item { flex: 0 0 auto !important; font-size: 14px !important; margin: 0 0 4px 0 !important; }
-
             .acord-item.custom-guit .chord-editor-wrapper { margin: 0 !important; }
             .acord-item.custom-bat .drum-grid { margin: 0 !important; padding: 3px !important; }
             .acord-item.custom-teclat .piano-diagram { width: 100% !important; }
@@ -289,7 +230,7 @@
     <div class="sidebar-content">
         <div class="grup-control">
             <label>Títol de la cançó:</label>
-            <input type="text" id="titolInput" placeholder="Ex: Urras - Adala" onkeyup="actualitzarTitol()">
+            <input type="text" id="titolInput" placeholder="Ex: EnDirecte. Música als instituts." onkeyup="actualitzarTitol()">
         </div>
         
         <div class="hr-div"></div>
@@ -332,25 +273,21 @@
 
 <div class="workspace-container">
     <h2 id="titolMostrat" class="titol-canco-global no-print">TÍTOL DE LA CANÇÓ</h2>
-    
     <div id="wrap-guitarra" class="seccio-embolcall" style="display:none;" data-inst="guitarra" data-nom="Guitarra">
         <div class="titol-repro"><span class="titol-instrument">Guitarra</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🎸 Guitarra</h3>
         <div class="graella-web" id="sec-guitarra"></div>
     </div>
-    
     <div id="wrap-teclat" class="seccio-embolcall" style="display:none;" data-inst="teclat" data-nom="Teclat">
         <div class="titol-repro"><span class="titol-instrument">Teclat</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🎹 Teclats</h3>
         <div class="graella-web" id="sec-teclat"></div>
     </div>
-    
     <div id="wrap-baix" class="seccio-embolcall" style="display:none;" data-inst="baix" data-nom="Baix">
         <div class="titol-repro"><span class="titol-instrument">Baix</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🎸 Baix Elèctric</h3>
         <div class="graella-web" id="sec-baix"></div>
     </div>
-    
     <div id="wrap-bateria" class="seccio-embolcall" style="display:none;" data-inst="bateria" data-nom="Bateria">
         <div class="titol-repro"><span class="titol-instrument">Bateria</span><span class="titol-separador">—</span><span class="titol-canco"></span></div>
         <h3 class="titol-seccio no-print">🥁 Bateria</h3>
@@ -393,7 +330,6 @@
         </div>
         <div style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
             <button class="btn-accio" style="background:#28a745; width:auto;" id="btn-guardar-guit-custom" onclick="generarGuitarraCustom()">✅ Afegir a Partitura</button>
-            <button class="btn-accio btn-netejar" style="width:auto;" onclick="netejarModalGuitarraCustom()">🗑️ Netejar</button>
             <button class="btn-accio btn-outline" style="width:auto;" onclick="tancarModalGuitarraCustom()">Cancel·lar</button>
         </div>
     </div>
@@ -411,7 +347,6 @@
     <div class="modal-contingut" style="max-width: 900px;">
         <h2 style="margin-top:0; color:#d35400;">🛠️ Dissenyador de Bateria</h2>
         <input type="text" id="bat-custom-titol" placeholder="Ex: Ritme Principal" style="width:100%; margin-bottom:15px; text-align:center; font-weight:bold; font-size:16px;">
-        
         <div class="reproductor-controls">
             <button id="btn-play-bat" class="btn-accio" style="background-color:#17a2b8; width:auto; margin:0;" onclick="togglePlayBateria()">▶️ Escoltar Audio</button>
             <div class="tempo-slider-container">
@@ -420,12 +355,9 @@
                 <span id="tempo-valor">90 BPM</span>
             </div>
         </div>
-
         <div id="sequencer-editor"></div>
-
         <div style="margin-top:30px; display:flex; justify-content:center; gap:10px;">
             <button class="btn-accio" id="btn-guardar-bat-custom" style="background:#28a745; width:auto;" onclick="generarBateriaCustom()">✅ Afegir a Partitura</button>
-            <button class="btn-accio btn-netejar" style="width:auto;" onclick="netejarModalBateriaCustom()">🗑️ Netejar</button>
             <button class="btn-accio btn-outline" style="width:auto;" onclick="tancarModalBateriaCustom()">Cancel·lar</button>
         </div>
     </div>
@@ -435,7 +367,6 @@
     <div class="modal-contingut" style="max-width: 800px;">
         <h2 style="margin-top:0; color:#6f42c1;">🎸 Tabulatura de Baix</h2>
         <input type="text" id="baix-titol" placeholder="Ex: Riff Principal / D-" style="width:100%; margin-bottom:15px; text-align:center; font-weight:bold; font-size:16px;">
-        
         <div id="fretboard-actiu" class="pal-wrapper">
             <div class="pal-nums" id="numeros-trasts"><div class="pal-num cejilla-num">0</div></div>
             <div class="pal-cordes">
@@ -443,17 +374,14 @@
                 <div id="cordes-contenidor"></div>
             </div>
         </div>
-
         <div class="tab-controls">
             <div class="corda-tab"><span>G|</span><input type="text" id="tab-G" value="------------------------" data-corda="G" oninput="actualitzarPalDesDeTab()"></div>
             <div class="corda-tab"><span>D|</span><input type="text" id="tab-D" value="------------------------" data-corda="D" oninput="actualitzarPalDesDeTab()"></div>
             <div class="corda-tab"><span>A|</span><input type="text" id="tab-A" value="------------------------" data-corda="A" oninput="actualitzarPalDesDeTab()"></div>
             <div class="corda-tab"><span>E|</span><input type="text" id="tab-E" value="------------------------" data-corda="E" oninput="actualitzarPalDesDeTab()"></div>
         </div>
-
         <div style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
             <button class="btn-accio" id="btn-guardar-baix" style="background:#28a745; width:auto;" onclick="generarBaix()">✅ Afegir a Partitura</button>
-            <button class="btn-accio btn-netejar" style="width:auto;" onclick="netejarModalBaix()">🗑️ Netejar</button>
             <button class="btn-accio btn-outline" style="width:auto;" onclick="tancarModalBaix()">Cancel·lar</button>
         </div>
     </div>
@@ -462,7 +390,6 @@
 <div id="modalCatalegGuitarra" class="modal-overlay no-print" onclick="tancarSiFora(event,'modalCatalegGuitarra')">
     <div class="modal-contingut">
         <h2 style="margin-top:0;">🎸 Catàleg d'Acords de Guitarra</h2>
-        <p style="color:#666;font-size:13px;margin-bottom:15px;">Fes clic per afegir o treure acords. Els seleccionats apareixen amb ✅.</p>
         <div class="modal-graella" id="galeria-guitarra"></div>
         <button class="btn-accio btn-outline" onclick="tancarModal('modalCatalegGuitarra')" style="margin-top:25px;width:auto;margin-left:auto;margin-right:auto;">Tancar</button>
     </div>
@@ -471,7 +398,6 @@
 <div id="modalCatalegTeclat" class="modal-overlay no-print" onclick="tancarSiFora(event,'modalCatalegTeclat')">
     <div class="modal-contingut">
         <h2 style="margin-top:0;">🎹 Catàleg d'Acords de Teclat</h2>
-        <p style="color:#666;font-size:13px;margin-bottom:15px;">Fes clic per afegir o treure acords. Els seleccionats apareixen amb ✅.</p>
         <div class="modal-graella" id="galeria-teclat"></div>
         <button class="btn-accio btn-outline" onclick="tancarModal('modalCatalegTeclat')" style="margin-top:25px;width:auto;margin-left:auto;margin-right:auto;">Tancar</button>
     </div>
@@ -480,14 +406,12 @@
 <div id="modalTeclatCustom" class="modal-overlay no-print" onclick="tancarSiForaTeclatCustom(event)">
     <div class="modal-contingut" style="max-width:560px;">
         <h2 style="margin-top:0;color:#e83e8c;">🎹 Dissenyador d'Acords de Teclat</h2>
-        <p style="font-size:13px;color:#666;margin-bottom:15px;">Fes clic a les tecles per marcar les notes de l'acord.</p>
         <input type="text" id="teclat-custom-titol" placeholder="Nom de l'acord (ex: Cmaj7)" style="width:100%;margin-bottom:20px;text-align:center;font-weight:bold;font-size:16px;">
         <div class="piano-editor-wrap">
             <div id="piano-editor-keys" class="piano-keys-row"></div>
         </div>
         <div style="margin-top:20px;display:flex;justify-content:center;gap:10px;">
             <button class="btn-accio" id="btn-guardar-teclat-custom" style="background:#e83e8c;width:auto;" onclick="generarTeclatCustom()">✅ Afegir a Partitura</button>
-            <button class="btn-accio btn-netejar" style="width:auto;" onclick="netejarModalTeclatCustom()">🗑️ Netejar</button>
             <button class="btn-accio btn-outline" style="width:auto;" onclick="tancarModalTeclatCustom()">Cancel·lar</button>
         </div>
     </div>
@@ -495,38 +419,47 @@
 
 <div id="modalMelodiaTeclat" class="modal-overlay no-print" onclick="tancarSiForaMelodia(event)">
     <div class="modal-contingut" style="max-width:900px;">
-        <h2 style="margin-top:0;color:#9b59b6;">🎵 Escriptor de Melodia per Teclat</h2>
-        <p style="font-size:13px;color:#666;margin-bottom:10px;">Cada pas és una negra (o silenci). Fes clic a les tecles per assignar la nota de cada pas.</p>
-        <div style="display:flex;gap:15px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:15px;">
-            <input type="text" id="melodia-titol" placeholder="Nom de la melodia (ex: Intro)" style="width:220px;font-size:14px;">
+        <h2 style="margin-top:0;color:#9b59b6;">🎵 Escriptor de Melodia (Piano Roll)</h2>
+        <p style="font-size:13px;color:#666;margin-bottom:15px;">Fes clic a la graella per dibuixar una nota (per defecte, 1 negra). Arrossega la vora dreta per canviar-ne la durada (fins a 1 semicorxera). Fes clic a una nota per esborrar-la.</p>
+        
+        <div id="preview-abc-container" style="background:#fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-bottom: 20px; min-height: 120px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+            <div id="preview-abc"></div>
+        </div>
+
+        <div style="display:flex;gap:15px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:15px; background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+            <input type="text" id="melodia-titol" placeholder="Títol (ex: Riff)" style="width:150px;font-size:14px;" onkeyup="actualitzarPreviewMelodia()">
+            
             <label style="text-transform:none;font-size:13px;display:flex;align-items:center;gap:6px;">
-                Passos: <select id="melodia-steps" onchange="generarGridMelodia()" style="width:70px;padding:8px;">
-                    <option value="8">8</option><option value="12">12</option><option value="16" selected>16</option><option value="24">24</option>
+                Compàs: <select id="melodia-compas" onchange="iniciarPianoRoll()" style="width:70px;padding:8px;">
+                    <option value="4/4" selected>4/4</option><option value="3/4">3/4</option><option value="2/4">2/4</option>
                 </select>
             </label>
+
             <label style="text-transform:none;font-size:13px;display:flex;align-items:center;gap:6px;">
-                Octava: <select id="melodia-octava" onchange="generarGridMelodia()" style="width:70px;padding:8px;">
-                    <option value="3">3</option><option value="4" selected>4</option><option value="5">5</option>
+                Compassos: <select id="melodia-compassos" onchange="iniciarPianoRoll()" style="width:60px;padding:8px;">
+                    <option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option>
                 </select>
             </label>
-            <button class="btn-accio btn-outline" style="width:auto;color:#dc3545;border-color:#dc3545;" onclick="netejarMelodia()">🗑️ Netejar</button>
+
+            <button id="btn-play-melodia" class="btn-accio" style="background-color:#17a2b8; width:auto; padding: 8px 15px;" onclick="togglePlayMelodia()">▶️ Escoltar</button>
+            <label style="text-transform:none;font-size:13px;display:flex;align-items:center;gap:6px;">
+                Tempo: <input type="number" id="tempo-melodia" value="90" min="40" max="200" style="width:60px;padding:8px;">
+            </label>
+            
+            <button class="btn-accio btn-outline" style="width:auto;color:#dc3545;border-color:#dc3545;" onclick="netejarPianoRoll()">🗑️ Netejar</button>
         </div>
-        <div class="melodia-grid-wrap">
-            <div class="melodia-grid" id="melodia-grid-editor"></div>
-        </div>
-        <p style="font-size:11px;color:#aaa;margin-top:8px;">Fes clic a un pas per seleccionar-lo, després toca la tecla. Doble clic = silenci.</p>
-        <div class="piano-editor-wrap" style="margin-top:15px;">
-            <div id="piano-melodia-keys" class="piano-keys-row"></div>
-        </div>
-        <div style="margin-top:20px;display:flex;justify-content:center;gap:10px;">
-            <button class="btn-accio" id="btn-guardar-melodia" style="background:#9b59b6;width:auto;" onclick="generarMelodia()">✅ Afegir a Partitura</button>
+
+        <div id="piano-roll-editor"></div>
+
+        <div style="margin-top:25px;display:flex;justify-content:center;gap:10px;">
+            <button class="btn-accio" id="btn-guardar-melodia" style="background:#9b59b6;width:auto;" onclick="generarMelodia()">✅ Generar Partitura</button>
             <button class="btn-accio btn-outline" style="width:auto;" onclick="tancarModalMelodia()">Cancel·lar</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- LÒGICA D'ESPAI VISUAL ---
+    // --- FUNCIONS GLOBALS BÀSIQUES ---
     function actualitzarTitol() {
         const text = document.getElementById('titolInput').value.toUpperCase() || "TÍTOL DE LA CANÇÓ";
         document.getElementById('titolMostrat').innerText = text;
@@ -537,30 +470,17 @@
         ['guitarra', 'teclat', 'baix', 'bateria'].forEach(id => {
             const wrap = document.getElementById('wrap-' + id);
             const graella = document.getElementById('sec-' + id);
-            
             if (graella.children.length > 0) {
-                wrap.style.display = 'block'; 
-                wrap.classList.add('seccio-activa');
-                
-                if (!graella.dataset.sortable) {
-                    new Sortable(graella, {
-                        animation: 150,
-                        ghostClass: 'sortable-ghost'
-                    });
-                    graella.dataset.sortable = "true";
-                }
-            } else {
-                wrap.style.display = 'none'; 
-                wrap.classList.remove('seccio-activa');
-            }
+                wrap.style.display = 'block'; wrap.classList.add('seccio-activa');
+                if (!graella.dataset.sortable) { new Sortable(graella, { animation: 150, ghostClass: 'sortable-ghost' }); graella.dataset.sortable = "true"; }
+            } else { wrap.style.display = 'none'; wrap.classList.remove('seccio-activa'); }
         });
     }
 
     function netejarTot() { 
         if(confirm("Vols esborrar tot i començar de zero?")) { 
             ['sec-guitarra','sec-teclat','sec-baix','sec-bateria'].forEach(id => document.getElementById(id).innerHTML = ''); 
-            actualitzarVisibilitat(); 
-            actualitzarSeleccioBateria(); 
+            actualitzarVisibilitat(); actualitzarSeleccioBateria(); 
         } 
     }
     
@@ -572,953 +492,551 @@
     }
     function tancarModal(id) { document.getElementById(id).style.display = 'none'; }
     function tancarSiFora(e, id) { if (e.target.id === id) tancarModal(id); }
-    
-    // --- GUITARRA DISSENYADOR CUSTOM ---
-    let cartaGuitCustomEnEdicio = null;
-    const fingerCycle = ['', '●', '1', '2', '3', '4', 'T'];
-    const nutCycle = ['', 'O', 'X'];
 
-    function inicialitzarGuitarraCustom() {
-        const overlay = document.getElementById('guit-click-overlay-editor');
-        overlay.innerHTML = '';
-        for (let r = 0; r < 5; r++) {
-            for (let c = 0; c < 6; c++) {
-                const zone = document.createElement('div');
-                zone.className = 'chord-click-zone';
-                zone.dataset.str = 5 - c; 
-                zone.dataset.fret = r + 1;
-                zone.onclick = function() { cycleFinger(this); };
-                overlay.appendChild(zone);
-            }
-        }
-    }
-
-    function cycleFinger(el) {
-        let current = el.dataset.finger || '';
-        let idx = fingerCycle.indexOf(current);
-        let nextIdx = (idx + 1) % fingerCycle.length;
-        let nextVal = fingerCycle[nextIdx];
-        el.dataset.finger = nextVal;
-        
-        if (nextVal !== '') {
-            const str = el.dataset.str;
-            const parent = el.parentElement;
-            Array.from(parent.children).forEach(sibling => {
-                if (sibling !== el && sibling.dataset.str === str) {
-                    sibling.dataset.finger = '';
-                    sibling.innerHTML = '';
-                }
-            });
-        }
-        el.innerHTML = nextVal ? `<div class="chord-dot">${nextVal === '●' ? '' : nextVal}</div>` : '';
-    }
-
-    function toggleNut(el) {
-        let current = el.dataset.val || '';
-        let idx = nutCycle.indexOf(current);
-        let nextIdx = (idx + 1) % nutCycle.length;
-        let nextVal = nutCycle[nextIdx];
-        el.dataset.val = nextVal;
-        el.innerText = nextVal;
-    }
-
-    function updateGuitFretStart() {
-        const input = document.getElementById('guit-fret-start');
-        const val = parseInt(input.value) || 1;
-        const label = document.getElementById('guit-fret-label');
-        const fretboard = document.getElementById('guit-fretboard');
-        
-        if (val > 1) {
-            label.innerText = val + "fr";
-            fretboard.classList.add('fret-offset');
-        } else {
-            label.innerText = "";
-            fretboard.classList.remove('fret-offset');
-        }
-    }
-
-    function obrirModalGuitarraCustomNova() {
-        cartaGuitCustomEnEdicio = null;
-        document.getElementById('btn-guardar-guit-custom').innerHTML = "✅ Afegir a Partitura";
-        netejarModalGuitarraCustom();
-        document.getElementById('modalGuitarraCustom').style.display = 'flex';
-    }
-
-    function netejarModalGuitarraCustom() {
-        document.getElementById('guit-custom-titol').value = '';
-        document.getElementById('guit-fret-start').value = 1;
-        updateGuitFretStart();
-        document.querySelectorAll('#guit-editor-visual .nut-marker').forEach(el => { el.dataset.val = ''; el.innerText = ''; });
-        document.querySelectorAll('#guit-editor-visual .chord-click-zone').forEach(el => { el.dataset.finger = ''; el.innerHTML = ''; });
-    }
-
-    function tancarModalGuitarraCustom() { tancarModal('modalGuitarraCustom'); cartaGuitCustomEnEdicio = null; }
-    function tancarSiForaGuitCustom(e) { if (e.target.id === 'modalGuitarraCustom') tancarModalGuitarraCustom(); }
-
-    function generarGuitarraCustom() {
-        const titol = document.getElementById('guit-custom-titol').value || 'Acord';
-        const visualClone = document.createElement('div');
-        visualClone.className = 'chord-visual';
-        
-        const titleBox = document.createElement('div');
-        titleBox.className = 'chord-title-box';
-        titleBox.innerText = titol;
-        visualClone.appendChild(titleBox);
-
-        const editorVisual = document.getElementById('guit-editor-visual');
-        const nutsClone = editorVisual.querySelector('.chord-nut-markers').cloneNode(true);
-        const gridClone = editorVisual.querySelector('div[style*="display: flex"]').cloneNode(true);
-        
-        nutsClone.querySelectorAll('.nut-marker').forEach(el => el.removeAttribute('onclick'));
-        gridClone.querySelectorAll('.chord-click-zone').forEach(el => el.removeAttribute('onclick'));
-        
-        visualClone.appendChild(nutsClone);
-        visualClone.appendChild(gridClone);
-        
-        const guitData = {
-            fretStart: document.getElementById('guit-fret-start').value,
-            nuts: Array.from(document.querySelectorAll('#guit-editor-visual .nut-marker')).map(n => n.dataset.val || ''),
-            dots: Array.from(document.querySelectorAll('#guit-editor-visual .chord-click-zone')).map(z => z.dataset.finger || '')
-        };
-
-        if (cartaGuitCustomEnEdicio) {
-            cartaGuitCustomEnEdicio.dataset.guitData = JSON.stringify(guitData);
-            const titleBoxExist = cartaGuitCustomEnEdicio.querySelector('.chord-title-box');
-            if(titleBoxExist) titleBoxExist.innerText = titol;
-            
-            const container = cartaGuitCustomEnEdicio.querySelector('.chord-editor-wrapper');
-            container.innerHTML = '';
-            container.appendChild(visualClone);
-        } else {
-            const wrapperFinal = document.createElement('div');
-            wrapperFinal.className = "chord-editor-wrapper";
-            wrapperFinal.appendChild(visualClone);
-            crearItem('guitarra', null, wrapperFinal, null, null, guitData);
-        }
-        tancarModalGuitarraCustom();
-    }
-
-    function editarGuitarraCustom(item) {
-        cartaGuitCustomEnEdicio = item;
-        const dataOriginal = JSON.parse(item.dataset.guitData);
-        const titleBox = item.querySelector('.chord-title-box');
-        document.getElementById('guit-custom-titol').value = titleBox ? titleBox.innerText : 'Acord';
-        
-        document.getElementById('guit-fret-start').value = dataOriginal.fretStart;
-        updateGuitFretStart();
-        
-        const nuts = document.querySelectorAll('#guit-editor-visual .nut-marker');
-        dataOriginal.nuts.forEach((val, i) => { nuts[i].dataset.val = val; nuts[i].innerText = val; });
-        
-        const dots = document.querySelectorAll('#guit-click-overlay-editor .chord-click-zone');
-        dataOriginal.dots.forEach((val, i) => { 
-            dots[i].dataset.finger = val; 
-            dots[i].innerHTML = val ? `<div class="chord-dot">${val === '●' ? '' : val}</div>` : '';
-        });
-        
-        document.getElementById('btn-guardar-guit-custom').innerHTML = "💾 Actualitzar Partitura";
-        document.getElementById('modalGuitarraCustom').style.display = 'flex';
-    }
-
-
-    // --- BATERIA IMATGES ---
-    function carregarBateria() {
-        const cont = document.getElementById('galeria-bateria');
-        if (cont.children.length > 0) return;
-        for (let i = 1; i <= 42; i++) {
-            const d = document.createElement('div'); d.className = 'bateria-opcio';
-            const nomArxiu = `img/dors patrons de bateria ${i}.png`;
-            d.innerHTML = `<img src="${nomArxiu}" onerror="this.parentElement.style.display='none'"><div>Patró ${i}</div>`;
-            
-            d.onclick = () => {
-                const imatgesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item:not(.custom-bat) img'));
-                const imatgeExistent = imatgesAfegides.find(img => img.getAttribute('src') === nomArxiu);
-                
-                if (imatgeExistent) {
-                    imatgeExistent.closest('.acord-item').remove();
-                } else {
-                    const img = document.createElement('img'); 
-                    img.setAttribute('src', nomArxiu);
-                    crearItem('bateria', `Patró ${i}`, img);
-                }
-                actualitzarVisibilitat();
-                actualitzarSeleccioBateria(); 
-            };
-            cont.appendChild(d);
-        }
-    }
-
-    function actualitzarSeleccioBateria() {
-        const bateriesAfegides = Array.from(document.querySelectorAll('#sec-bateria .acord-item:not(.custom-bat) img')).map(img => img.getAttribute('src'));
-        document.querySelectorAll('.bateria-opcio').forEach(div => {
-            const imatgeModal = div.querySelector('img').getAttribute('src');
-            if (bateriesAfegides.includes(imatgeModal)) {
-                div.classList.add('seleccionat');
-            } else {
-                div.classList.remove('seleccionat');
-            }
-        });
-    }
-
-    // --- BATERIA SEQÜENCIADOR CUSTOM ---
-    let drumPattern = { HH: Array(16).fill(false), SN: Array(16).fill(false), BD: Array(16).fill(false) };
-    let drumSynths = {};
-    let drumSeq = null;
-    let isPlaying = false;
-    let isAudioInitialized = false;
-
-    function syncDrumPattern() {
-        for(let i=0; i<16; i++) {
-            const hh = document.querySelector(`#sequencer-editor .drum-dot.hh[data-step="${i}"]`);
-            const sn = document.querySelector(`#sequencer-editor .drum-dot.sn[data-step="${i}"]`);
-            const bd = document.querySelector(`#sequencer-editor .drum-dot.bd[data-step="${i}"]`);
-            drumPattern.HH[i] = hh ? hh.classList.contains('actiu') : false;
-            drumPattern.SN[i] = sn ? sn.classList.contains('actiu') : false;
-            drumPattern.BD[i] = bd ? bd.classList.contains('actiu') : false;
-        }
-    }
-
-    function initAudioSynths() {
-        if (isAudioInitialized) return;
-        drumSynths.BD = new Tone.MembraneSynth().toDestination();
-        drumSynths.BD.volume.value = 2; 
-        drumSynths.SN = new Tone.NoiseSynth({ noise: { type: "white" }, envelope: { attack: 0.005, decay: 0.2, sustain: 0 } }).toDestination();
-        drumSynths.SN.volume.value = -5;
-        drumSynths.HH = new Tone.MetalSynth({ frequency: 250, envelope: { attack: 0.001, decay: 0.05, release: 0.01 }, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 }).toDestination();
-        drumSynths.HH.volume.value = -5; 
-        isAudioInitialized = true;
-    }
-
-    function togglePlayBateria() {
-        const btn = document.getElementById('btn-play-bat');
-        Tone.start().then(() => {
-            initAudioSynths();
-            Tone.Transport.bpm.value = document.getElementById('tempo-slider').value;
-
-            if (isPlaying) {
-                Tone.Transport.stop();
-                if (drumSeq) { drumSeq.stop(); drumSeq.dispose(); drumSeq = null; }
-                btn.innerHTML = "▶️ Escoltar Audio";
-                btn.classList.remove('playing');
-                document.querySelectorAll('#sequencer-editor .drum-col').forEach(c => c.classList.remove('playing'));
-                isPlaying = false;
-            } else {
-                syncDrumPattern();
-                if (drumSeq) { drumSeq.dispose(); }
-                
-                drumSeq = new Tone.Sequence((time, step) => {
-                    if (drumPattern.HH[step]) drumSynths.HH.triggerAttackRelease("32n", time);
-                    if (drumPattern.SN[step]) drumSynths.SN.triggerAttackRelease("16n", time);
-                    if (drumPattern.BD[step]) drumSynths.BD.triggerAttackRelease("C1", "8n", time);
-
-                    Tone.Draw.schedule(() => {
-                        const cols = document.querySelectorAll('#sequencer-editor .drum-col');
-                        for(let i=0; i<cols.length; i++) cols[i].classList.remove('playing');
-                        const cur = document.querySelector(`#sequencer-editor .drum-col[data-step="${step}"]`);
-                        if(cur) cur.classList.add('playing');
-                    }, time);
-                }, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], "16n");
-
-                Tone.Transport.start(); 
-                drumSeq.start(0);       
-                btn.innerHTML = "⏹️ Aturar Audio";
-                btn.classList.add('playing');
-                isPlaying = true;
-            }
-        }).catch(err => {
-            alert("Fes clic un altre cop, el navegador està encenent l'àudio.");
-        });
-    }
-
-    function updateTempo(val) {
-        document.getElementById('tempo-valor').innerText = val + " BPM";
-        Tone.Transport.bpm.value = val;
-    }
-
-    function aturarAudioForcat() { if(isPlaying) togglePlayBateria(); }
-
-    function inicialitzarSequenciador() {
-        const editor = document.getElementById('sequencer-editor');
-        let html = `<div class="drum-grid">`;
-        for(let i=0; i<16; i++) {
-            let label = '';
-            if(i===0) label = '1'; if(i===4) label = '2'; if(i===8) label = '3'; if(i===12) label = '4';
-            let extraClass = (i===3 || i===7 || i===11) ? 'beat-end' : '';
-            let sizeClass = (i % 2 === 0) ? 'large-step' : 'small-step';
-            let lineHtml = '';
-            if (i % 4 === 0) { lineHtml = `<div class="drum-vertical-line fort"></div>`; } 
-            else if (i % 4 === 2) { lineHtml = `<div class="drum-vertical-line fluix"></div>`; }
-
-            html += `<div class="drum-col ${extraClass}" data-step="${i}">
-                <div class="drum-label">${label}</div>
-                <div class="drum-line-container">
-                    ${lineHtml}
-                    <div class="drum-dot-wrap"><div class="drum-dot hh clicable ${sizeClass}" data-inst="HH" data-step="${i}" onclick="toggleSeqStep(this)"></div></div>
-                    <div class="drum-dot-wrap"><div class="drum-dot sn clicable ${sizeClass}" data-inst="SN" data-step="${i}" onclick="toggleSeqStep(this)"></div></div>
-                    <div class="drum-dot-wrap"><div class="drum-dot bd clicable ${sizeClass}" data-inst="BD" data-step="${i}" onclick="toggleSeqStep(this)"></div></div>
-                </div>
-            </div>`;
-        }
-        html += `</div>`;
-        editor.innerHTML = html;
-    }
-
-    function toggleSeqStep(el) { el.classList.toggle('actiu'); syncDrumPattern(); }
-
-    function obrirModalBateriaCustomNova() {
-        cartaBatCustomEnEdicio = null;
-        document.getElementById('btn-guardar-bat-custom').innerHTML = "✅ Afegir a Partitura";
-        netejarModalBateriaCustom();
-        document.getElementById('modalBateriaCustom').style.display = 'flex';
-    }
-
-    function netejarModalBateriaCustom() {
-        document.getElementById('bat-custom-titol').value = '';
-        document.querySelectorAll('#sequencer-editor .drum-dot').forEach(s => s.classList.remove('actiu'));
-        syncDrumPattern();
-    }
-
-    function tancarModalBateriaCustom() { aturarAudioForcat(); tancarModal('modalBateriaCustom'); cartaBatCustomEnEdicio = null; }
-    function tancarSiForaBatCustom(e) { if (e.target.id === 'modalBateriaCustom') tancarModalBateriaCustom(); }
-
-    function generarBateriaCustom() {
-        aturarAudioForcat();
-        const titol = document.getElementById('bat-custom-titol').value || 'Patró Manual';
-        const seqClone = document.createElement('div');
-        seqClone.innerHTML = document.getElementById('sequencer-editor').innerHTML;
-        
-        seqClone.querySelectorAll('.drum-dot').forEach(step => { step.removeAttribute('onclick'); step.classList.remove('clicable'); });
-        seqClone.querySelectorAll('.drum-col').forEach(c => c.classList.remove('playing'));
-
-        const activeSteps = [];
-        document.querySelectorAll('#sequencer-editor .drum-dot.actiu').forEach(el => {
-            activeSteps.push({ inst: el.dataset.inst, step: el.dataset.step });
-        });
-
-        if (cartaBatCustomEnEdicio) {
-            cartaBatCustomEnEdicio.dataset.batData = JSON.stringify(activeSteps);
-            cartaBatCustomEnEdicio.dataset.titol = titol;
-            const t = cartaBatCustomEnEdicio.querySelector('.titol-item');
-            if(t) t.innerText = titol;
-            cartaBatCustomEnEdicio.querySelector('.contingut-custom').innerHTML = '';
-            cartaBatCustomEnEdicio.querySelector('.contingut-custom').appendChild(seqClone);
-        } else {
-            const wrapperFinal = document.createElement('div');
-            wrapperFinal.className = "contingut-custom";
-            wrapperFinal.style.width = "100%";
-            wrapperFinal.appendChild(seqClone);
-            crearItem('bateria', titol, wrapperFinal, null, activeSteps, null);
-        }
-        tancarModalBateriaCustom();
-    }
-
-    function editarBateriaCustom(item) {
-        cartaBatCustomEnEdicio = item;
-        document.getElementById('bat-custom-titol').value = item.dataset.titol || '';
-        netejarModalBateriaCustom();
-        
-        const activeSteps = JSON.parse(item.dataset.batData);
-        activeSteps.forEach(data => {
-            const el = document.querySelector(`#sequencer-editor .drum-dot[data-inst="${data.inst}"][data-step="${data.step}"]`);
-            if(el) el.classList.add('actiu');
-        });
-        syncDrumPattern();
-        
-        document.getElementById('btn-guardar-bat-custom').innerHTML = "💾 Actualitzar Partitura";
-        document.getElementById('modalBateriaCustom').style.display = 'flex';
-    }
-    
-    // --- LÒGICA BAIX INTERACTIU ---
-    const NUM_TRASTS = 15; const CORDES = ['G', 'D', 'A', 'E']; let cartaBaixEnEdicio = null; 
-
-    function inicialitzarPal() {
-        const trastsNum = document.getElementById('numeros-trasts');
-        const marques = document.getElementById('marques-pal');
-        const cordesCont = document.getElementById('cordes-contenidor');
-
-        for (let i = 1; i <= NUM_TRASTS; i++) {
-            trastsNum.innerHTML += `<div class="pal-num">${i}</div>`;
-            let marcaHTML = `<div class="pal-marca-espai">`;
-            if ([3, 5, 7, 9, 15].includes(i)) marcaHTML += `<div class="pal-punt-marca"></div>`;
-            else if (i === 12) marcaHTML = `<div class="pal-marca-espai doble"><div class="pal-punt-marca"></div><div class="pal-punt-marca"></div>`;
-            marcaHTML += `</div>`;
-            marques.innerHTML += marcaHTML;
-        }
-
-        CORDES.forEach(corda => {
-            let fila = `<div class="pal-corda corda-${corda.toLowerCase()}">`;
-            fila += `<div class="pal-nom-corda">${corda}</div><div class="pal-linia"></div>`;
-            fila += `<div class="pal-trast cejilla" data-corda="${corda}" data-trast="0" onclick="clicTrast(this)"><div class="pal-punt-nota">0</div></div>`;
-            for (let i = 1; i <= NUM_TRASTS; i++) {
-                fila += `<div class="pal-trast" data-corda="${corda}" data-trast="${i}" onclick="clicTrast(this)"><div class="pal-punt-nota">${i}</div></div>`;
-            }
-            fila += `</div>`;
-            cordesCont.innerHTML += fila;
-        });
-    }
-
-    function clicTrast(element) {
-        const corda = element.getAttribute('data-corda'); const trast = element.getAttribute('data-trast');
-        afegirNotaATabulatura(corda, trast); actualitzarPalDesDeTab();
-    }
-
-    function afegirNotaATabulatura(corda, trast) {
-        let maxLength = 0;
-        for (let c of CORDES) {
-            let textNet = document.getElementById(`tab-${c}`).value.replace(/-+$/, '');
-            if (textNet.length > maxLength) maxLength = textNet.length;
-        }
-        if (maxLength < 2) maxLength = 2;
-
-        for (let c of CORDES) {
-            let input = document.getElementById(`tab-${c}`);
-            let textNet = input.value.replace(/-+$/, '');
-            while (textNet.length < maxLength) textNet += '-';
-            textNet += '--'; textNet += (c === corda) ? trast : '-'.repeat(trast.toString().length); textNet += '--';
-            input.value = textNet + "------------------------";
-        }
-    }
-
-    function actualitzarPalDesDeTab() {
-        document.querySelectorAll('#fretboard-actiu .pal-trast').forEach(t => t.classList.remove('actiu'));
-        CORDES.forEach(corda => {
-            const numeros = document.getElementById(`tab-${corda}`).value.match(/\d+/g);
-            if (numeros) {
-                [...new Set(numeros)].forEach(num => {
-                    if (num >= 0 && num <= NUM_TRASTS) {
-                        const el = document.querySelector(`#fretboard-actiu .pal-trast[data-corda="${corda}"][data-trast="${num}"]`);
-                        if(el) el.classList.add('actiu');
-                    }
-                });
-            }
-        });
-    }
-
-    function obrirModalBaixNova() {
-        cartaBaixEnEdicio = null; document.getElementById('btn-guardar-baix').innerHTML = "✅ Afegir a Partitura";
-        netejarModalBaix(); document.getElementById('modalBaix').style.display = 'flex';
-    }
-
-    function editarBaix(item) {
-        cartaBaixEnEdicio = item; 
-        document.getElementById('baix-titol').value = item.dataset.titol || '';
-        document.getElementById('tab-G').value = item.dataset.g; document.getElementById('tab-D').value = item.dataset.d;
-        document.getElementById('tab-A').value = item.dataset.a; document.getElementById('tab-E').value = item.dataset.e;
-        actualitzarPalDesDeTab(); 
-        document.getElementById('btn-guardar-baix').innerHTML = "💾 Actualitzar Partitura";
-        document.getElementById('modalBaix').style.display = 'flex';
-    }
-
-    function netejarModalBaix() {
-        document.getElementById('baix-titol').value = '';
-        document.querySelectorAll('#fretboard-actiu .pal-trast').forEach(t => t.classList.remove('actiu'));
-        CORDES.forEach(c => document.getElementById(`tab-${c}`).value = "------------------------");
-    }
-
-    function tancarModalBaix() { tancarModal('modalBaix'); cartaBaixEnEdicio = null; }
-    function tancarSiForaBaix(e) { if (e.target.id === 'modalBaix') tancarModalBaix(); }
-
-    function generarBaix() {
-        const titol = document.getElementById('baix-titol').value || 'Baix';
-        const valG = document.getElementById('tab-G').value; const valD = document.getElementById('tab-D').value;
-        const valA = document.getElementById('tab-A').value; const valE = document.getElementById('tab-E').value;
-        const HTMLPal = document.getElementById('fretboard-actiu').innerHTML;
-        
-        if (cartaBaixEnEdicio) {
-            cartaBaixEnEdicio.dataset.g = valG; cartaBaixEnEdicio.dataset.d = valD;
-            cartaBaixEnEdicio.dataset.a = valA; cartaBaixEnEdicio.dataset.e = valE;
-            cartaBaixEnEdicio.dataset.titol = titol;
-            const t = cartaBaixEnEdicio.querySelector('.titol-item'); if(t) t.innerText = titol;
-            cartaBaixEnEdicio.querySelector('.pal-wrapper').innerHTML = HTMLPal;
-            cartaBaixEnEdicio.querySelector('.tab-linies').innerHTML = `<span style="color:#333">G|</span>${valG}\n<span style="color:#333">D|</span>${valD}\n<span style="color:#333">A|</span>${valA}\n<span style="color:#333">E|</span>${valE}`;
-        } else {
-            const palGenerat = document.createElement('div'); palGenerat.className = 'pal-wrapper'; palGenerat.innerHTML = HTMLPal;
-            const tabGenerada = document.createElement('div'); tabGenerada.className = 'tab-baix';
-            tabGenerada.innerHTML = `<div class="tab-esquerra">T<br>A<br>B</div><div class="tab-linies"><span style="color:#333">G|</span>${valG}\n<span style="color:#333">D|</span>${valD}\n<span style="color:#333">A|</span>${valA}\n<span style="color:#333">E|</span>${valE}</div>`;
-            const wrapperFinal = document.createElement('div'); wrapperFinal.style.width = "100%";
-            wrapperFinal.appendChild(palGenerat); wrapperFinal.appendChild(tabGenerada);
-            crearItem('baix', titol, wrapperFinal, {g: valG, d: valD, a: valA, e: valE});
-        }
-        tancarModalBaix();
-    }
-
-    // --- CREACIÓ GENERAL DE CARTES ---
     function crearItem(inst, text, contingut, dadesBaix = null, dadesBat = null, dadesGuit = null, dadesTeclat = null, dadesMelodia = null) {
-        const item = document.createElement('div'); 
-        item.className = 'acord-item';
+        const item = document.createElement('div'); item.className = 'acord-item';
         if(inst === 'baix') item.dataset.inst = 'baix';
         
         let htmlBotons = `<div class="botons-targeta no-print">`;
-        
-        if (dadesBaix) {
-            item.dataset.g = dadesBaix.g; item.dataset.d = dadesBaix.d; item.dataset.a = dadesBaix.a; item.dataset.e = dadesBaix.e; item.dataset.titol = text;
-            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBaix(this.closest('.acord-item'))" title="Editar">✏️</button>`;
-        }
-        if (dadesBat) {
-            item.classList.add('custom-bat'); item.dataset.batData = JSON.stringify(dadesBat); item.dataset.titol = text;
-            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBateriaCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`;
-        }
-        if (dadesGuit) {
-            item.classList.add('custom-guit'); item.dataset.guitData = JSON.stringify(dadesGuit); item.dataset.titol = text;
-            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarGuitarraCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`;
-        }
-        if (dadesTeclat) {
-            item.classList.add('custom-teclat'); item.dataset.teclatData = JSON.stringify(dadesTeclat); item.dataset.titol = text;
-            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarTeclatCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`;
-        }
-        if (dadesMelodia) {
-            item.classList.add('custom-melodia'); item.dataset.melodiaData = JSON.stringify(dadesMelodia); item.dataset.titol = text;
-            htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarMelodia(this.closest('.acord-item'))" title="Editar">✏️</button>`;
-        }
-        
+        if (dadesBaix) { item.dataset.g = dadesBaix.g; item.dataset.d = dadesBaix.d; item.dataset.a = dadesBaix.a; item.dataset.e = dadesBaix.e; item.dataset.titol = text; htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBaix(this.closest('.acord-item'))" title="Editar">✏️</button>`; }
+        if (dadesBat) { item.classList.add('custom-bat'); item.dataset.batData = JSON.stringify(dadesBat); item.dataset.titol = text; htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarBateriaCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`; }
+        if (dadesGuit) { item.classList.add('custom-guit'); item.dataset.guitData = JSON.stringify(dadesGuit); item.dataset.titol = text; htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarGuitarraCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`; }
+        if (dadesTeclat) { item.classList.add('custom-teclat'); item.dataset.teclatData = JSON.stringify(dadesTeclat); item.dataset.titol = text; htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarTeclatCustom(this.closest('.acord-item'))" title="Editar">✏️</button>`; }
+        if (dadesMelodia) { item.classList.add('custom-melodia'); item.dataset.melodiaData = JSON.stringify(dadesMelodia); item.dataset.titol = text; htmlBotons += `<button class="btn-targeta btn-editar" onclick="editarMelodia(this.closest('.acord-item'))" title="Editar">✏️</button>`; }
         htmlBotons += `<button class="btn-targeta btn-eliminar" onclick="eliminarItem(this.closest('.acord-item'))" title="Eliminar">X</button></div>`;
         
         let html = htmlBotons;
         if (text) html += `<h3 class="titol-item" style="margin-top:5px; margin-bottom:15px; width:100%; text-align:center;">${text}</h3>`;
         
-        item.innerHTML = html;
-        item.appendChild(contingut);
-        document.getElementById('sec-' + inst).appendChild(item);
-        actualitzarVisibilitat();
+        item.innerHTML = html; item.appendChild(contingut);
+        document.getElementById('sec-' + inst).appendChild(item); actualitzarVisibilitat();
     }
 
     function eliminarItem(item) {
-        const inst = item.closest('.seccio-embolcall')?.dataset.inst;
-        item.remove();
-        actualitzarVisibilitat();
-        actualitzarSeleccioBateria();
+        const inst = item.closest('.seccio-embolcall')?.dataset.inst; item.remove();
+        actualitzarVisibilitat(); actualitzarSeleccioBateria();
         if(inst === 'guitarra') actualitzarSeleccioCataleg('guitarra');
         if(inst === 'teclat') actualitzarSeleccioCataleg('teclat');
     }
 
     function imprimirAra() {
-        const teContingut = ['guitarra', 'teclat', 'baix', 'bateria'].some(id => 
-            document.getElementById('sec-' + id).children.length > 0
-        );
-        if (!teContingut) {
-            alert('Afegeix algun element abans d\'imprimir.');
-            return;
-        }
-        actualitzarTitol();
-        window.print();
+        const teContingut = ['guitarra', 'teclat', 'baix', 'bateria'].some(id => document.getElementById('sec-' + id).children.length > 0);
+        if (!teContingut) { alert('Afegeix algun element abans d\'imprimir.'); return; }
+        actualitzarTitol(); window.print();
     }
 
-    // Arrancada inicial
-    inicialitzarGuitarraCustom();
-    inicialitzarPal();
-    inicialitzarSequenciador();
+    // --- CODI EXISTENT ABREUJAT (GUITARRA, BATERIA, BAIX, CATÀLEGS) ---
+
+    // --- GUITARRA CUSTOM ---
+    let cartaGuitCustomEnEdicio=null; const fingerCycle=['','●','1','2','3','4','T']; const nutCycle=['','O','X'];
+    function inicialitzarGuitarraCustom() {
+        const overlay = document.getElementById('guit-click-overlay-editor'); overlay.innerHTML = '';
+        for(let r=0;r<5;r++){ for(let c=0;c<6;c++){ const z = document.createElement('div'); z.className='chord-click-zone'; z.dataset.str=5-c; z.dataset.fret=r+1; z.onclick=function(){ cycleFinger(this); }; overlay.appendChild(z); } }
+    }
+    function cycleFinger(el) { let current=el.dataset.finger||''; let nextVal=fingerCycle[(fingerCycle.indexOf(current)+1)%fingerCycle.length]; el.dataset.finger=nextVal; if(nextVal!==''){ Array.from(el.parentElement.children).forEach(s=>{if(s!==el&&s.dataset.str===el.dataset.str){s.dataset.finger='';s.innerHTML='';}}); } el.innerHTML=nextVal?`<div class="chord-dot">${nextVal==='●'?'':nextVal}</div>`:''; }
+    function toggleNut(el) { let nextVal=nutCycle[(nutCycle.indexOf(el.dataset.val||'')+1)%nutCycle.length]; el.dataset.val=nextVal; el.innerText=nextVal; }
+    function updateGuitFretStart() { const val=parseInt(document.getElementById('guit-fret-start').value)||1; const l=document.getElementById('guit-fret-label'); const f=document.getElementById('guit-fretboard'); if(val>1){l.innerText=val+"fr";f.classList.add('fret-offset');}else{l.innerText="";f.classList.remove('fret-offset');} }
+    function obrirModalGuitarraCustomNova() { cartaGuitCustomEnEdicio=null; document.getElementById('btn-guardar-guit-custom').innerHTML="✅ Afegir a Partitura"; document.getElementById('guit-custom-titol').value=''; document.getElementById('guit-fret-start').value=1; updateGuitFretStart(); document.querySelectorAll('#guit-editor-visual .nut-marker').forEach(el=>{el.dataset.val='';el.innerText='';}); document.querySelectorAll('#guit-editor-visual .chord-click-zone').forEach(el=>{el.dataset.finger='';el.innerHTML='';}); document.getElementById('modalGuitarraCustom').style.display='flex'; }
+    function tancarModalGuitarraCustom() { tancarModal('modalGuitarraCustom'); cartaGuitCustomEnEdicio=null; }
+    function tancarSiForaGuitCustom(e) { if(e.target.id==='modalGuitarraCustom') tancarModalGuitarraCustom(); }
+    function generarGuitarraCustom() {
+        const titol=document.getElementById('guit-custom-titol').value||'Acord'; const vClone=document.createElement('div'); vClone.className='chord-visual'; const tb=document.createElement('div'); tb.className='chord-title-box'; tb.innerText=titol; vClone.appendChild(tb);
+        const ev=document.getElementById('guit-editor-visual'); const nc=ev.querySelector('.chord-nut-markers').cloneNode(true); const gc=ev.querySelector('div[style*="display: flex"]').cloneNode(true); nc.querySelectorAll('.nut-marker').forEach(el=>el.removeAttribute('onclick')); gc.querySelectorAll('.chord-click-zone').forEach(el=>el.removeAttribute('onclick')); vClone.appendChild(nc); vClone.appendChild(gc);
+        const data={fretStart:document.getElementById('guit-fret-start').value, nuts:Array.from(document.querySelectorAll('#guit-editor-visual .nut-marker')).map(n=>n.dataset.val||''), dots:Array.from(document.querySelectorAll('#guit-editor-visual .chord-click-zone')).map(z=>z.dataset.finger||'')};
+        if(cartaGuitCustomEnEdicio){ cartaGuitCustomEnEdicio.dataset.guitData=JSON.stringify(data); const te=cartaGuitCustomEnEdicio.querySelector('.chord-title-box'); if(te)te.innerText=titol; const c=cartaGuitCustomEnEdicio.querySelector('.chord-editor-wrapper'); c.innerHTML=''; c.appendChild(vClone); }
+        else{ const w=document.createElement('div'); w.className="chord-editor-wrapper"; w.appendChild(vClone); crearItem('guitarra',null,w,null,null,data); } tancarModalGuitarraCustom();
+    }
+    function editarGuitarraCustom(item) {
+        cartaGuitCustomEnEdicio=item; const data=JSON.parse(item.dataset.guitData); document.getElementById('guit-custom-titol').value=item.querySelector('.chord-title-box')?.innerText||'Acord'; document.getElementById('guit-fret-start').value=data.fretStart; updateGuitFretStart();
+        const nuts=document.querySelectorAll('#guit-editor-visual .nut-marker'); data.nuts.forEach((v,i)=>{nuts[i].dataset.val=v;nuts[i].innerText=v;});
+        const dots=document.querySelectorAll('#guit-click-overlay-editor .chord-click-zone'); data.dots.forEach((v,i)=>{dots[i].dataset.finger=v;dots[i].innerHTML=v?`<div class="chord-dot">${v==='●'?'':v}</div>`:'';});
+        document.getElementById('btn-guardar-guit-custom').innerHTML="💾 Actualitzar"; document.getElementById('modalGuitarraCustom').style.display='flex';
+    }
+
+    // --- BATERIA ---
+    function carregarBateria(){ const c=document.getElementById('galeria-bateria'); if(c.children.length>0)return; for(let i=1;i<=42;i++){ const d=document.createElement('div'); d.className='bateria-opcio'; const a=`img/dors patrons de bateria ${i}.png`; d.innerHTML=`<img src="${a}" onerror="this.parentElement.style.display='none'"><div>Patró ${i}</div>`; d.onclick=()=>{ const ext=Array.from(document.querySelectorAll('#sec-bateria .acord-item:not(.custom-bat) img')).find(img=>img.getAttribute('src')===a); if(ext)ext.closest('.acord-item').remove(); else{const img=document.createElement('img');img.setAttribute('src',a);crearItem('bateria',`Patró ${i}`,img);} actualitzarVisibilitat(); actualitzarSeleccioBateria(); }; c.appendChild(d); } }
+    function actualitzarSeleccioBateria(){ const af=Array.from(document.querySelectorAll('#sec-bateria .acord-item:not(.custom-bat) img')).map(img=>img.getAttribute('src')); document.querySelectorAll('.bateria-opcio').forEach(div=>{ if(af.includes(div.querySelector('img').getAttribute('src')))div.classList.add('seleccionat'); else div.classList.remove('seleccionat'); }); }
+
+    let drumPattern={HH:Array(16).fill(false),SN:Array(16).fill(false),BD:Array(16).fill(false)}, drumSynths={}, drumSeq=null, isPlayingBat=false, isBatInit=false;
+    function syncDrumPattern(){ for(let i=0;i<16;i++){ drumPattern.HH[i]=!!document.querySelector(`#sequencer-editor .drum-dot.hh[data-step="${i}"]`)?.classList.contains('actiu'); drumPattern.SN[i]=!!document.querySelector(`#sequencer-editor .drum-dot.sn[data-step="${i}"]`)?.classList.contains('actiu'); drumPattern.BD[i]=!!document.querySelector(`#sequencer-editor .drum-dot.bd[data-step="${i}"]`)?.classList.contains('actiu'); } }
+    function initAudioBat(){ if(isBatInit)return; drumSynths.BD=new Tone.MembraneSynth().toDestination(); drumSynths.BD.volume.value=2; drumSynths.SN=new Tone.NoiseSynth({noise:{type:"white"},envelope:{attack:0.005,decay:0.2,sustain:0}}).toDestination(); drumSynths.SN.volume.value=-5; drumSynths.HH=new Tone.MetalSynth({frequency:250,envelope:{attack:0.001,decay:0.05,release:0.01},harmonicity:5.1,modulationIndex:32,resonance:4000,octaves:1.5}).toDestination(); drumSynths.HH.volume.value=-5; isBatInit=true; }
+    function togglePlayBateria(){ Tone.start().then(()=>{ initAudioBat(); Tone.Transport.bpm.value=document.getElementById('tempo-slider').value; const b=document.getElementById('btn-play-bat'); if(isPlayingBat){ Tone.Transport.stop(); if(drumSeq){drumSeq.stop();drumSeq.dispose();drumSeq=null;} b.innerHTML="▶️ Escoltar Audio"; b.classList.remove('playing'); document.querySelectorAll('#sequencer-editor .drum-col').forEach(c=>c.classList.remove('playing')); isPlayingBat=false; }else{ syncDrumPattern(); if(drumSeq)drumSeq.dispose(); drumSeq=new Tone.Sequence((time,step)=>{ if(drumPattern.HH[step])drumSynths.HH.triggerAttackRelease("32n",time); if(drumPattern.SN[step])drumSynths.SN.triggerAttackRelease("16n",time); if(drumPattern.BD[step])drumSynths.BD.triggerAttackRelease("C1","8n",time); Tone.Draw.schedule(()=>{ document.querySelectorAll('#sequencer-editor .drum-col').forEach(c=>c.classList.remove('playing')); document.querySelector(`#sequencer-editor .drum-col[data-step="${step}"]`)?.classList.add('playing'); },time); },[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"16n"); Tone.Transport.start(); drumSeq.start(0); b.innerHTML="⏹️ Aturar Audio"; b.classList.add('playing'); isPlayingBat=true; } }).catch(()=>{alert("Fes clic altre cop, encenent l'àudio.");}); }
+    function updateTempo(v){ document.getElementById('tempo-valor').innerText=v+" BPM"; Tone.Transport.bpm.value=v; }
+    function aturarAudioForcat(){ if(isPlayingBat)togglePlayBateria(); }
+    function inicialitzarSequenciador(){ const e=document.getElementById('sequencer-editor'); let h=`<div class="drum-grid">`; for(let i=0;i<16;i++){ let l='';if(i===0)l='1';if(i===4)l='2';if(i===8)l='3';if(i===12)l='4'; let exc=(i===3||i===7||i===11)?'beat-end':'', sz=(i%2===0)?'large-step':'small-step', ln=''; if(i%4===0)ln=`<div class="drum-vertical-line fort"></div>`;else if(i%4===2)ln=`<div class="drum-vertical-line fluix"></div>`; h+=`<div class="drum-col ${exc}" data-step="${i}"><div class="drum-label">${l}</div><div class="drum-line-container">${ln}<div class="drum-dot-wrap"><div class="drum-dot hh clicable ${sz}" data-inst="HH" data-step="${i}" onclick="this.classList.toggle('actiu');syncDrumPattern()"></div></div><div class="drum-dot-wrap"><div class="drum-dot sn clicable ${sz}" data-inst="SN" data-step="${i}" onclick="this.classList.toggle('actiu');syncDrumPattern()"></div></div><div class="drum-dot-wrap"><div class="drum-dot bd clicable ${sz}" data-inst="BD" data-step="${i}" onclick="this.classList.toggle('actiu');syncDrumPattern()"></div></div></div></div>`; } e.innerHTML=h+"</div>"; }
+    let cartaBatCustomEnEdicio=null;
+    function obrirModalBateriaCustomNova(){ cartaBatCustomEnEdicio=null; document.getElementById('btn-guardar-bat-custom').innerHTML="✅ Afegir a Partitura"; document.getElementById('bat-custom-titol').value=''; document.querySelectorAll('#sequencer-editor .drum-dot').forEach(s=>s.classList.remove('actiu')); syncDrumPattern(); document.getElementById('modalBateriaCustom').style.display='flex'; }
+    function tancarModalBateriaCustom(){ aturarAudioForcat(); tancarModal('modalBateriaCustom'); cartaBatCustomEnEdicio=null; }
+    function tancarSiForaBatCustom(e){ if(e.target.id==='modalBateriaCustom')tancarModalBateriaCustom(); }
+    function generarBateriaCustom(){ aturarAudioForcat(); const t=document.getElementById('bat-custom-titol').value||'Patró Manual'; const c=document.createElement('div'); c.innerHTML=document.getElementById('sequencer-editor').innerHTML; c.querySelectorAll('.drum-dot').forEach(s=>{s.removeAttribute('onclick');s.classList.remove('clicable');}); c.querySelectorAll('.drum-col').forEach(co=>co.classList.remove('playing')); const ast=[]; document.querySelectorAll('#sequencer-editor .drum-dot.actiu').forEach(el=>ast.push({inst:el.dataset.inst,step:el.dataset.step})); if(cartaBatCustomEnEdicio){ cartaBatCustomEnEdicio.dataset.batData=JSON.stringify(ast); cartaBatCustomEnEdicio.dataset.titol=t; const ti=cartaBatCustomEnEdicio.querySelector('.titol-item'); if(ti)ti.innerText=t; cartaBatCustomEnEdicio.querySelector('.contingut-custom').innerHTML=''; cartaBatCustomEnEdicio.querySelector('.contingut-custom').appendChild(c); }else{ const w=document.createElement('div');w.className="contingut-custom";w.style.width="100%";w.appendChild(c);crearItem('bateria',t,w,null,ast,null); } tancarModalBateriaCustom(); }
+    function editarBateriaCustom(item){ cartaBatCustomEnEdicio=item; document.getElementById('bat-custom-titol').value=item.dataset.titol||''; document.querySelectorAll('#sequencer-editor .drum-dot').forEach(s=>s.classList.remove('actiu')); JSON.parse(item.dataset.batData).forEach(d=>{ document.querySelector(`#sequencer-editor .drum-dot[data-inst="${d.inst}"][data-step="${d.step}"]`)?.classList.add('actiu'); }); syncDrumPattern(); document.getElementById('btn-guardar-bat-custom').innerHTML="💾 Actualitzar Partitura"; document.getElementById('modalBateriaCustom').style.display='flex'; }
+
+    // --- BAIX ---
+    const NUM_TRASTS=15, CORDES=['G','D','A','E']; let cartaBaixEnEdicio=null;
+    function inicialitzarPal(){ const tn=document.getElementById('numeros-trasts'), m=document.getElementById('marques-pal'), cc=document.getElementById('cordes-contenidor'); for(let i=1;i<=NUM_TRASTS;i++){ tn.innerHTML+=`<div class="pal-num">${i}</div>`; let mh=`<div class="pal-marca-espai">`; if([3,5,7,9,15].includes(i))mh+=`<div class="pal-punt-marca"></div>`; else if(i===12)mh=`<div class="pal-marca-espai doble"><div class="pal-punt-marca"></div><div class="pal-punt-marca"></div>`; mh+=`</div>`; m.innerHTML+=mh; } CORDES.forEach(c=>{ let f=`<div class="pal-corda corda-${c.toLowerCase()}"><div class="pal-nom-corda">${c}</div><div class="pal-linia"></div><div class="pal-trast cejilla" data-corda="${c}" data-trast="0" onclick="clicTrast(this)"><div class="pal-punt-nota">0</div></div>`; for(let i=1;i<=NUM_TRASTS;i++) f+=`<div class="pal-trast" data-corda="${c}" data-trast="${i}" onclick="clicTrast(this)"><div class="pal-punt-nota">${i}</div></div>`; f+=`</div>`; cc.innerHTML+=f; }); }
+    function clicTrast(el){ const c=el.getAttribute('data-corda'), t=el.getAttribute('data-trast'); let ml=0; for(let c of CORDES) ml=Math.max(ml, document.getElementById(`tab-${c}`).value.replace(/-+$/,'').length); if(ml<2)ml=2; for(let co of CORDES){ let i=document.getElementById(`tab-${co}`), tN=i.value.replace(/-+$/,''); while(tN.length<ml)tN+='-'; tN+='--'; tN+=(co===c)?t:'-'.repeat(t.toString().length); tN+='--'; i.value=tN+"------------------------"; } actualitzarPalDesDeTab(); }
+    function actualitzarPalDesDeTab(){ document.querySelectorAll('#fretboard-actiu .pal-trast').forEach(t=>t.classList.remove('actiu')); CORDES.forEach(c=>{ const num=document.getElementById(`tab-${c}`).value.match(/\d+/g); if(num) [...new Set(num)].forEach(n=>{ if(n>=0&&n<=NUM_TRASTS) document.querySelector(`#fretboard-actiu .pal-trast[data-corda="${c}"][data-trast="${n}"]`)?.classList.add('actiu'); }); }); }
+    function obrirModalBaixNova(){ cartaBaixEnEdicio=null; document.getElementById('btn-guardar-baix').innerHTML="✅ Afegir a Partitura"; document.getElementById('baix-titol').value=''; document.querySelectorAll('#fretboard-actiu .pal-trast').forEach(t=>t.classList.remove('actiu')); CORDES.forEach(c=>document.getElementById(`tab-${c}`).value="------------------------"); document.getElementById('modalBaix').style.display='flex'; }
+    function editarBaix(item){ cartaBaixEnEdicio=item; document.getElementById('baix-titol').value=item.dataset.titol||''; CORDES.forEach(c=>document.getElementById(`tab-${c}`).value=item.dataset[c.toLowerCase()]); actualitzarPalDesDeTab(); document.getElementById('btn-guardar-baix').innerHTML="💾 Actualitzar"; document.getElementById('modalBaix').style.display='flex'; }
+    function tancarModalBaix(){ tancarModal('modalBaix'); cartaBaixEnEdicio=null; }
+    function tancarSiForaBaix(e){ if(e.target.id==='modalBaix')tancarModalBaix(); }
+    function generarBaix(){ const t=document.getElementById('baix-titol').value||'Baix', vG=document.getElementById('tab-G').value, vD=document.getElementById('tab-D').value, vA=document.getElementById('tab-A').value, vE=document.getElementById('tab-E').value, ht=document.getElementById('fretboard-actiu').innerHTML; if(cartaBaixEnEdicio){ cartaBaixEnEdicio.dataset.g=vG; cartaBaixEnEdicio.dataset.d=vD; cartaBaixEnEdicio.dataset.a=vA; cartaBaixEnEdicio.dataset.e=vE; cartaBaixEnEdicio.dataset.titol=t; const ti=cartaBaixEnEdicio.querySelector('.titol-item'); if(ti)ti.innerText=t; cartaBaixEnEdicio.querySelector('.pal-wrapper').innerHTML=ht; cartaBaixEnEdicio.querySelector('.tab-linies').innerHTML=`<span style="color:#333">G|</span>${vG}\n<span style="color:#333">D|</span>${vD}\n<span style="color:#333">A|</span>${vA}\n<span style="color:#333">E|</span>${vE}`; }else{ const pw=document.createElement('div');pw.className='pal-wrapper';pw.innerHTML=ht; const tb=document.createElement('div');tb.className='tab-baix';tb.innerHTML=`<div class="tab-esquerra">T<br>A<br>B</div><div class="tab-linies"><span style="color:#333">G|</span>${vG}\n<span style="color:#333">D|</span>${vD}\n<span style="color:#333">A|</span>${vA}\n<span style="color:#333">E|</span>${vE}</div>`; const wf=document.createElement('div');wf.style.width="100%";wf.appendChild(pw);wf.appendChild(tb); crearItem('baix',t,wf,{g:vG,d:vD,a:vA,e:vE}); } tancarModalBaix(); }
+
+    // --- CATÀLEGS TECLAT I GUITARRA ---
+    const ACORDS_GUITARRA=[{val:'C',nom:'C'},{val:'Csostingut o Dbemoll',nom:'C#/Db'},{val:'D',nom:'D'},{val:'E',nom:'E'},{val:'F',nom:'F'},{val:'G',nom:'G'},{val:'A',nom:'A'},{val:'B',nom:'B'}];
+    const ACORDS_TECLAT=[{val:'TC',nom:'C'},{val:'TD',nom:'D'},{val:'TE',nom:'E'},{val:'TF',nom:'F'},{val:'TG',nom:'G'},{val:'TA',nom:'A'},{val:'TB',nom:'B'}];
+    function carregarCatalegGuitarra(){ const c=document.getElementById('galeria-guitarra'); if(c.children.length>0){actualitzarSeleccioCataleg('guitarra');return;} ACORDS_GUITARRA.forEach(a=>{ const d=document.createElement('div'); d.className='cataleg-opcio'; d.dataset.val=a.val; d.innerHTML=`<img src="img/${a.val}.png" onerror="this.style.display='none'"><div class="cataleg-nom">${a.nom}</div>`; d.onclick=()=>toggleCatalegItem('guitarra',a.val,a.nom,d); c.appendChild(d); }); actualitzarSeleccioCataleg('guitarra'); }
+    function carregarCatalegTeclat(){ const c=document.getElementById('galeria-teclat'); if(c.children.length>0){actualitzarSeleccioCataleg('teclat');return;} ACORDS_TECLAT.forEach(a=>{ const d=document.createElement('div'); d.className='cataleg-opcio'; d.dataset.val=a.val; const f=a.val.startsWith('T')?a.val.substring(1):a.val; d.innerHTML=`<img src="img/T${f}.png" onerror="this.style.background='#f0f0f0';this.style.display='none'"><div class="cataleg-nom">${a.nom}</div>`; d.onclick=()=>toggleCatalegItem('teclat',a.val,a.nom,d); c.appendChild(d); }); actualitzarSeleccioCataleg('teclat'); }
+    function toggleCatalegItem(inst,v,n,div){ const fitxer=inst==='teclat'?`T${v.replace('T','')}`:v; const ex=Array.from(document.querySelectorAll(`#sec-${inst} .acord-item:not(.custom-guit):not(.custom-teclat) img`)).find(i=>i.getAttribute('data-val')===v); if(ex)ex.closest('.acord-item').remove(); else{ const img=document.createElement('img'); img.src=`img/${fitxer}.png`; img.setAttribute('data-val',v); crearItem(inst,n,img); } actualitzarVisibilitat(); actualitzarSeleccioCataleg(inst); }
+    function actualitzarSeleccioCataleg(inst){ const p=inst==='teclat'?'galeria-teclat':'galeria-guitarra'; const af=Array.from(document.querySelectorAll(`#sec-${inst} .acord-item:not(.custom-guit):not(.custom-teclat) img`)).map(i=>i.getAttribute('data-val')); document.querySelectorAll(`#${p} .cataleg-opcio`).forEach(d=>{ if(af.includes(d.dataset.val))d.classList.add('seleccionat'); else d.classList.remove('seleccionat'); }); }
+
+    // --- TECLAT CUSTOM (ACORDS) ---
+    const PIANO_KEYS_DEF=[{nota:'C',black:false},{nota:'C#',black:true},{nota:'D',black:false},{nota:'D#',black:true},{nota:'E',black:false},{nota:'F',black:false},{nota:'F#',black:true},{nota:'G',black:false},{nota:'G#',black:true},{nota:'A',black:false},{nota:'A#',black:true},{nota:'B',black:false}]; let cartaTeclatCustomEnEdicio=null;
+    function construirPianoEditor(cid, oct=[4], fn){ const c=document.getElementById(cid); c.innerHTML=''; c.style.position='relative'; let ak=[]; oct.forEach(o=>PIANO_KEYS_DEF.forEach(k=>ak.push({...k,oct:o,id:k.nota+o}))); const ws=ak.filter(k=>!k.black); ws.forEach(k=>{ const e=document.createElement('div');e.className='pkey-white';e.dataset.nota=k.id;e.innerHTML=`<span class="pkey-label">${k.nota}${k.oct}</span>`;e.onclick=()=>fn(e);c.appendChild(e); }); c.style.width=(ws.length*36)+'px'; c.style.height='120px'; let wi=0; oct.forEach(o=>{ const os=wi; PIANO_KEYS_DEF.filter(k=>!k.black).forEach(()=>{}); const bm={'C#':0,'D#':1,'F#':3,'G#':4,'A#':5}; PIANO_KEYS_DEF.forEach(k=>{ if(!k.black){wi++;return;} const e=document.createElement('div');e.className='pkey-black';e.dataset.nota=k.nota+o;e.style.left=((os+bm[k.nota])*36+36*0.65)+'px';e.onclick=()=>fn(e);c.appendChild(e); }); }); }
+    function obrirModalTeclatCustomNou(){ cartaTeclatCustomEnEdicio=null; document.getElementById('btn-guardar-teclat-custom').innerHTML='✅ Afegir a Partitura'; document.getElementById('teclat-custom-titol').value=''; construirPianoEditor('piano-editor-keys',[3,4,5],el=>el.classList.toggle('actiu')); document.getElementById('modalTeclatCustom').style.display='flex'; }
+    function tancarModalTeclatCustom(){ tancarModal('modalTeclatCustom'); cartaTeclatCustomEnEdicio=null; }
+    function tancarSiForaTeclatCustom(e){ if(e.target.id==='modalTeclatCustom')tancarModalTeclatCustom(); }
+    function generarTeclatCustom(){ const t=document.getElementById('teclat-custom-titol').value||'Acord', na=Array.from(document.querySelectorAll('#piano-editor-keys .actiu')).map(e=>e.dataset.nota), dc={titol:t,notes:na}; if(cartaTeclatCustomEnEdicio){ cartaTeclatCustomEnEdicio.dataset.teclatData=JSON.stringify(dc); const ti=cartaTeclatCustomEnEdicio.querySelector('.titol-item'); if(ti)ti.innerText=t; cartaTeclatCustomEnEdicio.querySelector('.piano-diagram')?.replaceWith(crearDiagramaTeclat(na)); }else{ crearItem('teclat',t,crearDiagramaTeclat(na),null,null,null,dc); } tancarModalTeclatCustom(); }
+    function editarTeclatCustom(i){ cartaTeclatCustomEnEdicio=i; const d=JSON.parse(i.dataset.teclatData); document.getElementById('teclat-custom-titol').value=d.titol||''; construirPianoEditor('piano-editor-keys',[3,4,5],el=>el.classList.toggle('actiu')); d.notes.forEach(n=>document.querySelector(`#piano-editor-keys [data-nota="${n}"]`)?.classList.add('actiu')); document.getElementById('btn-guardar-teclat-custom').innerHTML='💾 Actualitzar'; document.getElementById('modalTeclatCustom').style.display='flex'; }
+    function crearDiagramaTeclat(n){ const w=document.createElement('div'); w.className='piano-diagram'; const r=document.createElement('div'); r.className='piano-diagram-keys'; r.style.position='relative'; let ws=[]; [3,4].forEach(o=>PIANO_KEYS_DEF.filter(k=>!k.black).forEach(k=>ws.push({...k,oct:o,id:k.nota+o}))); r.style.width=(ws.length*22)+'px'; r.style.height='70px'; ws.forEach(k=>{ const e=document.createElement('div');e.className='pd-white'+(n.includes(k.id)?' actiu':'');e.innerHTML=`<span class="pd-label">${k.nota}</span>`;r.appendChild(e); }); let wi=0; [3,4].forEach(o=>{ const st=wi; PIANO_KEYS_DEF.forEach(k=>{ if(!k.black){wi++;return;} const e=document.createElement('div');e.className='pd-black'+(n.includes(k.nota+o)?' actiu':'');e.style.left=((st+{'C#':0,'D#':1,'F#':3,'G#':4,'A#':5}[k.nota])*22+22*0.65)+'px';r.appendChild(e); }); }); w.appendChild(r); return w; }
+
+    inicialitzarGuitarraCustom(); inicialitzarPal(); inicialitzarSequenciador();
 
     // =========================================================
-    //  CATÀLEG GUITARRA I TECLAT
+    //  MELODIA TECLAT: PIANO ROLL REDIMENSIONABLE (DRAG)
     // =========================================================
-    const ACORDS_GUITARRA = [
-        {val:'C', nom:'C'},{val:'Csostingut o Dbemoll', nom:'C#/Db'},{val:'D', nom:'D'},{val:'Dsostingut o Ebemoll', nom:'D#/Eb'},
-        {val:'E', nom:'E'},{val:'F', nom:'F'},{val:'Fsostingut o Gbemoll', nom:'F#/Gb'},{val:'G', nom:'G'},
-        {val:'Gsostingut o Abemoll', nom:'G#/Ab'},{val:'A', nom:'A'},{val:'Asostingut o Bbemoll', nom:'A#/Bb'},{val:'B', nom:'B'},
-        {val:'C-', nom:'Cm'},{val:'Csostingut- o Dbemoll-', nom:'C#m'},{val:'D-', nom:'Dm'},{val:'Dsostingut- o Ebemoll-', nom:'D#m'},
-        {val:'E-', nom:'Em'},{val:'F-', nom:'Fm'},{val:'Fsostingut- o Gbemoll-', nom:'F#m'},{val:'G-', nom:'Gm'},
-        {val:'Gsostingut- o Abemoll-', nom:'G#m'},{val:'A-', nom:'Am'},{val:'Asostingut- o Bbemoll-', nom:'A#m'},{val:'B-', nom:'Bm'},
-        {val:'A5', nom:'A5'},{val:'D5', nom:'D5'},{val:'E5', nom:'E5'}
-    ];
-    const ACORDS_TECLAT = [
-        {val:'TC', nom:'C'},{val:'TDb', nom:'Db'},{val:'TD', nom:'D'},{val:'TEb', nom:'Eb'},
-        {val:'TE', nom:'E'},{val:'TF', nom:'F'},{val:'TGb', nom:'F#/Gb'},{val:'TG', nom:'G'},
-        {val:'TAb', nom:'Ab'},{val:'TA', nom:'A'},{val:'TBb', nom:'Bb'},{val:'TB', nom:'B'},
-        {val:'TCm', nom:'Cm'},{val:'TDbm', nom:'Dbm'},{val:'TDm', nom:'Dm'},{val:'TEbm', nom:'Ebm'},
-        {val:'TEm', nom:'Em'},{val:'TFm', nom:'Fm'},{val:'TGbm', nom:'F#m'},{val:'TGm', nom:'Gm'},
-        {val:'TAbm', nom:'Abm'},{val:'TAm', nom:'Am'},{val:'TBbm', nom:'Bbm'},{val:'TBm', nom:'Bm'}
-    ];
-
-    function carregarCatalegGuitarra() {
-        const cont = document.getElementById('galeria-guitarra');
-        if (cont.children.length > 0) { actualitzarSeleccioCataleg('guitarra'); return; }
-        ACORDS_GUITARRA.forEach(acord => {
-            const d = document.createElement('div');
-            d.className = 'cataleg-opcio'; d.dataset.val = acord.val;
-            d.innerHTML = `<img src="img/${acord.val}.png" onerror="this.style.display='none'"><div class="cataleg-nom">${acord.nom}</div>`;
-            d.onclick = () => toggleCatalegItem('guitarra', acord.val, acord.nom, d);
-            cont.appendChild(d);
-        });
-        actualitzarSeleccioCataleg('guitarra');
-    }
-
-    function carregarCatalegTeclat() {
-        const cont = document.getElementById('galeria-teclat');
-        if (cont.children.length > 0) { actualitzarSeleccioCataleg('teclat'); return; }
-        ACORDS_TECLAT.forEach(acord => {
-            const d = document.createElement('div');
-            d.className = 'cataleg-opcio'; d.dataset.val = acord.val;
-            const fitxer = acord.val.startsWith('T') ? acord.val.substring(1) : acord.val;
-            d.innerHTML = `<img src="img/T${fitxer}.png" onerror="this.style.background='#f0f0f0';this.style.display='none'"><div class="cataleg-nom">${acord.nom}</div>`;
-            d.onclick = () => toggleCatalegItem('teclat', acord.val, acord.nom, d);
-            cont.appendChild(d);
-        });
-        actualitzarSeleccioCataleg('teclat');
-    }
-
-    function toggleCatalegItem(inst, val, nom, div) {
-        const fitxerBase = inst === 'teclat' ? val : val;
-        const fitxer = inst === 'teclat' ? `T${val.substring(1)}` : val;
-        const imatgesAfegides = Array.from(document.querySelectorAll(`#sec-${inst} .acord-item:not(.custom-guit):not(.custom-teclat) img`));
-        const existent = imatgesAfegides.find(img => img.getAttribute('data-val') === val);
-        if (existent) {
-            existent.closest('.acord-item').remove();
-        } else {
-            const img = document.createElement('img');
-            img.src = `img/${inst === 'teclat' ? 'T' + val.replace('T','') : val}.png`;
-            img.setAttribute('data-val', val);
-            crearItem(inst, nom, img);
-        }
-        actualitzarVisibilitat();
-        actualitzarSeleccioCataleg(inst);
-    }
-
-    function actualitzarSeleccioCataleg(inst) {
-        const prefix = inst === 'teclat' ? 'galeria-teclat' : 'galeria-guitarra';
-        const imatgesAfegides = Array.from(document.querySelectorAll(`#sec-${inst} .acord-item:not(.custom-guit):not(.custom-teclat) img`)).map(img => img.getAttribute('data-val'));
-        document.querySelectorAll(`#${prefix} .cataleg-opcio`).forEach(div => {
-            if (imatgesAfegides.includes(div.dataset.val)) div.classList.add('seleccionat');
-            else div.classList.remove('seleccionat');
-        });
-    }
-
-    // =========================================================
-    //  EDITOR DE TECLAT CUSTOM (ACORDS)
-    // =========================================================
-
-    const PIANO_KEYS_DEF = [
-        {nota:'C', black:false},{nota:'C#', black:true},
-        {nota:'D', black:false},{nota:'D#', black:true},
-        {nota:'E', black:false},{nota:'F', black:false},
-        {nota:'F#', black:true},{nota:'G', black:false},
-        {nota:'G#', black:true},{nota:'A', black:false},
-        {nota:'A#', black:true},{nota:'B', black:false}
-    ];
-
-    let cartaTeclatCustomEnEdicio = null;
-
-    function construirPianoEditor(containerId, octaves = [4], onClickFn) {
-        const cont = document.getElementById(containerId);
-        cont.innerHTML = '';
-        cont.style.position = 'relative';
-
-        let whiteCount = 0;
-        const allKeys = [];
-
-        octaves.forEach(oct => {
-            PIANO_KEYS_DEF.forEach(k => {
-                allKeys.push({...k, oct, id: k.nota + oct});
-            });
-        });
-
-        const whites = allKeys.filter(k => !k.black);
-        whites.forEach((k, i) => {
-            const el = document.createElement('div');
-            el.className = 'pkey-white';
-            el.dataset.nota = k.id;
-            el.innerHTML = `<span class="pkey-label">${k.nota}${k.oct}</span>`;
-            el.onclick = () => onClickFn(el);
-            cont.appendChild(el);
-        });
-
-        const ww = 36;
-        cont.style.width = (whites.length * ww) + 'px';
-        cont.style.height = '120px';
-
-        let wIdx = 0;
-        octaves.forEach(oct => {
-            const octWhiteStart = wIdx;
-            PIANO_KEYS_DEF.filter(k => !k.black).forEach(() => {}); 
-            const blackMap = {'C#':0,'D#':1,'F#':3,'G#':4,'A#':5};
-
-            PIANO_KEYS_DEF.forEach(k => {
-                if (!k.black) { wIdx++; return; }
-                const localWhiteIdx = blackMap[k.nota];
-                const absIdx = octWhiteStart + localWhiteIdx;
-                const el = document.createElement('div');
-                el.className = 'pkey-black';
-                el.dataset.nota = k.nota + oct;
-                el.style.left = (absIdx * ww + ww * 0.65) + 'px';
-                el.style.width = '22px';
-                el.onclick = () => onClickFn(el);
-                cont.appendChild(el);
-            });
-        });
-    }
-
-    function togglePianoKey(el) {
-        el.classList.toggle('actiu');
-    }
-
-    function obrirModalTeclatCustomNou() {
-        cartaTeclatCustomEnEdicio = null;
-        document.getElementById('btn-guardar-teclat-custom').innerHTML = '✅ Afegir a Partitura';
-        netejarModalTeclatCustom();
-        construirPianoEditor('piano-editor-keys', [3,4,5], togglePianoKey);
-        document.getElementById('modalTeclatCustom').style.display = 'flex';
-    }
-
-    function netejarModalTeclatCustom() {
-        document.getElementById('teclat-custom-titol').value = '';
-        document.querySelectorAll('#piano-editor-keys .pkey-white, #piano-editor-keys .pkey-black').forEach(k => k.classList.remove('actiu'));
-    }
-
-    function tancarModalTeclatCustom() { tancarModal('modalTeclatCustom'); cartaTeclatCustomEnEdicio = null; }
-    function tancarSiForaTeclatCustom(e) { if(e.target.id === 'modalTeclatCustom') tancarModalTeclatCustom(); }
-
-    function generarTeclatCustom() {
-        const titol = document.getElementById('teclat-custom-titol').value || 'Acord';
-        const notesActives = Array.from(document.querySelectorAll('#piano-editor-keys .actiu')).map(el => el.dataset.nota);
-
-        const dadesCustom = { titol, notes: notesActives };
-
-        if (cartaTeclatCustomEnEdicio) {
-            cartaTeclatCustomEnEdicio.dataset.teclatData = JSON.stringify(dadesCustom);
-            const t = cartaTeclatCustomEnEdicio.querySelector('.titol-item'); if(t) t.innerText = titol;
-            const diag = cartaTeclatCustomEnEdicio.querySelector('.piano-diagram');
-            if(diag) diag.replaceWith(crearDiagramaTeclat(notesActives));
-        } else {
-            const diag = crearDiagramaTeclat(notesActives);
-            crearItem('teclat', titol, diag, null, null, null, dadesCustom);
-        }
-        tancarModalTeclatCustom();
-    }
-
-    function editarTeclatCustom(item) {
-        cartaTeclatCustomEnEdicio = item;
-        const dades = JSON.parse(item.dataset.teclatData);
-        document.getElementById('teclat-custom-titol').value = dades.titol || '';
-        construirPianoEditor('piano-editor-keys', [3,4,5], togglePianoKey);
-        dades.notes.forEach(nota => {
-            const el = document.querySelector(`#piano-editor-keys [data-nota="${nota}"]`);
-            if(el) el.classList.add('actiu');
-        });
-        document.getElementById('btn-guardar-teclat-custom').innerHTML = '💾 Actualitzar';
-        document.getElementById('modalTeclatCustom').style.display = 'flex';
-    }
-
-    function crearDiagramaTeclat(notes) {
-        const octaves = [3,4];
-        const ww = 22; 
-        const wrap = document.createElement('div');
-        wrap.className = 'piano-diagram';
-        const row = document.createElement('div');
-        row.className = 'piano-diagram-keys';
-        row.style.position = 'relative';
-
-        let whites = [];
-        octaves.forEach(oct => {
-            PIANO_KEYS_DEF.filter(k => !k.black).forEach(k => whites.push({...k, oct, id: k.nota+oct}));
-        });
-        row.style.width = (whites.length * ww) + 'px';
-        row.style.height = '70px';
-
-        whites.forEach((k, i) => {
-            const el = document.createElement('div');
-            el.className = 'pd-white' + (notes.includes(k.id) ? ' actiu' : '');
-            el.style.width = ww + 'px';
-            el.innerHTML = `<span class="pd-label">${k.nota}</span>`;
-            row.appendChild(el);
-        });
-
-        const blackMap = {'C#':0,'D#':1,'F#':3,'G#':4,'A#':5};
-        let wIdx = 0;
-        octaves.forEach(oct => {
-            const start = wIdx;
-            PIANO_KEYS_DEF.forEach(k => {
-                if(!k.black){ wIdx++; return; }
-                const li = blackMap[k.nota];
-                const el = document.createElement('div');
-                el.className = 'pd-black' + (notes.includes(k.nota+oct) ? ' actiu' : '');
-                el.style.position = 'absolute';
-                el.style.left = ((start + li) * ww + ww * 0.65) + 'px';
-                el.style.width = '14px'; el.style.height = '42px'; el.style.top = '3px';
-                row.appendChild(el);
-            });
-        });
-
-        wrap.appendChild(row);
-        return wrap;
-    }
-
-    // =========================================================
-    //  MELODIA TECLAT AMB ABCJS
-    // =========================================================
-    let melodiaSteps = [];
-    let melodiaPasSeleccionat = null;
+    let prNotesArray = []; // { id, pitch, startCol, durationCols }
+    let noteIdCounter = 0;
     let cartaMelodiaEnEdicio = null;
+    let melodiaTonePart = null;
+    let isMelodiaPlaying = false;
+    let synthMelodia = null;
+    let synthMetronom = null;
+    
+    // Variables pel drag (arrossegar per canviar la durada)
+    let isResizing = false;
+    let activeDragNoteId = null;
+    let dragStartX = 0;
+    let startDuration = 0;
+    const CELL_WIDTH = 30; // Píxels per cada semicorxera
+
+    const PR_NOTES = [
+        { id: 'C5', label: 'C5', black: false }, { id: 'B4', label: 'B4', black: false },
+        { id: 'A#4', label: 'A#', black: true }, { id: 'A4', label: 'A4', black: false },
+        { id: 'G#4', label: 'G#', black: true }, { id: 'G4', label: 'G4', black: false },
+        { id: 'F#4', label: 'F#', black: true }, { id: 'F4', label: 'F4', black: false },
+        { id: 'E4', label: 'E4', black: false }, { id: 'D#4', label: 'D#', black: true },
+        { id: 'D4', label: 'D4', black: false }, { id: 'C#4', label: 'C#', black: true },
+        { id: 'C4', label: 'C4', black: false }
+    ];
 
     function obrirModalMelodiaTeclat() {
         cartaMelodiaEnEdicio = null;
-        document.getElementById('btn-guardar-melodia').innerHTML = '✅ Afegir a Partitura';
+        document.getElementById('btn-guardar-melodia').innerHTML = '✅ Generar Partitura';
         document.getElementById('melodia-titol').value = '';
-        document.getElementById('melodia-steps').value = '16';
-        document.getElementById('melodia-octava').value = '4';
-        generarGridMelodia();
-        construirPianoMelodia();
+        document.getElementById('melodia-compas').value = '4/4';
+        document.getElementById('melodia-compassos').value = '2';
+        
+        prNotesArray = [];
+        noteIdCounter = 0;
+        iniciarPianoRoll();
         document.getElementById('modalMelodiaTeclat').style.display = 'flex';
     }
 
-    function tancarModalMelodia() { tancarModal('modalMelodiaTeclat'); melodiaPasSeleccionat = null; cartaMelodiaEnEdicio = null; }
-    function tancarSiForaMelodia(e) { if(e.target.id === 'modalMelodiaTeclat') tancarModalMelodia(); }
-
-    function generarGridMelodia() {
-        const n = parseInt(document.getElementById('melodia-steps').value);
-        const prev = melodiaSteps.slice();
-        melodiaSteps = Array.from({length:n}, (_,i) => prev[i] || {nota: null, label: ''});
-        melodiaPasSeleccionat = null;
-        renderGridMelodia();
+    function tancarModalMelodia() { 
+        aturarAudioMelodia();
+        tancarModal('modalMelodiaTeclat'); 
+        cartaMelodiaEnEdicio = null; 
+    }
+    
+    function tancarSiForaMelodia(e) { 
+        if(e.target.id === 'modalMelodiaTeclat') tancarModalMelodia(); 
     }
 
-    function netejarMelodia() {
-        melodiaSteps = melodiaSteps.map(() => ({nota: null, label: ''}));
-        melodiaPasSeleccionat = null;
-        renderGridMelodia();
-    }
-
-    function renderGridMelodia() {
-        const cont = document.getElementById('melodia-grid-editor');
-        cont.innerHTML = '';
-        melodiaSteps.forEach((step, i) => {
-            const div = document.createElement('div');
-            div.className = 'melodia-pas' + (i % 4 === 0 ? ' beat-start' : '');
-            div.dataset.idx = i;
-
-            const num = document.createElement('div');
-            num.className = 'melodia-pas-num';
-            num.innerText = i % 4 === 0 ? (i/4+1) : '·';
-
-            const piano = crearMiniPianoStep(step.nota);
-            piano.onclick = (e) => { e.stopPropagation(); seleccionarPas(i); };
-
-            const label = document.createElement('div');
-            label.className = 'melodia-pas-label';
-            label.innerText = step.label || '—';
-
-            div.appendChild(num); div.appendChild(piano); div.appendChild(label);
-            div.ondblclick = () => { melodiaSteps[i] = {nota:null, label:''}; renderGridMelodia(); };
-            cont.appendChild(div);
-        });
-        destacarPasSeleccionat();
-    }
-
-    function crearMiniPianoStep(notaActiva) {
-        const oct = parseInt(document.getElementById('melodia-octava').value);
-        const whites = PIANO_KEYS_DEF.filter(k => !k.black).map(k => ({...k, id: k.nota+oct}));
-        const bm = {'C#':0,'D#':1,'F#':3,'G#':4,'A#':5};
-
-        const wrap = document.createElement('div');
-        wrap.className = 'melodia-piano-mini';
-        const ww = 32 / whites.length; 
-        const kh = 80; const bh = 48;
-
-        whites.forEach((k,i) => {
-            const el = document.createElement('div');
-            el.className = 'melodia-white-key' + (notaActiva === k.id ? ' actiu' : '');
-            el.style.cssText = `left:${i*ww}px;width:${ww}px;top:0;height:${kh}px;`;
-            wrap.appendChild(el);
-        });
-
-        PIANO_KEYS_DEF.filter(k=>k.black).forEach(k => {
-            const el = document.createElement('div');
-            el.className = 'melodia-black-key' + (notaActiva === k.nota+oct ? ' actiu' : '');
-            const li = bm[k.nota];
-            el.style.cssText = `left:${(li+0.65)*ww}px;width:${ww*0.6}px;top:0;height:${bh}px;`;
-            wrap.appendChild(el);
-        });
-        return wrap;
-    }
-
-    function seleccionarPas(idx) {
-        melodiaPasSeleccionat = idx;
-        destacarPasSeleccionat();
-    }
-
-    function destacarPasSeleccionat() {
-        document.querySelectorAll('#melodia-grid-editor .melodia-piano-mini').forEach((el, i) => {
-            el.style.outline = i === melodiaPasSeleccionat ? '3px solid #9b59b6' : '';
-        });
-    }
-
-    function construirPianoMelodia() {
-        const oct = parseInt(document.getElementById('melodia-octava').value);
-        construirPianoEditor('piano-melodia-keys', [oct-1, oct, oct+1], (el) => {
-            if(melodiaPasSeleccionat === null) { alert('Primer selecciona un pas del grid.'); return; }
-            const nota = el.dataset.nota;
-            const notaCurta = nota.replace(/\d/,'');
-            melodiaSteps[melodiaPasSeleccionat] = {nota, label: notaCurta};
-            if(melodiaPasSeleccionat < melodiaSteps.length - 1) melodiaPasSeleccionat++;
-            renderGridMelodia();
-        });
-    }
-
-    // Funcions de conversió a format ABCjs
-    function notaToABC(notaString) {
-        if (!notaString) return "z"; // Silenci
-        const regex = /^([CDEFGAB])(#?)(\d)$/;
-        const match = notaString.match(regex);
-        if (!match) return "z";
+    // Calcula quants passos totals (semicorxeres) té la nostra graella
+    function getGridStats() {
+        const compas = document.getElementById('melodia-compas').value; // ex: "4/4"
+        const numCompassos = parseInt(document.getElementById('melodia-compassos').value);
+        const [num, den] = compas.split('/').map(Number);
         
-        const l = match[1];
-        const acc = match[2] === '#' ? '^' : '';
-        const oct = parseInt(match[3]);
+        // 1 pas = 1 semicorxera (1/16). 
+        // Si és /4 (negra), cada negra són 4 passos.
+        const passosPerTemps = (den === 4) ? 4 : (den === 8 ? 2 : 4); 
+        const passosPerCompas = num * passosPerTemps;
+        const totalPassos = passosPerCompas * numCompassos;
 
-        let base = l;
-        if (oct === 3) base = l + ",";
-        else if (oct === 4) base = l;
-        else if (oct === 5) base = l.toLowerCase();
-
-        return acc + base;
+        return { num, den, passosPerTemps, passosPerCompas, totalPassos };
     }
 
-    function crearCardMelodia(dades) {
+    function iniciarPianoRoll() {
+        const editor = document.getElementById('piano-roll-editor');
+        const stats = getGridStats();
+        
+        // Assegurar que les notes no surtin de la graella si hem reduït compassos
+        prNotesArray = prNotesArray.filter(n => n.startCol < stats.totalPassos);
+        prNotesArray.forEach(n => {
+            if (n.startCol + n.durationCols > stats.totalPassos) {
+                n.durationCols = stats.totalPassos - n.startCol;
+            }
+        });
+
+        let html = `<div class="pr-wrapper"><div class="pr-keys">`;
+        PR_NOTES.forEach(nota => {
+            html += `<div class="pr-key ${nota.black ? 'black' : 'white'}">${nota.label}</div>`;
+        });
+        html += `</div><div class="pr-grid-container" id="pr-grid-main">`;
+        
+        // Capa de fons (línies i cel·les per fer clic)
+        PR_NOTES.forEach(nota => {
+            html += `<div class="pr-row">`;
+            for (let col = 0; col < stats.totalPassos; col++) {
+                let cssClasses = "pr-cell";
+                
+                // Mirem a quin "temps" (beat) ens trobem per pintar la columna de manera alterna
+                let beatIndex = Math.floor(col / stats.passosPerTemps);
+                cssClasses += (beatIndex % 2 === 0) ? " beat-odd" : " beat-even";
+                
+                // Si és l'inici d'un compàs, dibuixem la barra de compàs forta a l'esquerra
+                if (col > 0 && col % stats.passosPerCompas === 0) {
+                    cssClasses += " measure-start";
+                }
+                
+                html += `<div class="${cssClasses}" onclick="afegirNotaPR('${nota.id}', ${col})"></div>`;
+            }
+            html += `</div>`;
+        });
+
+        // Capa de les notes sobreposades
+        html += `<div class="pr-notes-layer" id="pr-notes-layer"></div>`;
+        html += `</div></div>`;
+        
+        editor.innerHTML = html;
+        renderPRNotesLayer();
+        actualitzarPreviewMelodia(); 
+    }
+
+    function afegirNotaPR(pitch, col) {
+        if(isResizing) return; // Evitar crear si acabem d'arrossegar
+        
+        const stats = getGridStats();
+        // Evitar solapaments simples
+        const existent = prNotesArray.findIndex(n => n.pitch === pitch && n.startCol <= col && n.startCol + n.durationCols > col);
+        
+        if (existent !== -1) {
+            // Si cliquem sobre una nota existent des de la cel·la de sota, l'esborrem
+            prNotesArray.splice(existent, 1);
+        } else {
+            // Creem nota nova (per defecte durada = 1 pols (negra))
+            let defaultDur = stats.passosPerTemps; 
+            // Si es passa del límit, ho limitem
+            if (col + defaultDur > stats.totalPassos) defaultDur = stats.totalPassos - col;
+
+            prNotesArray.push({
+                id: 'n_' + (noteIdCounter++),
+                pitch: pitch,
+                startCol: col,
+                durationCols: defaultDur
+            });
+        }
+        
+        renderPRNotesLayer();
+        actualitzarPreviewMelodia();
+    }
+
+    function esborrarNota(id, e) {
+        e.stopPropagation(); // Evitar disparar afegirNotaPR
+        const index = prNotesArray.findIndex(n => n.id === id);
+        if(index !== -1) prNotesArray.splice(index, 1);
+        renderPRNotesLayer();
+        actualitzarPreviewMelodia();
+    }
+
+    // Dibuixa les notes (divs visuals amb drag handler)
+    function renderPRNotesLayer() {
+        const layer = document.getElementById('pr-notes-layer');
+        if(!layer) return;
+        layer.innerHTML = '';
+
+        prNotesArray.forEach(nota => {
+            // Busquem quina fila és per l'eix Y
+            const rowIdx = PR_NOTES.findIndex(k => k.id === nota.pitch);
+            if (rowIdx === -1) return;
+
+            const div = document.createElement('div');
+            div.className = 'pr-note';
+            div.id = nota.id;
+            div.style.left = (nota.startCol * CELL_WIDTH) + 'px';
+            div.style.top = (rowIdx * 30 + 2) + 'px'; // 30px alçada fila, +2px de padding
+            div.style.width = (nota.durationCols * CELL_WIDTH) + 'px';
+            
+            // Clic a la nota = esborrar
+            div.onclick = (e) => esborrarNota(nota.id, e);
+
+            // Ansa de redimensionar a la dreta
+            const handle = document.createElement('div');
+            handle.className = 'pr-note-handle';
+            handle.onmousedown = (e) => startResizingNota(e, nota.id);
+
+            div.appendChild(handle);
+            layer.appendChild(div);
+        });
+    }
+
+    // --- LÒGICA DRAG TO RESIZE ---
+    function startResizingNota(e, id) {
+        e.stopPropagation();
+        isResizing = true;
+        activeDragNoteId = id;
+        dragStartX = e.clientX;
+        
+        const noteObj = prNotesArray.find(n => n.id === id);
+        startDuration = noteObj.durationCols;
+
+        document.addEventListener('mousemove', onDragNota);
+        document.addEventListener('mouseup', stopResizingNota);
+    }
+
+    function onDragNota(e) {
+        if(!isResizing) return;
+        const noteObj = prNotesArray.find(n => n.id === activeDragNoteId);
+        if(!noteObj) return;
+
+        const diffX = e.clientX - dragStartX;
+        const diffCols = Math.round(diffX / CELL_WIDTH);
+        
+        let newDur = startDuration + diffCols;
+        
+        // Mínim 1 semicorxera
+        if (newDur < 1) newDur = 1;
+        
+        // Màxim fins al final de la graella
+        const stats = getGridStats();
+        if (noteObj.startCol + newDur > stats.totalPassos) {
+            newDur = stats.totalPassos - noteObj.startCol;
+        }
+
+        if (newDur !== noteObj.durationCols) {
+            noteObj.durationCols = newDur;
+            renderPRNotesLayer(); // Refrescar visual ràpid
+        }
+    }
+
+    function stopResizingNota(e) {
+        if(isResizing) {
+            isResizing = false;
+            activeDragNoteId = null;
+            document.removeEventListener('mousemove', onDragNota);
+            document.removeEventListener('mouseup', stopResizingNota);
+            actualitzarPreviewMelodia(); // Refrescar partitura en deixar anar
+        }
+    }
+
+    function netejarPianoRoll() {
+        cartaMelodiaEnEdicio = null; 
+        aturarAudioMelodia();
+        prNotesArray = [];
+        iniciarPianoRoll();
+    }
+
+    // --- CONVERSIÓ A PARTITURA ABC (LÒGICA NOVA PER MÚLTIPLES DURADES) ---
+    function notaToABC(notaString) {
+        const match = notaString.match(/^([CDEFGAB])(#?)(\d)$/);
+        if (!match) return "z";
+        let base = match[1];
+        if (match[3] === '3') base = base + ",";
+        else if (match[3] === '5') base = base.toLowerCase();
+        return (match[2] === '#' ? '^' : '') + base;
+    }
+
+    function construirStringABC(dades, perPreview = false) {
+        let titol = perPreview ? "" : `T:${dades.titol}\n`;
+        const compas = document.getElementById('melodia-compas').value || "4/4";
+        
+        // Marquem L:1/16 com a unitat base. Així una durada de "4" es printa literalment com a 4 i serà una negra.
+        let abcString = `X:1\n${titol}M:${compas}\nL:1/16\nK:C\n`;
+        
+        let c = 0;
+        const colsPerMeasure = dades.stats.passosPerCompas;
+        
+        // Ordenar notes per temps d'inici per anar llegint d'esquerra a dreta
+        const sortedNotes = [...dades.notes].sort((a,b) => a.startCol - b.startCol);
+
+        while (c < dades.stats.totalPassos) {
+            if (c > 0 && c % colsPerMeasure === 0) abcString += "| ";
+
+            let notesAqui = sortedNotes.filter(n => n.startCol === c);
+            
+            if (notesAqui.length > 0) {
+                // Per simplificar la visió acadèmica, assumim una estructura homofònica vertical.
+                // Agafem la durada màxima entre les notes que comencen aquí
+                let maxDur = Math.max(...notesAqui.map(n => n.durationCols));
+                
+                // Limitar que no passi d'un compàs al següent (per evitar errors complexos a ABCjs)
+                let distToBarline = colsPerMeasure - (c % colsPerMeasure);
+                let actualDur = Math.min(maxDur, distToBarline);
+
+                let chordStr = notesAqui.map(n => notaToABC(n.pitch)).join("");
+                if (notesAqui.length > 1) chordStr = `[${chordStr}]`;
+                
+                abcString += `${chordStr}${actualDur} `;
+                c += actualDur; // Avancem el temps
+                
+            } else {
+                // No hi ha cap nota que comenci ara. Trobar el següent esdeveniment
+                let seguentNota = sortedNotes.find(n => n.startCol > c);
+                let distToNext = seguentNota ? (seguentNota.startCol - c) : (dades.stats.totalPassos - c);
+                let distToBarline = colsPerMeasure - (c % colsPerMeasure);
+                
+                let restDur = Math.min(distToNext, distToBarline);
+                abcString += `z${restDur} `;
+                c += restDur;
+            }
+        }
+
+        return abcString + "|]";
+    }
+
+    function actualitzarPreviewMelodia() {
+        const titol = document.getElementById('melodia-titol').value;
+        const dades = { 
+            notes: prNotesArray, 
+            titol: titol,
+            stats: getGridStats()
+        };
+        const abcString = construirStringABC(dades, true);
+        
+        ABCJS.renderAbc("preview-abc", abcString, {
+            add_classes: true,
+            responsive: "resize",
+            staffwidth: 800
+        });
+    }
+
+    // --- ÀUDIO AMB TONE.JS I TONE.PART ---
+    function initSintetitzadorsMelodia() {
+        if (!synthMelodia) {
+            synthMelodia = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "triangle" },
+                envelope: { attack: 0.05, decay: 0.1, sustain: 0.3, release: 1 }
+            }).toDestination();
+            synthMelodia.volume.value = -5;
+        }
+        if (!synthMetronom) {
+            synthMetronom = new Tone.MembraneSynth().toDestination();
+            synthMetronom.volume.value = -15;
+        }
+    }
+
+    function togglePlayMelodia() {
+        const btn = document.getElementById('btn-play-melodia');
+        Tone.start().then(() => {
+            initSintetitzadorsMelodia();
+            Tone.Transport.bpm.value = parseInt(document.getElementById('tempo-melodia').value);
+            const stats = getGridStats();
+
+            if (isMelodiaPlaying) {
+                aturarAudioMelodia();
+            } else {
+                if (melodiaTonePart) melodiaTonePart.dispose();
+                
+                // 1. Programar Metrònom
+                let metronomeEvents = [];
+                for(let col = 0; col < stats.totalPassos; col++) {
+                    if (col % stats.passosPerTemps === 0) {
+                        const isFort = (col % stats.passosPerCompas === 0);
+                        metronomeEvents.push({ 
+                            time: col * Tone.Time("16n"), 
+                            note: isFort ? "C3" : "C4",
+                            vel: isFort ? 1 : 0.2
+                        });
+                    }
+                }
+                
+                // 2. Programar Melodia
+                let melodiaEvents = prNotesArray.map(n => ({
+                    time: n.startCol * Tone.Time("16n"),
+                    note: n.pitch,
+                    duration: n.durationCols * Tone.Time("16n"),
+                    col: n.startCol
+                }));
+
+                // Execució conjunta
+                melodiaTonePart = new Tone.Part((time, event) => {
+                    if(event.vel !== undefined) {
+                        // So metrònom
+                        synthMetronom.triggerAttackRelease(event.note, "8n", time, event.vel);
+                        
+                        // Feedback visual bàsic de la línia de temps
+                        Tone.Draw.schedule(() => {
+                            let stepX = Math.round(event.time / Tone.Time("16n"));
+                            const grid = document.getElementById('pr-grid-main');
+                        }, time);
+                    } else {
+                        // So melodia
+                        synthMelodia.triggerAttackRelease(event.note, event.duration, time);
+                    }
+                }, [...metronomeEvents, ...melodiaEvents]).start(0);
+                
+                Tone.Transport.start();
+                
+                // Aturar automàticament al final
+                const totalDur = stats.totalPassos * Tone.Time("16n").toSeconds();
+                Tone.Transport.scheduleOnce(() => {
+                    aturarAudioMelodia();
+                }, "+" + totalDur);
+
+                btn.innerHTML = "⏹️ Aturar";
+                btn.classList.add('playing');
+                isMelodiaPlaying = true;
+            }
+        });
+    }
+
+    function aturarAudioMelodia() {
+        if(isMelodiaPlaying) {
+            Tone.Transport.stop();
+            Tone.Transport.cancel(); // Neteja schedules
+            if(melodiaTonePart) { melodiaTonePart.stop(); melodiaTonePart.dispose(); melodiaTonePart = null; }
+            const btn = document.getElementById('btn-play-melodia');
+            if(btn) { btn.innerHTML = "▶️ Escoltar"; btn.classList.remove('playing'); }
+            isMelodiaPlaying = false;
+        }
+    }
+
+    // --- GUARDAR A LA WEB ---
+    function generarMelodia() {
+        aturarAudioMelodia();
+        const titol = document.getElementById('melodia-titol').value || 'Melodia';
+        
+        const dades = { 
+            titol: titol, 
+            notes: JSON.parse(JSON.stringify(prNotesArray)),
+            stats: getGridStats(),
+            compasRaw: document.getElementById('melodia-compas').value,
+            compassosRaw: document.getElementById('melodia-compassos').value
+        };
+
         const wrap = document.createElement('div');
         wrap.className = 'melodia-card abcjs-container';
         wrap.style.width = "100%";
-        wrap.style.padding = "10px";
-        wrap.style.background = "#fff";
-        wrap.style.boxSizing = "border-box";
-
+        
         const renderDiv = document.createElement('div');
         renderDiv.style.width = "100%";
         wrap.appendChild(renderDiv);
 
-        // Muntem l'string format ABC: compàs 4/4, figures de negra
-        let abcString = "X:1\nM:4/4\nL:1/4\nK:C\n";
-        let notesArr = [];
-        dades.steps.forEach((step, i) => {
-            notesArr.push(notaToABC(step.nota));
-            // Afegim una barra de compàs cada 4 notes (si no és l'última)
-            if ((i + 1) % 4 === 0 && i !== dades.steps.length - 1) {
-                notesArr.push("|");
-            }
-        });
-        abcString += notesArr.join(" ") + " |]";
+        const abcString = construirStringABC(dades, false);
 
-        // Renderitzem ABCjs just després que el div s'insereixi a la targeta
         setTimeout(() => {
-            ABCJS.renderAbc(renderDiv, abcString, {
-                add_classes: true,
-                responsive: "resize"
-            });
+            ABCJS.renderAbc(renderDiv, abcString, { add_classes: true, responsive: "resize" });
         }, 10);
-
-        return wrap;
-    }
-
-    function generarMelodia() {
-        const titol = document.getElementById('melodia-titol').value || 'Melodia';
-        const dades = { titol, steps: melodiaSteps };
-
-        const card = crearCardMelodia(dades);
         
         if(cartaMelodiaEnEdicio) {
             cartaMelodiaEnEdicio.dataset.melodiaData = JSON.stringify(dades);
             const t = cartaMelodiaEnEdicio.querySelector('.titol-item'); if(t) t.innerText = titol;
             const mc = cartaMelodiaEnEdicio.querySelector('.melodia-card');
-            if(mc) mc.replaceWith(card);
+            if(mc) mc.replaceWith(wrap);
         } else {
-            crearItem('teclat', titol, card, null, null, null, null, dades);
+            crearItem('teclat', titol, wrap, null, null, null, null, dades);
         }
         tancarModalMelodia();
     }
@@ -1526,12 +1044,15 @@
     function editarMelodia(item) {
         cartaMelodiaEnEdicio = item;
         const dades = JSON.parse(item.dataset.melodiaData);
+        
         document.getElementById('melodia-titol').value = dades.titol || '';
-        melodiaSteps = dades.steps || [];
-        document.getElementById('melodia-steps').value = melodiaSteps.length;
-        renderGridMelodia();
-        construirPianoMelodia();
-        document.getElementById('btn-guardar-melodia').innerHTML = '💾 Actualitzar';
+        document.getElementById('melodia-compas').value = dades.compasRaw || '4/4';
+        document.getElementById('melodia-compassos').value = dades.compassosRaw || '2';
+        
+        prNotesArray = dades.notes || [];
+        
+        iniciarPianoRoll();
+        document.getElementById('btn-guardar-melodia').innerHTML = '💾 Actualitzar Partitura';
         document.getElementById('modalMelodiaTeclat').style.display = 'flex';
     }
 
