@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Diagrames Musicals</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.2.2/abcjs-basic-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    
+    <style>
+        /* Estils globals - mantens el teu disseny */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f7f6; }
+        .modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center; }
+        .modal-contingut { background: white; padding: 20px; border-radius: 12px; width: 950px; max-height: 90vh; overflow: auto; }
+
+        /* Estils Piano Roll (El teu nou sistema) */
+        .pr-wrapper { display: flex; border: 1px solid #ccc; background: #fff; border-radius: 4px; overflow-x: auto; width: 100%; position: relative; min-height: 400px; margin-top: 10px; }
+        .pr-keys { display: flex; flex-direction: column; width: 50px; border-right: 2px solid #555; background: #f8f9fa; flex-shrink: 0; position: sticky; left: 0; z-index: 10; }
+        .pr-key { height: 30px; border-bottom: 1px solid #ddd; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+        .pr-key.black { background: #333; color: #fff; }
+        .pr-grid-container { position: relative; background-image: linear-gradient(90deg, #eee 1px, transparent 1px); background-size: 60px 30px; flex: 1; min-width: 800px; height: 390px; }
+        .pr-note { position: absolute; height: 26px; top: 2px; background: #9b59b6; border-radius: 4px; border: 1px solid #8e44ad; cursor: pointer; display: flex; align-items: center; justify-content: flex-end; padding-right: 5px; color: white; font-size: 10px; z-index: 5; }
+        .pr-note-handle { width: 15px; height: 100%; cursor: ew-resize; background: rgba(0,0,0,0.1); position: absolute; right: 0; }
+    </style>
+</head>
+<body>
+
+<div id="modalMelodiaTeclat" class="modal-overlay">
+    <div class="modal-contingut">
+        <h2>🎵 Escriptor de Melodia (Flux Lliure)</h2>
+        <div id="piano-roll-editor" class="pr-wrapper" onclick="crearNota(event)">
+            <div class="pr-keys" id="pr-keys"></div>
+            <div class="pr-grid-container" id="pr-grid-main">
+                <div id="pr-notes-layer" class="pr-notes-layer"></div>
+            </div>
+        </div>
+        <button onclick="generarPartituraFinal()">✅ Generar Partitura Final</button>
+    </div>
+</div>
+
+<script>
+    let prNotes = []; // Array d'objectes: {id, pitch, x, width}
+    let isResizing = false;
+    let activeId = null;
+
+    // Inicialització visual
+    function renderPianoRoll() {
+        const keysCont = document.getElementById('pr-keys');
+        const notesLayer = document.getElementById('pr-notes-layer');
+        keysCont.innerHTML = '';
+        notesLayer.innerHTML = '';
+
+        // Dibuixar tecles
+        ['C5','B4','A#4','A4','G#4','G4','F#4','F4','E4','D#4','D4','C#4','C4'].forEach(n => {
+            keysCont.innerHTML += `<div class="pr-key ${n.includes('#')?'black':''}">${n}</div>`;
+        });
+
+        // Dibuixar notes
+        prNotes.forEach(n => {
+            const div = document.createElement('div');
+            div.className = 'pr-note';
+            div.style.left = n.x + 'px';
+            div.style.width = n.width + 'px';
+            div.innerHTML = `<div class="pr-note-handle" onmousedown="startResize(event, '${n.id}')"></div>`;
+            div.onclick = (e) => { e.stopPropagation(); esborrarNota(n.id); };
+            notesLayer.appendChild(div);
+        });
+    }
+
+    function crearNota(e) {
+        if(isResizing) return;
+        const rect = document.getElementById('pr-grid-main').getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Calcular pitch segons Y
+        const row = Math.floor(y / 30);
+        const pitch = ['C5','B4','A#4','A4','G#4','G4','F#4','F4','E4','D#4','D4','C#4','C4'][row];
+        
+        prNotes.push({ id: Date.now(), pitch, x: Math.floor(x/30)*30, width: 60 });
+        renderPianoRoll();
+    }
+
+    function startResize(e, id) {
+        isResizing = true;
+        activeId = id;
+        e.stopPropagation();
+        document.onmousemove = (me) => {
+            const n = prNotes.find(note => note.id == activeId);
+            n.width = Math.max(15, me.movementX + n.width); // Mínim 15px
+            renderPianoRoll();
+        };
+        document.onmouseup = () => { isResizing = false; document.onmousemove = null; };
+    }
+
+    function esborrarNota(id) {
+        prNotes = prNotes.filter(n => n.id != id);
+        renderPianoRoll();
+    }
+
+    function generarPartituraFinal() {
+        // Aquí fas la conversió: cada 60px = 1 negra.
+        // Si width = 30px, és corxera, etc.
+        console.log("Generant ABC amb les dades:", prNotes);
+        tancarModal('modalMelodiaTeclat');
+    }
+</script>
+</body>
+</html>
