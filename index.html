@@ -6,7 +6,6 @@
 <title>Generador de Diagrames Musicals</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/abcjs/6.2.2/abcjs-basic-min.js"></script>
 <style>
 /* =========================================================
    1. INTERFÍCIE
@@ -216,6 +215,16 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .bat-titol { font-weight: bold; font-size: 11pt; margin-top: 2mm; }
 .pg-flux { display: flex; flex-direction: column; gap: 5mm; height: 100%; overflow: hidden; }
 .sistema-baix + .sistema-baix { margin-top: 3mm; }
+.sistema-melodia + .sistema-melodia { margin-top: 3mm; }
+.sec-teclat .sistema-melodia + .sistema-melodia { margin-top: 10px; }
+.mel-barra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; background: #f8f9fa; border: 1px solid #e3e3e3; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+.mel-grup { display: flex; gap: 4px; }
+.mel-btn { border: 2px solid #ddd; background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 14px; min-width: 42px; }
+.mel-btn:hover { border-color: #9b59b6; }
+.mel-btn.actiu { border-color: #9b59b6; background: #f3e8fa; font-weight: bold; }
+.mel-fig svg { display: block; height: 34px; width: 26px; }
+.mel-editor { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px; min-height: 160px; }
+.mel-editor .fantasma { pointer-events: none; }
 .sec-baix .sistema-baix + .sistema-baix { margin-top: 10px; }
 .subtitol-pag { font-size: 11pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #555; border-bottom: 0.3mm solid #999; padding-bottom: 1mm; margin-bottom: 3mm; }
 .bat-fila { display: flex; gap: 6mm; justify-content: center; }
@@ -318,6 +327,7 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
     <button class="btn-accio btn-outline" id="btn-previsualitzar" onclick="togglePrevisualitzar()">👁️ Vista prèvia A4</button>
     <button class="btn-accio btn-imprimir" onclick="imprimirAra()">🖨️ Imprimir / PDF</button>
     <p class="ajuda">Al diàleg d'impressió tria <b>A4</b>, orientació <b>horitzontal</b> i marges <b>cap</b>/per defecte.</p>
+    <button class="btn-accio btn-outline" id="btn-recuperar" style="display:none" onclick="recuperarUltima()">↩️ Recuperar l'última cançó</button>
     <div class="fila-2">
       <button class="btn-accio btn-outline" onclick="exportarJSON()">💾 Desar</button>
       <button class="btn-accio btn-outline" onclick="document.getElementById('fitxerJSON').click()">📂 Obrir</button>
@@ -451,21 +461,37 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 
 <!-- ===== EDITOR MELODIA ===== -->
 <div id="modalMelodia" class="modal-overlay" onclick="tancarSiFora(event)">
-  <div class="modal-contingut">
-    <h2 style="color:#9b59b6">🎵 Escriptor de melodia (piano roll)</h2>
-    <p class="ajuda">Clica la graella per posar una nota (1 temps). Arrossega la vora dreta per allargar-la o escurçar-la. Clica una nota per esborrar-la.</p>
-    <div style="background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;margin:10px 0;min-height:110px"><div id="preview-abc"></div></div>
-    <div class="reproductor-controls">
-      <input type="text" id="melodia-titol" placeholder="Títol (ex: Opció 1)" style="width:170px">
-      <label style="text-transform:none;display:flex;align-items:center;gap:6px">Compàs
-        <select id="melodia-compas" onchange="iniciarPianoRoll()" style="width:75px"><option>4/4</option><option>3/4</option><option>2/4</option></select></label>
-      <label style="text-transform:none;display:flex;align-items:center;gap:6px">Compassos
-        <select id="melodia-compassos" onchange="iniciarPianoRoll()" style="width:65px"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option><option>8</option></select></label>
-      <button id="btn-play-melodia" class="btn-accio" style="background:#17a2b8" onclick="togglePlayMelodia()">▶️ Escoltar</button>
-      <label style="text-transform:none;display:flex;align-items:center;gap:6px">Tempo <input type="number" id="tempo-melodia" value="90" min="40" max="200" style="width:70px"></label>
-      <button class="btn-accio btn-outline" style="color:#dc3545;border-color:#dc3545" onclick="netejarPianoRoll()">🗑️ Netejar</button>
+  <div class="modal-contingut" style="max-width:1050px">
+    <h2 style="color:#9b59b6">🎵 Escriptor de melodia</h2>
+    <p class="ajuda">Tria la figura i clica el pentagrama a l'altura de la nota. Clica una nota per seleccionar-la; després pots canviar-ne la figura, pujar-la o baixar-la amb ↑ ↓, o esborrar-la amb la tecla d'esborrar.</p>
+    <div class="mel-barra">
+      <div id="mel-figures" class="mel-grup"></div>
+      <button class="mel-btn" id="mel-puntet" onclick="melTogglePuntet()" title="Puntet (tecla .)">Puntet</button>
+      <button class="mel-btn" id="mel-silenci" onclick="melSilenci=!melSilenci;melRender()" title="Silenci (tecla R)">Silenci</button>
+      <div class="mel-grup" id="mel-alteracions">
+        <button class="mel-btn" data-alt="#" onclick="melTriaAlteracio('#')">♯</button>
+        <button class="mel-btn" data-alt="b" onclick="melTriaAlteracio('b')">♭</button>
+      </div>
+      <button class="mel-btn" onclick="melDesfer()" title="Desfer (Ctrl+Z)">↩︎ Desfer</button>
+      <button class="mel-btn" onclick="melEsborrarSel()">🗑️ Esborrar nota</button>
     </div>
-    <div id="piano-roll-editor"></div>
+    <div class="mel-barra">
+      <input type="text" id="melodia-titol" placeholder="Títol (ex: Opció 1)" style="width:160px">
+      <label style="text-transform:none;display:flex;align-items:center;gap:6px">Compàs
+        <select id="melodia-compas" onchange="melRecalcular();melRender()" style="width:75px"><option>4/4</option><option>3/4</option><option>2/4</option><option>6/8</option></select></label>
+      <span class="mel-grup">
+        <button class="mel-btn" onclick="melAfegirCompas(-1)">− compàs</button>
+        <select id="melodia-compassos" onchange="melRecalcular();melRender()" style="width:65px"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option><option>8</option><option>12</option><option>16</option></select>
+        <button class="mel-btn" onclick="melAfegirCompas(1)">+ compàs</button>
+      </span>
+      <button id="btn-play-melodia" class="btn-accio" style="background:#17a2b8;width:auto" onclick="togglePlayMelodia()">▶️ Escoltar</button>
+      <label style="text-transform:none;display:flex;align-items:center;gap:6px">Tempo <input type="number" id="tempo-melodia" value="90" min="40" max="200" style="width:70px"></label>
+      <label class="check" style="text-transform:none"><input type="checkbox" id="mel-metronom" checked> Metrònom</label>
+      <button class="mel-btn" onclick="if(confirm('Esborrar tota la melodia?')){melGuardarHistoria();melNotes=[];melSel=-1;melRender();}">🗑️ Netejar tot</button>
+      <span class="ajuda" id="mel-so"></span>
+      <span class="ajuda" id="mel-info"></span>
+    </div>
+    <div id="melodia-editor" class="mel-editor"></div>
     <div style="margin-top:16px;display:flex;justify-content:center;gap:10px">
       <button class="btn-accio" id="btn-guardar-melodia" style="background:#9b59b6" onclick="guardarMelodia()">✅ Afegir</button>
       <button class="btn-accio btn-outline" onclick="tancarModal('modalMelodia')">Cancel·lar</button>
@@ -716,7 +742,7 @@ function contingut(it) {
   } else if (it.inst === 'teclat') {
     if (it.tipus === 'img') div.appendChild(imatgeRetallada(`img/${it.fitxer}.png`, 'teclat'));
     else if (it.tipus === 'notes') div.innerHTML = svgTeclat(it.notes);
-    else if (it.tipus === 'melodia') { div.className = 'abc-render'; renderABC(div, it); }
+    else if (it.tipus === 'melodia') div.innerHTML = svgMelodia(melConvertirAntic(it));
   } else if (it.inst === 'baix') {
     div.innerHTML = htmlBaix(it);
     div.dataset.tab = '1';
@@ -1580,209 +1606,436 @@ function guardarBaix() {
 }
 
 /* =========================================================
-   MELODIA (piano roll → partitura ABC)
+   MELODIA: editor de pentagrama (estil MuseScore)
    ========================================================= */
-let prNotesArray = [], noteIdCounter = 0, melodiaEditant = null;
-let melodiaTonePart = null, isMelodiaPlaying = false, synthMelodia = null, synthMetronom = null, finalMelodiaId = null;
-let isResizing = false, acabaDeRedimensionar = false, activeDragNoteId = null, dragStartX = 0, startDuration = 0;
-const CELL_WIDTH = 30;
-const PR_NOTES = ['C5', 'B4', 'A#4', 'A4', 'G#4', 'G4', 'F#4', 'F4', 'E4', 'D#4', 'D4', 'C#4', 'C4'].map(id => ({ id, label: id.includes('#') ? id.slice(0, 2) : id, black: id.includes('#') }));
-
 function statsCompas(compas, compassos) {
   const [num, den] = String(compas || '4/4').split('/').map(Number);
   const passosPerTemps = den === 8 ? 2 : 4;
   const passosPerCompas = num * passosPerTemps;
   return { num, den, passosPerTemps, passosPerCompas, totalPassos: passosPerCompas * (parseInt(compassos) || 1) };
 }
-function getGridStats() { return statsCompas($('melodia-compas').value, $('melodia-compassos').value); }
-function dadesMelodiaActual() {
-  return { nom: $('melodia-titol').value.trim(), notes: JSON.parse(JSON.stringify(prNotesArray)), compas: $('melodia-compas').value, compassos: $('melodia-compassos').value };
+const FIGURES = [
+  { d: 16, nom: 'Rodona', tecla: '1' }, { d: 8, nom: 'Blanca', tecla: '2' }, { d: 4, nom: 'Negra', tecla: '3' },
+  { d: 2, nom: 'Corxera', tecla: '4' }, { d: 1, nom: 'Semicorxera', tecla: '5' }
+];
+const DIAT = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
+const DIAT_INV = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+const SEMIS = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const MEL_GAP = 10;                       // distància entre línies del pentagrama
+const MEL_BASE = 4 * 7 + DIAT.E;          // E4 = línia inferior de la clau de sol
+
+let melNotes = [], melSel = -1, melFigura = 4, melPuntet = false, melSilenci = false, melAlt = '', melodiaEditant = null;
+let melHistoria = [];
+
+function melParsePitch(p) {
+  const m = String(p || '').match(/^([A-G])([#b]?)(\d)$/); if (!m) return null;
+  return { l: m[1], alt: m[2], o: +m[3], diat: +m[3] * 7 + DIAT[m[1]], midi: (+m[3] + 1) * 12 + SEMIS[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) };
+}
+function melPitchDe(diat, alt) {
+  const o = Math.floor(diat / 7), l = DIAT_INV[diat % 7];
+  return l + (alt || '') + o;
+}
+function melDuradaTriada() {
+  const d = melFigura * (melPuntet ? 1.5 : 1);
+  return Math.max(1, Math.round(d));
+}
+function melTotal(notes) { return (notes || melNotes).reduce((a, n) => a + n.d, 0); }
+
+/* ---- Edició ---- */
+function melGuardarHistoria() { melHistoria.push(JSON.stringify(melNotes)); if (melHistoria.length > 60) melHistoria.shift(); }
+function melDesfer() { if (!melHistoria.length) return; melNotes = JSON.parse(melHistoria.pop()); melSel = Math.min(melSel, melNotes.length - 1); melRender(); }
+function melAfegir(pitch) {
+  const st = melStats();
+  const lliure = st.totalPassos - melTotal();
+  if (lliure <= 0) { alert("Aquest fragment ja és ple. Afegeix-hi un compàs amb el botó «+ compàs»."); return; }
+  melGuardarHistoria();
+  melNotes.push({ d: Math.min(melDuradaTriada(), lliure), p: pitch });
+  melSel = melNotes.length - 1;
+  melRender();
+}
+function melCanviarFigura(d) {
+  melFigura = d;
+  const n = melNotes[melSel];
+  if (n) {
+    const st = melStats();
+    const lliure = st.totalPassos - melTotal() + n.d;
+    melGuardarHistoria();
+    n.d = Math.min(melDuradaTriada(), lliure);
+  }
+  melRender();
+}
+function melTogglePuntet() {
+  melPuntet = !melPuntet;
+  const n = melNotes[melSel];
+  if (n) { melFigura = [16, 8, 4, 2, 1].find(f => f <= n.d) || 4; melCanviarFigura(melFigura); return; }
+  melRender();
+}
+function melRecalcular() {
+  const st = melStats();
+  let pos = 0;
+  melNotes = melNotes.filter(n => { if (pos >= st.totalPassos) return false; n.d = Math.min(n.d, st.totalPassos - pos); pos += n.d; return true; });
+}
+function melEsborrarSel() {
+  if (melSel < 0 || !melNotes[melSel]) return;
+  melGuardarHistoria();
+  melNotes.splice(melSel, 1);
+  melSel = Math.min(melSel, melNotes.length - 1);
+  melRender();
+}
+function melMouSel(dir) {
+  const n = melNotes[melSel]; if (!n || !n.p) return;
+  const p = melParsePitch(n.p); if (!p) return;
+  melGuardarHistoria();
+  n.p = melPitchDe(p.diat + dir, p.alt);
+  melRender();
+}
+function melTriaAlteracio(a) {
+  melAlt = melAlt === a ? '' : a;
+  const n = melNotes[melSel];
+  if (n && n.p) { const p = melParsePitch(n.p); melGuardarHistoria(); n.p = melPitchDe(p.diat, melAlt); }
+  melRender();
+}
+function melAfegirCompas(n) {
+  const c = Math.max(1, Math.min(24, (parseInt($('melodia-compassos').value) || 1) + n));
+  $('melodia-compassos').value = c;
+  melRecalcular();
+  melRender();
+}
+function melStats() { return statsCompas($('melodia-compas').value, $('melodia-compassos').value); }
+
+/* ---- Elements a dibuixar (notes, silencis de farciment i barres) ---- */
+const FIG_OK = [16, 12, 8, 6, 4, 3, 2, 1];
+function melTrossejar(d) { const o = []; while (d > 0) { const x = FIG_OK.find(v => v <= d); o.push(x); d -= x; } return o; }
+function melElements(m) {
+  const st = statsCompas(m.compas, m.compassos);
+  const els = []; let pos = 0;
+  const barra = () => { if (pos > 0 && pos % st.passosPerCompas === 0) els.push({ tipus: 'barra', pos }); };
+  (m.notes || []).forEach((n, i) => {
+    let queda = n.d;
+    while (queda > 0 && pos < st.totalPassos) {
+      barra();
+      const fins = Math.min(st.passosPerCompas - (pos % st.passosPerCompas), st.totalPassos - pos);
+      melTrossejar(Math.min(queda, fins)).forEach((d, k, arr) => {
+        const restaDespres = queda - arr.slice(0, k + 1).reduce((a, b) => a + b, 0);
+        els.push({ tipus: n.p ? 'nota' : 'silenci', d, p: n.p, idx: i, pos, lligada: !!n.p && (restaDespres > 0 || Math.min(queda, fins) < queda) });
+        pos += d;
+      });
+      queda -= Math.min(queda, fins);
+    }
+  });
+  while (pos < st.totalPassos) {
+    barra();
+    const fins = Math.min(st.passosPerCompas - (pos % st.passosPerCompas), st.totalPassos - pos);
+    melTrossejar(fins).forEach(d => { els.push({ tipus: 'silenci', d, pos, farcit: true }); pos += d; });
+  }
+  return { els, st };
 }
 
+/* ---- Dibuix ---- */
+function clauSol(x, yG) {                            // yG = línia de Sol (2a des de baix)
+  const e = (MEL_GAP / 10).toFixed(3);
+  return `<g transform="translate(${x} ${yG}) scale(${e})" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">`
+    + '<path d="M6,-36 C-10,-27 -17,-8 -14,4 C-11,15 2,21 11,14 C19,7 17,-5 7,-8 C-3,-10 -9,1 -5,9"/>'
+    + '<path d="M6,-36 L5,28"/><path d="M5,28 C5,37 -2,40 -7,36"/></g>';
+}
+function melSilenciPath(d, x, y) {                   // y = línia central
+  if (d >= 16) return `<rect x="${x - 8}" y="${y - MEL_GAP}" width="16" height="${MEL_GAP * 0.55}" fill="#000"/>`;
+  if (d >= 8) return `<rect x="${x - 8}" y="${y - MEL_GAP * 0.55}" width="16" height="${MEL_GAP * 0.55}" fill="#000"/>`;
+  if (d >= 4) return `<path d="M${x - 3},${y - 14} c4,4 4,6 1,10 c-3,4 -3,6 1,9 c-5,-3 -9,-1 -7,4 c-3,-5 -1,-9 4,-9 c-4,-5 -5,-8 0,-14" fill="#000" stroke="#000" stroke-width="1"/>`;
+  const flags = d >= 2 ? 1 : 2;
+  let s = `<line x1="${x + 4}" y1="${y - 10}" x2="${x - 3}" y2="${y + 10}" stroke="#000" stroke-width="1.8"/>`;
+  for (let i = 0; i < flags; i++) {
+    const yy = y - 10 + i * 8;
+    s += `<circle cx="${x - 2}" cy="${yy}" r="3" fill="#000"/><path d="M${x - 2},${yy} C${x + 3},${yy - 4} ${x + 6},${yy - 2} ${x + 5},${yy + 2}" fill="none" stroke="#000" stroke-width="1.8"/>`;
+  }
+  return s;
+}
+function svgSistemaMelodia(els, st, opts) {
+  const W = 1000, xIni = 78, xFi = W - 14;
+  const notes = els.filter(e => e.tipus !== 'barra');
+  const diats = els.filter(e => e.p).map(e => melParsePitch(e.p).diat);
+  const rel = dd => -(dd - MEL_BASE) * MEL_GAP / 2;                    // 0 = línia inferior (E4)
+  let sostre = -4 * MEL_GAP - 6, terra = 8;
+  diats.forEach(dd => { sostre = Math.min(sostre, rel(dd) - 34); terra = Math.max(terra, rel(dd) + 34); });
+  const staffB = 14 - sostre;
+  const H = staffB + terra + 12;
+  const yN = dd => staffB + rel(dd);
+  const yLinia = i => staffB - i * MEL_GAP;                            // i = 0..4
+  // amplada proporcional a la durada
+  const pes = d => d >= 16 ? 2.6 : d >= 8 ? 2 : d >= 4 ? 1.5 : d >= 2 ? 1 : 0.75;
+  const totalPes = notes.reduce((a, e) => a + pes(e.d), 0) + els.filter(e => e.tipus === 'barra').length * 0.35;
+  const unitat = (xFi - xIni - 16) / Math.max(totalPes, 1);
+  let s = `<svg class="svg-diag" data-staffb="${staffB}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">`;
+  for (let i = 0; i < 5; i++) s += `<line x1="10" y1="${yLinia(i)}" x2="${xFi}" y2="${yLinia(i)}" stroke="#000" stroke-width="1.2"/>`;
+  s += `<line x1="10" y1="${yLinia(0)}" x2="10" y2="${yLinia(4)}" stroke="#000" stroke-width="2.5"/>`;
+  s += `<line x1="${xFi}" y1="${yLinia(0)}" x2="${xFi}" y2="${yLinia(4)}" stroke="#000" stroke-width="2.5"/>`;
+  s += clauSol(34, yLinia(1));
+  if (opts.compas) s += `<text x="62" y="${yLinia(3) + 4}" font-size="${MEL_GAP * 2.1}" font-weight="bold" text-anchor="middle">${st.num}</text><text x="62" y="${yLinia(1) + 4}" font-size="${MEL_GAP * 2.1}" font-weight="bold" text-anchor="middle">${st.den}</text>`;
+  // posicions
+  let x = xIni;
+  const posX = [];
+  els.forEach(e => {
+    if (e.tipus === 'barra') { posX.push(x + unitat * 0.17); x += unitat * 0.35; return; }
+    posX.push(x + pes(e.d) * unitat / 2);
+    x += pes(e.d) * unitat;
+  });
+  // agrupacions de corxeres dins del mateix temps
+  const grups = [];
+  let g = [];
+  els.forEach((e, i) => {
+    const corx = e.tipus === 'nota' && e.d <= 2;
+    const mateixTemps = g.length && Math.floor(els[g[g.length - 1]].pos / st.passosPerTemps) === Math.floor(e.pos / st.passosPerTemps);
+    if (corx && (!g.length || mateixTemps)) g.push(i);
+    else { if (g.length > 1) grups.push(g); g = corx ? [i] : []; }
+  });
+  if (g.length > 1) grups.push(g);
+  const agrupada = new Set(grups.flat());
+
+  els.forEach((e, i) => {
+    const x0 = posX[i];
+    if (e.tipus === 'barra') { s += `<line x1="${x0}" y1="${yLinia(0)}" x2="${x0}" y2="${yLinia(4)}" stroke="#000" stroke-width="1.5"/>`; return; }
+    if (e.tipus === 'silenci') {
+      s += melSilenciPath(e.d, x0, yLinia(2));
+      if (e.d === 3 || e.d === 6 || e.d === 12) s += `<circle cx="${x0 + 11}" cy="${yLinia(2) - 3}" r="2.4" fill="#000"/>`;
+      if (opts.selIdx === e.idx && e.idx !== undefined) s += `<rect x="${x0 - 14}" y="${yLinia(4) - 6}" width="28" height="${4 * MEL_GAP + 12}" fill="#2980b9" fill-opacity="0.15"/>`;
+      if (e.idx !== undefined) s += `<rect class="cap-nota" data-idx="${e.idx}" x="${x0 - 12}" y="${yLinia(4) - 6}" width="24" height="${4 * MEL_GAP + 12}" fill="transparent"/>`;
+      return;
+    }
+    const p = melParsePitch(e.p); if (!p) return;
+    const y = yN(p.diat), buida = e.d >= 8;
+    if (opts.selIdx === e.idx) s += `<rect x="${x0 - 13}" y="${y - 12}" width="26" height="24" rx="4" fill="#2980b9" fill-opacity="0.18"/>`;
+    // línies addicionals
+    for (let dd = MEL_BASE - 2; dd >= p.diat; dd -= 2) s += `<line x1="${x0 - 12}" y1="${yN(dd)}" x2="${x0 + 12}" y2="${yN(dd)}" stroke="#000" stroke-width="1.2"/>`;
+    for (let dd = MEL_BASE + 10; dd <= p.diat; dd += 2) s += `<line x1="${x0 - 12}" y1="${yN(dd)}" x2="${x0 + 12}" y2="${yN(dd)}" stroke="#000" stroke-width="1.2"/>`;
+    s += `<ellipse class="cap-nota" data-idx="${e.idx}" cx="${x0}" cy="${y}" rx="6.6" ry="5" transform="rotate(-20 ${x0} ${y})" fill="${buida ? '#fff' : '#000'}" stroke="#000" stroke-width="${buida ? 2 : 1}"/>`;
+    if (p.alt) {
+      const ax = x0 - 17;
+      s += p.alt === '#'
+        ? `<path d="M${ax - 2},${y - 9}V${y + 8}M${ax + 2},${y - 8}V${y + 9}M${ax - 5},${y - 2}L${ax + 5},${y - 4}M${ax - 5},${y + 4}L${ax + 5},${y + 2}" stroke="#000" stroke-width="1.3" fill="none"/>`
+        : `<path d="M${ax - 2},${y - 12}V${y + 6} C${ax + 5},${y - 2} ${ax + 5},${y + 1} ${ax - 2},${y + 6}" stroke="#000" stroke-width="1.4" fill="none"/>`;
+    }
+    if (e.d === 3 || e.d === 6 || e.d === 12) s += `<circle cx="${x0 + 11}" cy="${y - (Math.round((MEL_BASE - p.diat) % 2) === 0 ? 5 : 0)}" r="2.4" fill="#000"/>`;
+    // plica
+    if (e.d < 16) {
+      const avall = p.diat >= MEL_BASE + 6;                       // per sobre de la línia central → plica cap avall
+      const xs = avall ? x0 - 6.3 : x0 + 6.3;
+      const yFi = avall ? y + 33 : y - 33;
+      s += `<line x1="${xs}" y1="${y}" x2="${xs}" y2="${yFi}" stroke="#000" stroke-width="1.6"/>`;
+      if (e.d <= 2 && !agrupada.has(i)) {                          // bandera solta
+        const dir = avall ? -1 : 1;
+        for (let f = 0; f < (e.d <= 1 ? 2 : 1); f++) {
+          const yf = yFi + dir * f * 8;
+          s += `<path d="M${xs},${yf} C${xs + 9},${yf + dir * 4} ${xs + 11},${yf + dir * 10} ${xs + 6},${yf + dir * 16}" fill="none" stroke="#000" stroke-width="2.4"/>`;
+        }
+      }
+    }
+    if (e.lligada && els[i + 1]) {
+      const x1 = posX[i + 1] === undefined ? x0 + 20 : posX[i + 1];
+      s += `<path d="M${x0 + 6},${y + 9} Q${(x0 + x1) / 2},${y + 20} ${x1 - 6},${y + 9}" fill="none" stroke="#000" stroke-width="1.6"/>`;
+    }
+  });
+  // barres d'unió
+  grups.forEach(gr => {
+    const ys = gr.map(i => yN(melParsePitch(els[i].p).diat));
+    const avall = gr.every(i => melParsePitch(els[i].p).diat >= MEL_BASE + 6);
+    const yBeam = avall ? Math.max(...ys) + 33 : Math.min(...ys) - 33;
+    const x1 = posX[gr[0]] + (avall ? -6.3 : 6.3), x2 = posX[gr[gr.length - 1]] + (avall ? -6.3 : 6.3);
+    gr.forEach(i => {
+      const y = yN(melParsePitch(els[i].p).diat);
+      const xs = posX[i] + (avall ? -6.3 : 6.3);
+      s += `<line x1="${xs}" y1="${y}" x2="${xs}" y2="${yBeam}" stroke="#000" stroke-width="1.6"/>`;
+    });
+    s += `<rect x="${x1 - 0.8}" y="${yBeam - (avall ? 5 : 0)}" width="${x2 - x1 + 1.6}" height="5" fill="#000"/>`;
+    if (gr.every(i => els[i].d <= 1)) s += `<rect x="${x1 - 0.8}" y="${yBeam + (avall ? -13 : 8)}" width="${x2 - x1 + 1.6}" height="5" fill="#000"/>`;
+  });
+  return s + '</svg>';
+}
+function svgMelodia(m, opts = {}) {
+  const { els, st } = melElements(m);
+  // repartim per sistemes: tallem per compassos
+  const perSistema = st.passosPerCompas >= 16 ? 2 : 3;
+  const sistemes = []; let act = [], compassos = 0;
+  els.forEach(e => {
+    if (e.tipus === 'barra') {
+      compassos++;
+      if (compassos >= perSistema) { sistemes.push(act); act = []; compassos = 0; return; }
+    }
+    act.push(e);
+  });
+  if (act.length) sistemes.push(act);
+  return sistemes.map((sis, i) => `<div class="sistema-melodia">${svgSistemaMelodia(sis, st, { ...opts, compas: i === 0 })}</div>`).join('');
+}
+
+/* ---- Editor ---- */
+function iconaFigura(d) {
+  const buida = d >= 8, ambPlica = d < 16;
+  let s = '<svg viewBox="0 0 26 34" xmlns="http://www.w3.org/2000/svg">';
+  s += `<ellipse cx="9" cy="26" rx="6.5" ry="5" transform="rotate(-20 9 26)" fill="${buida ? '#fff' : '#000'}" stroke="#000" stroke-width="${buida ? 2 : 1}"/>`;
+  if (ambPlica) s += '<line x1="15.3" y1="26" x2="15.3" y2="4" stroke="#000" stroke-width="1.8"/>';
+  if (d <= 2) s += '<path d="M15.3,4 C22,7 23,12 19,17" fill="none" stroke="#000" stroke-width="2.2"/>';
+  if (d <= 1) s += '<path d="M15.3,11 C22,14 23,19 19,24" fill="none" stroke="#000" stroke-width="2.2"/>';
+  return s + '</svg>';
+}
+(function initFigures() {
+  const c = $('mel-figures');
+  FIGURES.forEach(f => {
+    const b = document.createElement('button');
+    b.className = 'mel-btn mel-fig'; b.dataset.d = f.d; b.title = `${f.nom} (tecla ${f.tecla})`;
+    b.innerHTML = iconaFigura(f.d);
+    b.onclick = () => melCanviarFigura(f.d);
+    c.appendChild(b);
+  });
+})();
+function melRender() {
+  const cont = $('melodia-editor');
+  cont.innerHTML = svgMelodia(dadesMelodiaActual(), { selIdx: melSel });
+  cont.querySelectorAll('svg').forEach((svg, si) => {
+    svg.style.cursor = 'crosshair';
+    svg.addEventListener('mousemove', e => melFantasma(e, svg));
+    svg.addEventListener('mouseleave', () => { const f = svg.querySelector('.fantasma'); if (f) f.remove(); });
+    svg.addEventListener('click', e => melClic(e, svg));
+  });
+  document.querySelectorAll('#mel-figures .mel-fig').forEach(b => b.classList.toggle('actiu', +b.dataset.d === melFigura));
+  $('mel-puntet').classList.toggle('actiu', melPuntet);
+  $('mel-silenci').classList.toggle('actiu', melSilenci);
+  document.querySelectorAll('#mel-alteracions button').forEach(b => b.classList.toggle('actiu', b.dataset.alt === melAlt && melAlt !== ''));
+  const st = melStats();
+  const ocupat = melTotal();
+  $('mel-info').textContent = `${$('melodia-compassos').value} compassos · ${Math.round(ocupat / st.passosPerCompas * 10) / 10} plens`;
+  desar();
+}
+function melCoordsSVG(e, svg) {
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function melDiatDesDeY(y, svg) {
+  // busquem la línia inferior a partir de l'alçada del sistema
+  const staffB = +svg.dataset.staffb;
+  return MEL_BASE + Math.round((staffB - y) * 2 / MEL_GAP);
+}
+function melFantasma(e, svg) {
+  const p = melCoordsSVG(e, svg);
+  const vell = svg.querySelector('.fantasma'); if (vell) vell.remove();
+  if (melSilenci) return;
+  const diat = melDiatDesDeY(p.y, svg);
+  if (diat < MEL_BASE - 8 || diat > MEL_BASE + 18) return;
+  const staffB = +svg.dataset.staffb;
+  const y = staffB - (diat - MEL_BASE) * MEL_GAP / 2;
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+  g.setAttribute('class', 'fantasma'); g.setAttribute('cx', p.x); g.setAttribute('cy', y);
+  g.setAttribute('rx', 6.6); g.setAttribute('ry', 5); g.setAttribute('fill', '#2980b9'); g.setAttribute('opacity', '.45');
+  svg.appendChild(g);
+}
+function melClic(e, svg) {
+  const cap = e.target.closest ? e.target.closest('.cap-nota') : null;
+  if (cap) { melSel = +cap.dataset.idx; melRender(); return; }
+  const p = melCoordsSVG(e, svg);
+  if (melSilenci) { melAfegir(null); return; }
+  const diat = melDiatDesDeY(p.y, svg);
+  if (diat < MEL_BASE - 10 || diat > MEL_BASE + 20) return;
+  melAfegir(melPitchDe(diat, melAlt));
+}
+function dadesMelodiaActual() {
+  return { nom: $('melodia-titol').value.trim(), notes: JSON.parse(JSON.stringify(melNotes)), compas: $('melodia-compas').value, compassos: $('melodia-compassos').value };
+}
+function melConvertirAntic(it) {                    // melodies fetes amb el piano roll antic
+  if (!Array.isArray(it.notes) || !it.notes.length || it.notes[0].startCol === undefined) return it;
+  const st = statsCompas(it.compas, it.compassos);
+  const ord = [...it.notes].sort((a, b) => a.startCol - b.startCol);
+  const noves = []; let pos = 0;
+  ord.forEach((n, i) => {
+    if (n.startCol > pos) noves.push({ d: n.startCol - pos, p: null });
+    const seg = i + 1 < ord.length ? ord[i + 1].startCol : st.totalPassos;
+    const d = Math.max(1, Math.min(n.durationCols, seg - n.startCol));
+    noves.push({ d, p: n.pitch });
+    pos = n.startCol + d;
+  });
+  return { ...it, notes: noves };
+}
 function obrirEditorMelodia(it = null) {
   melodiaEditant = it ? it.id : null;
-  $('melodia-titol').value = it ? it.nom : '';
-  $('melodia-compas').value = it ? it.compas : '4/4';
-  $('melodia-compassos').value = it ? it.compassos : '2';
-  prNotesArray = it ? JSON.parse(JSON.stringify(it.notes)) : [];
-  noteIdCounter = prNotesArray.length + 1;
-  prNotesArray.forEach((n, i) => n.id = 'n_' + i);
-  iniciarPianoRoll();
+  const dades = it ? melConvertirAntic(it) : null;
+  $('melodia-titol').value = dades ? dades.nom : '';
+  $('melodia-compas').value = dades ? dades.compas : '4/4';
+  $('melodia-compassos').value = dades ? dades.compassos : '2';
+  melNotes = dades ? JSON.parse(JSON.stringify(dades.notes)) : [];
+  melSel = -1; melHistoria = []; melSilenci = false; melAlt = '';
   botoGuardar('btn-guardar-melodia', !!it);
   obrirModal('modalMelodia');
+  carregarPiano();
+  estatPiano();
+  melRender();
 }
-function iniciarPianoRoll() {
-  const st = getGridStats();
-  prNotesArray = prNotesArray.filter(n => n.startCol < st.totalPassos);
-  prNotesArray.forEach(n => { n.durationCols = Math.min(n.durationCols, st.totalPassos - n.startCol); });
-  let h = '<div class="pr-wrapper"><div class="pr-keys">';
-  PR_NOTES.forEach(n => h += `<div class="pr-key ${n.black ? 'black' : 'white'}">${n.label}</div>`);
-  h += '</div><div class="pr-grid-container" id="pr-grid-main">';
-  PR_NOTES.forEach(n => {
-    h += '<div class="pr-row">';
-    for (let col = 0; col < st.totalPassos; col++) {
-      let cls = 'pr-cell ' + (Math.floor(col / st.passosPerTemps) % 2 === 0 ? 'beat-odd' : 'beat-even');
-      if (col > 0 && col % st.passosPerCompas === 0) cls += ' measure-start';
-      h += `<div class="${cls}" onclick="afegirNotaPR('${n.id}', ${col})"></div>`;
-    }
-    h += '</div>';
-  });
-  h += '<div class="pr-notes-layer" id="pr-notes-layer"></div></div></div>';
-  $('piano-roll-editor').innerHTML = h;
-  renderPRNotesLayer();
-  actualitzarPreviewMelodia();
-}
-function afegirNotaPR(pitch, col) {
-  if (isResizing || acabaDeRedimensionar) return;
-  const st = getGridStats();
-  const dur = Math.min(st.passosPerTemps, st.totalPassos - col);
-  prNotesArray.push({ id: 'n_' + (noteIdCounter++), pitch, startCol: col, durationCols: dur });
-  renderPRNotesLayer();
-  actualitzarPreviewMelodia();
-}
-function esborrarNota(id, e) {
-  e.stopPropagation();
-  if (acabaDeRedimensionar) return;         // el clic que arriba després d'arrossegar no esborra
-  prNotesArray = prNotesArray.filter(n => n.id !== id);
-  renderPRNotesLayer();
-  actualitzarPreviewMelodia();
-}
-function renderPRNotesLayer() {
-  const layer = $('pr-notes-layer'); if (!layer) return;
-  layer.innerHTML = '';
-  prNotesArray.forEach(n => {
-    const row = PR_NOTES.findIndex(k => k.id === n.pitch);
-    if (row < 0) return;
-    const d = document.createElement('div');
-    d.className = 'pr-note';
-    d.style.left = (n.startCol * CELL_WIDTH + 1) + 'px';
-    d.style.top = (row * 30 + 2) + 'px';
-    d.style.width = (n.durationCols * CELL_WIDTH - 2) + 'px';
-    d.onclick = e => esborrarNota(n.id, e);
-    const hdl = document.createElement('div');
-    hdl.className = 'pr-note-handle';
-    hdl.onmousedown = e => startResizingNota(e, n.id);
-    hdl.onclick = e => e.stopPropagation();
-    d.appendChild(hdl);
-    layer.appendChild(d);
-  });
-}
-function startResizingNota(e, id) {
-  e.stopPropagation(); e.preventDefault();
-  isResizing = true; activeDragNoteId = id; dragStartX = e.clientX;
-  startDuration = prNotesArray.find(n => n.id === id).durationCols;
-  document.addEventListener('mousemove', onDragNota);
-  document.addEventListener('mouseup', stopResizingNota);
-}
-function onDragNota(e) {
-  const n = prNotesArray.find(x => x.id === activeDragNoteId); if (!n) return;
-  const st = getGridStats();
-  let d = startDuration + Math.round((e.clientX - dragStartX) / CELL_WIDTH);
-  d = Math.max(1, Math.min(d, st.totalPassos - n.startCol));
-  if (d !== n.durationCols) { n.durationCols = d; renderPRNotesLayer(); }
-}
-function stopResizingNota() {
-  isResizing = false; activeDragNoteId = null;
-  acabaDeRedimensionar = true; setTimeout(() => acabaDeRedimensionar = false, 0);
-  document.removeEventListener('mousemove', onDragNota);
-  document.removeEventListener('mouseup', stopResizingNota);
-  actualitzarPreviewMelodia();
-}
-function netejarPianoRoll() { aturarAudioMelodia(); prNotesArray = []; iniciarPianoRoll(); }
-
-// --- Conversió a ABC: lligadures, compassos i durades vàlides ---
-function notaToABC(n) {
-  const m = n.match(/^([A-G])(#?)(\d)$/); if (!m) return 'z';
-  const o = +m[3];
-  let b = o >= 5 ? m[1].toLowerCase() + "'".repeat(o - 5) : m[1] + ','.repeat(Math.max(0, 4 - o));
-  return (m[2] ? '^' : '') + b;
-}
-const DURADES_OK = [16, 12, 8, 6, 4, 3, 2, 1];   // en semicorxeres
-function trossejarDurada(d) { const o = []; while (d > 0) { const x = DURADES_OK.find(v => v <= d); o.push(x); d -= x; } return o; }
-function construirStringABC(m) {
-  const st = statsCompas(m.compas, m.compassos);
-  const notes = (m.notes || []).filter(n => n.startCol < st.totalPassos);
-  const inicis = [...new Set(notes.map(n => n.startCol))].sort((a, b) => a - b);
-  const segments = [];
-  let c = 0;
-  inicis.forEach((s, k) => {
-    if (s > c) segments.push({ start: c, dur: s - c, notes: null });
-    const grup = notes.filter(n => n.startCol === s);
-    const seg = k + 1 < inicis.length ? inicis[k + 1] : st.totalPassos;
-    const dur = Math.min(Math.max(...grup.map(n => n.durationCols)), seg - s);
-    const altures = [...new Set(grup.map(n => n.pitch))];
-    segments.push({ start: s, dur, notes: altures });
-    c = s + dur;
-  });
-  if (c < st.totalPassos) segments.push({ start: c, dur: st.totalPassos - c, notes: null });
-
-  let cos = '';
-  segments.forEach(sg => {
-    let pos = sg.start, rest = sg.dur;
-    while (rest > 0) {
-      const fins = Math.min(rest, st.passosPerCompas - (pos % st.passosPerCompas));
-      let parts;
-      if (sg.notes) parts = trossejarDurada(fins);
-      else {                                   // silencis: primer fins al temps següent, després temps sencers
-        parts = [];
-        let q = pos, r = fins;
-        const fiTemps = st.passosPerTemps - (q % st.passosPerTemps);
-        if (fiTemps < st.passosPerTemps) { const x = Math.min(fiTemps, r); parts.push(...trossejarDurada(x)); r -= x; }
-        if (r > 0) parts.push(...trossejarDurada(r));
-      }
-      parts.forEach((p, i) => {
-        if (pos > 0 && pos % st.passosPerCompas === 0) cos += ' | ';
-        else if (pos % st.passosPerTemps === 0) cos += ' ';
-        let tok;
-        if (sg.notes) {
-          tok = sg.notes.length > 1 ? '[' + sg.notes.map(notaToABC).join('') + ']' : notaToABC(sg.notes[0]);
-          tok += p;
-          const queda = (i < parts.length - 1) || (rest - fins > 0);
-          if (queda) tok += '-';
-        } else tok = 'z' + p;
-        cos += tok;
-        pos += p;
-      });
-      rest -= fins;
-    }
-  });
-  return `X:1\nM:${m.compas || '4/4'}\nL:1/16\nK:C\n${cos.trim()} |]`;
-}
-function renderABC(el, m) {
-  if (typeof ABCJS === 'undefined') { el.innerHTML = '<p style="color:#c00">No s\'ha pogut carregar la llibreria de partitures (cal connexió a internet).</p>'; return; }
-  ABCJS.renderAbc(el, construirStringABC(m), { responsive: 'resize', add_classes: true, paddingleft: 0, paddingright: 0 });
-}
-function actualitzarPreviewMelodia() { renderABC($('preview-abc'), dadesMelodiaActual()); }
 function guardarMelodia() {
   aturarAudioMelodia();
   const dades = dadesMelodiaActual();
-  dades.notes.forEach(n => delete n.id);
+  if (!dades.notes.some(n => n.p)) { alert('Encara no hi ha cap nota.'); return; }
   if (melodiaEditant) Object.assign(trobarItem(melodiaEditant), dades);
   else afegirItem({ inst: 'teclat', tipus: 'melodia', ...dades }, false);
   tancarModal('modalMelodia');
   renderTot();
+}
+
+/* ---- Àudio ---- */
+let melodiaTonePart = null, isMelodiaPlaying = false, synthMelodia = null, synthMetronom = null, finalMelodiaId = null;
+let pianoSampler = null, pianoLlest = false, pianoFallat = false;
+
+// Piano de veritat (mostres de la Salamander Grand, via tonejs.github.io).
+// Si no es poden descarregar (sense internet), fem servir un piano sintetitzat.
+function carregarPiano() {
+  if (pianoSampler || pianoFallat || typeof Tone === 'undefined') return;
+  try {
+    pianoSampler = new Tone.Sampler({
+      urls: { 'C2': 'C2.mp3', 'F#2': 'Fs2.mp3', 'C3': 'C3.mp3', 'F#3': 'Fs3.mp3', 'C4': 'C4.mp3', 'F#4': 'Fs4.mp3', 'C5': 'C5.mp3', 'F#5': 'Fs5.mp3', 'C6': 'C6.mp3' },
+      baseUrl: 'https://tonejs.github.io/audio/salamander/',
+      release: 1.1,
+      onload: () => { pianoLlest = true; estatPiano(); },
+      onerror: () => { pianoFallat = true; pianoSampler = null; estatPiano(); }
+    }).toDestination();
+    pianoSampler.volume.value = -4;
+    setTimeout(() => { if (!pianoLlest) { pianoFallat = true; estatPiano(); } }, 4000);
+  } catch (e) { pianoFallat = true; }
+}
+function estatPiano() {
+  const el = $('mel-so'); if (!el) return;
+  el.textContent = pianoLlest ? '🎹 So: piano' : pianoFallat ? '🎹 So: piano (sintetitzat)' : '🎹 Carregant el so de piano…';
+}
+function instrumentMelodia() {
+  if (pianoLlest && pianoSampler) return pianoSampler;
+  if (!synthMelodia) {
+    // piano sintetitzat: atac ràpid i cua que va morint
+    synthMelodia = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'triangle8' },
+      envelope: { attack: 0.004, decay: 1.6, sustain: 0.04, release: 1.1 }
+    }).toDestination();
+    synthMelodia.volume.value = -6;
+  }
+  return synthMelodia;
 }
 function togglePlayMelodia() {
   if (!audioDisponible()) return;
   if (isMelodiaPlaying) { aturarAudioMelodia(); return; }
   aturarBateria();
   Tone.start().then(() => {
-    if (!synthMelodia) {
-      synthMelodia = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle' }, envelope: { attack: .05, decay: .1, sustain: .3, release: 1 } }).toDestination();
-      synthMelodia.volume.value = -5;
+    carregarPiano();
+    const instrument = instrumentMelodia();
+    if (!synthMetronom) {
       synthMetronom = new Tone.MembraneSynth().toDestination();
-      synthMetronom.volume.value = -15;
+      synthMetronom.volume.value = -16;
     }
+    const ambMetronom = $('mel-metronom').checked;
     Tone.Transport.bpm.value = parseInt($('tempo-melodia').value) || 90;
-    const st = getGridStats();
+    const st = melStats();
     const sem = Tone.Time('16n').toSeconds();
     const events = [];
-    for (let col = 0; col < st.totalPassos; col += st.passosPerTemps)
-      events.push({ time: col * sem, metro: true, note: col % st.passosPerCompas === 0 ? 'C3' : 'C4', vel: col % st.passosPerCompas === 0 ? 1 : .3 });
-    prNotesArray.forEach(n => events.push({ time: n.startCol * sem, note: n.pitch, dur: n.durationCols * sem }));
+    if (ambMetronom)
+      for (let c = 0; c < st.totalPassos; c += st.passosPerTemps)
+        events.push({ time: c * sem, metro: true, note: c % st.passosPerCompas === 0 ? 'C3' : 'C4', vel: c % st.passosPerCompas === 0 ? 1 : .3 });
+    let pos = 0;
+    melNotes.forEach(n => { if (n.p) events.push({ time: pos * sem, note: n.p, dur: n.d * sem * 0.96 }); pos += n.d; });
     melodiaTonePart = new Tone.Part((time, ev) => {
       if (ev.metro) synthMetronom.triggerAttackRelease(ev.note, '16n', time, ev.vel);
-      else synthMelodia.triggerAttackRelease(ev.note, ev.dur, time);
+      else instrument.triggerAttackRelease(ev.note, ev.dur, time, 0.85);
     }, events).start(0);
     finalMelodiaId = Tone.Transport.scheduleOnce(() => Tone.Draw.schedule(aturarAudioMelodia, Tone.now()), st.totalPassos * sem);
     Tone.Transport.start();
@@ -1798,6 +2051,22 @@ function aturarAudioMelodia() {
   $('btn-play-melodia').innerHTML = '▶️ Escoltar';
   isMelodiaPlaying = false;
 }
+
+/* ---- Tecles ---- */
+document.addEventListener('keydown', e => {
+  if ($('modalMelodia').style.display !== 'flex') return;
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  const f = FIGURES.find(x => x.tecla === e.key);
+  if (f) { melFigura = f.d; melRender(); e.preventDefault(); return; }
+  if (e.key === '.') { melPuntet = !melPuntet; melRender(); e.preventDefault(); }
+  else if (e.key.toLowerCase() === 'r') { melSilenci = !melSilenci; melRender(); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { melMouSel(1); e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { melMouSel(-1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { melSel = Math.max(0, melSel - 1); melRender(); e.preventDefault(); }
+  else if (e.key === 'ArrowRight') { melSel = Math.min(melNotes.length - 1, melSel + 1); melRender(); e.preventDefault(); }
+  else if (e.key === 'Backspace' || e.key === 'Delete') { melEsborrarSel(); e.preventDefault(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { melDesfer(); e.preventDefault(); }
+});
 
 /* =========================================================
    DESAR / OBRIR
@@ -1828,6 +2097,13 @@ function carregarEstat(e) {
   renderTot();
   return true;
 }
+let ultimaSessio = null;
+function recuperarUltima() {
+  if (!ultimaSessio) return;
+  if (items.length && !confirm('Això substituirà el que tens ara. Continuo?')) return;
+  carregarEstat(ultimaSessio);
+  $('btn-recuperar').style.display = 'none';
+}
 function desar() { programarPagines(); try { localStorage.setItem(CLAU_LOCAL, JSON.stringify(estatActual())); } catch (e) { } }
 function exportarJSON() {
   const nom = (textCapcalera() || 'canco').toLowerCase().replace(/[^a-z0-9àèéíïòóúüç]+/gi, '-').replace(/^-|-$/g, '');
@@ -1854,9 +2130,14 @@ function netejarTot() {
 
 // Inici
 (function inici() {
-  let e = null;
-  try { e = JSON.parse(localStorage.getItem(CLAU_LOCAL)); } catch (err) { }
-  if (!carregarEstat(e)) renderTot();
+  // sempre comencem en blanc; l'última cançó es pot recuperar amb el botó
+  let desada = null;
+  try { desada = JSON.parse(localStorage.getItem(CLAU_LOCAL)); } catch (err) { }
+  if (desada && Array.isArray(desada.items) && desada.items.length) {
+    ultimaSessio = desada;
+    $('btn-recuperar').style.display = 'flex';
+  }
+  renderTot();
   renderMarca();
 })();
 </script>
