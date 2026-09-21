@@ -225,6 +225,16 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .mel-fig svg { display: block; height: 34px; width: 26px; }
 .mel-editor { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px; min-height: 160px; }
 .mel-editor .fantasma { pointer-events: none; }
+.btn-compartir { background: #f59f00; }
+.biblio-cerca { display: flex; gap: 8px; margin-bottom: 12px; }
+.biblio-llista { text-align: left; max-height: 58vh; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+.biblio-fila { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+.biblio-fila:hover { background: #fffbea; }
+.biblio-fila .t { font-weight: bold; }
+.biblio-fila .m { font-size: 12px; color: #777; }
+.biblio-fila .i { margin-left: auto; font-size: 18px; white-space: nowrap; }
+.biblio-buit { padding: 30px; text-align: center; color: #888; }
+#avis { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #2c3e50; color: #fff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.3); z-index: 3000; font-size: 14px; display: none; max-width: 90vw; }
 .sec-baix .sistema-baix + .sistema-baix { margin-top: 10px; }
 .subtitol-pag { font-size: 11pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; color: #555; border-bottom: 0.3mm solid #999; padding-bottom: 1mm; margin-bottom: 3mm; }
 .bat-fila { display: flex; gap: 6mm; justify-content: center; }
@@ -327,6 +337,10 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
     <button class="btn-accio btn-outline" id="btn-previsualitzar" onclick="togglePrevisualitzar()">👁️ Vista prèvia A4</button>
     <button class="btn-accio btn-imprimir" onclick="imprimirAra()">🖨️ Imprimir / PDF</button>
     <p class="ajuda">Al diàleg d'impressió tria <b>A4</b>, orientació <b>horitzontal</b> i marges <b>cap</b>/per defecte.</p>
+    <div class="hr-div"></div>
+    <label>👥 Professorat</label>
+    <button class="btn-accio btn-compartir" onclick="compartirCanco()">📤 Compartir amb el professorat</button>
+    <button class="btn-accio btn-outline" onclick="obrirBiblioteca()">📚 Biblioteca compartida</button>
     <button class="btn-accio btn-outline" id="btn-recuperar" style="display:none" onclick="recuperarUltima()">↩️ Recuperar l'última cançó</button>
     <div class="fila-2">
       <button class="btn-accio btn-outline" onclick="exportarJSON()">💾 Desar</button>
@@ -344,6 +358,24 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 </div>
 
 <div id="pagines"></div>
+
+<!-- ===== BIBLIOTECA COMPARTIDA ===== -->
+<div id="modalBiblio" class="modal-overlay" onclick="tancarSiFora(event)">
+  <div class="modal-contingut" style="max-width:760px">
+    <h2>📚 Biblioteca compartida</h2>
+    <p class="ajuda" style="margin-bottom:12px">Cançons que ha compartit el professorat. Clica «Obrir» per carregar-la a l'eina, imprimir-la o adaptar-la.</p>
+    <div class="biblio-cerca">
+      <input type="text" id="biblio-filtre" placeholder="🔎 Cerca per títol, grup o professor/a" oninput="pintarBiblioteca()">
+      <button class="btn-accio btn-outline" style="width:auto" onclick="obrirBiblioteca(true)">🔄</button>
+    </div>
+    <div class="biblio-llista" id="biblio-llista"></div>
+    <div style="margin-top:14px;display:flex;justify-content:center;gap:10px">
+      <button class="btn-accio btn-outline" onclick="canviarCodiBiblio()">🔑 Canviar codi</button>
+      <button class="btn-accio btn-outline" onclick="tancarModal('modalBiblio')">Tancar</button>
+    </div>
+  </div>
+</div>
+<div id="avis"></div>
 
 <!-- ===== MODAL CATÀLEG (compartit) ===== -->
 <div id="modalCataleg" class="modal-overlay" onclick="tancarSiFora(event)">
@@ -2067,6 +2099,123 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Backspace' || e.key === 'Delete') { melEsborrarSel(); e.preventDefault(); }
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { melDesfer(); e.preventDefault(); }
 });
+
+/* =========================================================
+   BIBLIOTECA COMPARTIDA (Google Drive via Apps Script)
+   ========================================================= */
+// Adreça de l'aplicació web de Google Apps Script (Implementa → Aplicació web).
+const URL_BIBLIOTECA = '';
+const CLAU_CODI = 'generador-diagrames-codi', CLAU_AUTOR = 'generador-diagrames-autor';
+let biblioLlista = [];
+
+function avis(text, ms = 3500) {
+  const a = $('avis'); a.textContent = text; a.style.display = 'block';
+  clearTimeout(avis.t); avis.t = setTimeout(() => a.style.display = 'none', ms);
+}
+function llegirLocal(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function escriureLocal(k, v) { try { localStorage.setItem(k, v); } catch (e) { } }
+function biblioConfigurada() {
+  if (URL_BIBLIOTECA) return true;
+  alert("La biblioteca compartida encara no està configurada.\nCal enganxar l'adreça de l'script de Google a URL_BIBLIOTECA (dins d'index.html).");
+  return false;
+}
+function codiBiblio(forcar) {
+  let c = forcar ? '' : llegirLocal(CLAU_CODI);
+  if (!c) {
+    c = (prompt('Escriu el codi del professorat per accedir a la biblioteca compartida:') || '').trim();
+    if (c) escriureLocal(CLAU_CODI, c);
+  }
+  return c;
+}
+function canviarCodiBiblio() { if (codiBiblio(true)) obrirBiblioteca(true); }
+async function peticioBiblio(metode, dades) {
+  const codi = codiBiblio(false);
+  if (!codi) throw new Error('sense-codi');
+  let r;
+  if (metode === 'GET') {
+    const q = new URLSearchParams({ codi, ...(dades || {}) });
+    r = await fetch(URL_BIBLIOTECA + '?' + q.toString());
+  } else {
+    // text/plain evita la comprovació prèvia CORS de Google
+    r = await fetch(URL_BIBLIOTECA, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ codi, ...dades }) });
+  }
+  const j = await r.json();
+  if (!j.ok && j.error === 'codi') {
+    escriureLocal(CLAU_CODI, '');
+    throw new Error('codi');
+  }
+  return j;
+}
+function missatgeError(e) {
+  if (e.message === 'codi') return 'El codi del professorat no és correcte.';
+  if (e.message === 'sense-codi') return 'Cal el codi del professorat.';
+  return "No s'ha pogut connectar amb la biblioteca. Comprova la connexió a internet.";
+}
+function instrumentsCanco() {
+  return Object.keys(INSTRUMENTS).filter(inst => items.some(i => i.inst === inst));
+}
+async function compartirCanco(sobreescriure = false) {
+  if (!biblioConfigurada()) return;
+  if (!items.length) { alert('Afegeix algun diagrama abans de compartir.'); return; }
+  const titol = $('titolInput').value.trim();
+  if (!titol) { alert('Posa el títol de la cançó abans de compartir-la.'); $('titolInput').focus(); return; }
+  let autor = llegirLocal(CLAU_AUTOR);
+  if (!sobreescriure) {
+    autor = (prompt('El teu nom (sortirà a la biblioteca):', autor) ?? null);
+    if (autor === null) return;
+    autor = autor.trim(); escriureLocal(CLAU_AUTOR, autor);
+  }
+  const nom = [titol, $('artistaInput').value.trim()].filter(Boolean).join(' - ');
+  avis('📤 Compartint…', 20000);
+  try {
+    const j = await peticioBiblio('POST', {
+      nom, sobreescriure,
+      canco: estatActual(),
+      info: { titol, artista: $('artistaInput').value.trim(), autor, instruments: instrumentsCanco() }
+    });
+    if (!j.ok && j.error === 'existeix') {
+      $('avis').style.display = 'none';
+      if (confirm(`Ja hi ha una cançó que es diu «${nom}» a la biblioteca.\nLa vols substituir per aquesta versió?`)) compartirCanco(true);
+      return;
+    }
+    if (!j.ok) throw new Error(j.error || 'error');
+    avis(`✅ «${nom}» ja és a la biblioteca compartida`);
+  } catch (e) { $('avis').style.display = 'none'; alert(missatgeError(e)); }
+}
+async function obrirBiblioteca(refrescar) {
+  if (!biblioConfigurada()) return;
+  obrirModal('modalBiblio');
+  if (biblioLlista.length && !refrescar) { pintarBiblioteca(); return; }
+  $('biblio-llista').innerHTML = '<div class="biblio-buit">Carregant…</div>';
+  try {
+    const j = await peticioBiblio('GET');
+    biblioLlista = j.llista || [];
+    pintarBiblioteca();
+  } catch (e) { $('biblio-llista').innerHTML = `<div class="biblio-buit">${esc(missatgeError(e))}</div>`; }
+}
+function pintarBiblioteca() {
+  const f = $('biblio-filtre').value.trim().toLowerCase();
+  const llista = biblioLlista.filter(c => !f || [c.nom, c.titol, c.artista, c.autor].join(' ').toLowerCase().includes(f));
+  if (!llista.length) { $('biblio-llista').innerHTML = `<div class="biblio-buit">${biblioLlista.length ? 'Cap cançó coincideix amb la cerca.' : 'Encara no hi ha cap cançó compartida.'}</div>`; return; }
+  $('biblio-llista').innerHTML = llista.map(c => {
+    const data = new Date(c.data).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    const icones = (c.instruments || []).map(i => (INSTRUMENTS[i] || {}).icona || '').join(' ');
+    return `<div class="biblio-fila"><div><div class="t">${esc(c.titol || c.nom)}${c.artista ? ' <span style="font-weight:normal;color:#666">— ' + esc(c.artista) + '</span>' : ''}</div>
+      <div class="m">${c.autor ? 'Compartida per ' + esc(c.autor) + ' · ' : ''}${data}</div></div>
+      <span class="i">${icones}</span><button class="btn-accio" style="width:auto" onclick="obrirDeBiblioteca('${esc(c.id)}')">Obrir</button></div>`;
+  }).join('');
+}
+async function obrirDeBiblioteca(id) {
+  if (items.length && !confirm('Això substituirà el que tens ara a la pantalla. Continuo?')) return;
+  avis('📥 Obrint…', 20000);
+  try {
+    const j = await peticioBiblio('GET', { id });
+    if (!j.ok || !carregarEstat(j.canco)) throw new Error('format');
+    tancarModal('modalBiblio');
+    renderMarca();
+    avis('✅ Cançó carregada');
+  } catch (e) { $('avis').style.display = 'none'; alert(e.message === 'format' ? 'Aquesta cançó no es pot obrir.' : missatgeError(e)); }
+}
 
 /* =========================================================
    DESAR / OBRIR
