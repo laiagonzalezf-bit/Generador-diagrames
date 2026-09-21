@@ -232,7 +232,8 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .biblio-fila:hover { background: #fffbea; }
 .biblio-fila .t { font-weight: bold; }
 .biblio-fila .m { font-size: 12px; color: #777; }
-.biblio-fila .i { margin-left: auto; font-size: 18px; white-space: nowrap; }
+.biblio-fila .i { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 260px; }
+.xip { color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
 .biblio-buit { padding: 30px; text-align: center; color: #888; }
 #avis { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #2c3e50; color: #fff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.3); z-index: 3000; font-size: 14px; display: none; max-width: 90vw; }
 .sec-baix .sistema-baix + .sistema-baix { margin-top: 10px; }
@@ -248,7 +249,93 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .bloc-flux .titol-bloc { font-size: 13pt; margin-bottom: 2mm; }
 .bloc-flux .abc-render svg { width: 100%; height: auto; }
 
+/* ---- Pestanyes ---- */
+.pestanyes { display: flex; background: #22313f; }
+.pestanyes button { flex: 1; border: none; background: transparent; color: #cfd8e3; padding: 11px 6px; font-size: 13px; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; }
+.pestanyes button.actiu { color: #fff; border-bottom-color: #f59f00; background: #2c3e50; }
+body.mode-est .nomes-diag { display: none !important; }
+body:not(.mode-est) .nomes-est { display: none !important; }
+
+/* ---- Editor d'estructura ---- */
+.est-editor { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 18px; }
+.est-card { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.est-card h3 { margin: 0 0 10px; color: #444; }
+.est-fila { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin-bottom: 12px; }
+.est-fila label { display: flex; flex-direction: column; gap: 4px; }
+.est-fila select, .est-fila input { width: auto; }
+.est-graus { display: flex; gap: 4px; flex-wrap: wrap; }
+.est-grau { padding: 6px 10px; border-radius: 5px; font-weight: bold; font-size: 14px; min-width: 52px; text-align: center; }
+.est-grau small { display: block; font-size: 10px; font-weight: normal; opacity: .75; }
+#est-lletra { width: 100%; min-height: 260px; font-family: inherit; font-size: 14px; line-height: 1.45; padding: 12px; border: 1px solid #ccc; border-radius: 6px; resize: vertical; }
+.est-afegir { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 14px; }
+.est-part { border: 1px solid #e3e3e3; border-radius: 8px; margin-bottom: 14px; overflow: hidden; }
+.est-part-cap { display: flex; align-items: center; gap: 10px; background: #ff9f1a; padding: 8px 10px; }
+.est-nom { font-weight: bold; text-transform: uppercase; max-width: 260px; background: #fff; }
+.est-part-botons { margin-left: auto; display: flex; gap: 4px; }
+.est-fila-part { display: flex; gap: 10px; padding: 10px; border-top: 1px solid #eee; }
+.est-etiq { width: 60px; font-size: 12px; color: #888; padding-top: 10px; }
+.est-acords { font-size: 15px; }
+.est-celles { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; min-height: 26px; }
+.est-cel { display: flex; width: 120px; border: 1px solid #666; }
+.est-cel i { font-style: normal; padding: 4px 8px; font-family: 'Times New Roman', serif; font-size: 16px; min-width: 0; overflow: hidden; }
+.est-cel i + i { border-left: 1px dashed #333; }
+.est-cel-vell { padding: 4px 12px; font-family: 'Times New Roman', serif; font-size: 16px; min-width: 60px; border-radius: 2px; }
+.cmp-graella { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.cmp-bar { display: flex; border: 2px solid #555; border-radius: 4px; overflow: hidden; height: 44px; background: #fff; }
+.cmp-cel { flex: 1; display: flex; align-items: center; padding: 0 8px; font-family: 'Times New Roman', serif; font-size: 18px; cursor: pointer; border-left: 1px dashed #444; min-width: 0; overflow: hidden; }
+.cmp-cel:first-child { border-left: none; }
+.cmp-cel.cont { border-left-color: transparent; }
+.cmp-cel.buida { color: #bbb; justify-content: center; font-family: Arial, sans-serif; }
+.cmp-cel:hover { filter: brightness(.93); }
+.cmp-cel.sel { outline: 3px solid #007bff; outline-offset: -3px; }
+.cmp-nou { height: 44px; border: 2px dashed #aaa; border-radius: 4px; background: #fafafa; color: #666; font-weight: bold; cursor: pointer; }
+.cmp-nou.sel { border-color: #007bff; color: #007bff; background: #eef5ff; }
+.paleta { margin-top: 10px; border: 2px solid #007bff; border-radius: 8px; padding: 10px; background: #f5f9ff; }
+.paleta-titol { font-size: 13px; font-weight: bold; color: #0056b3; margin-bottom: 8px; }
+.paleta-acords, .paleta-eines { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.paleta-eines { margin-top: 10px; font-size: 13px; }
+.pal-acord { border: 1px solid #555; border-radius: 6px; padding: 8px 14px; font-family: 'Times New Roman', serif; font-size: 18px; cursor: pointer; min-width: 56px; }
+.pal-acord:hover { filter: brightness(.9); transform: translateY(-1px); }
+.pal-acord.altre { font-family: Arial, sans-serif; font-size: 13px; background: #fff; }
+.pal-sep { width: 1px; height: 28px; background: #bbb; margin: 0 4px; }
+.est-avancat { margin-top: 8px; font-size: 13px; color: #666; }
+.est-avancat summary { cursor: pointer; }
+.est-avancat input { margin-top: 6px; }
+.est-veu { width: 100%; font-family: inherit; font-size: 14px; line-height: 1.4; padding: 8px; border: 1px solid #ccc; border-radius: 6px; resize: vertical; }
+.est-estrofa { margin-top: 6px; font-size: 13px; padding: 6px; }
+
+/* ---- Pàgines verticals (lletra i estructura) ---- */
+.pagina.vertical { page: vertical; width: 210mm; height: 296.5mm; padding: 16mm 16mm 10mm 30mm; position: relative; }
+.pagina.vertical .pv-cos { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.pv-peu { flex: 0 0 auto; text-align: center; font-family: 'Times New Roman', serif; font-size: 12pt; padding-top: 3mm; }
+.pagina.vertical.pagina-lletra { padding-left: 20mm; padding-right: 20mm; }
+.lt-titol { font-size: 19pt; margin: 0 0 4mm; }
+.lt-sub { font-size: 13pt; margin-bottom: 7mm; }
+.lt-text { white-space: pre-wrap; font-size: 11pt; line-height: 1.38; }
+.lt-text.dues-col { column-count: 2; column-gap: 10mm; }
+.est-barra { position: absolute; left: 9mm; top: 16mm; bottom: 26mm; width: 11mm; display: flex; flex-direction: column; border: 0.3mm solid #666; }
+.est-barra div { flex: 1; position: relative; border-top: 0.3mm solid #666; display: flex; align-items: center; justify-content: center; font-size: 11pt; }
+.est-barra div:first-child { border-top: none; }
+.est-barra small { position: absolute; top: 1mm; left: 1mm; font-size: 9pt; }
+.pv-titolcurt { text-align: right; font-family: 'Times New Roman', serif; font-size: 12pt; margin-bottom: 5mm; }
+.pv-meta { font-size: 14pt; font-weight: bold; margin-bottom: 5mm; }
+.pv-part { border: 0.3mm solid #999; margin-top: 4mm; }
+.pv-fila { display: flex; border-top: 0.3mm solid #999; }
+.pv-fila:first-child { border-top: none; }
+.pv-etiq { width: 22mm; flex: 0 0 22mm; padding: 1.5mm 2mm; font-size: 7.5pt; font-weight: bold; border-right: 0.3mm solid #999; }
+.pv-etiq.fluix { font-weight: normal; color: #777; }
+.pv-cap { background: #ff9f1a; }
+.pv-cels { flex: 1; }
+.pv-acords { display: flex; }
+.pv-acords span { display: flex; padding: 0 !important; }
+.pv-acords span i { font-style: normal; font-family: 'Times New Roman', serif; font-size: 13pt; padding: 1mm 1.5mm; min-width: 0; overflow: hidden; }
+.pv-acords span i + i { border-left: 0.3mm dashed #333; }
+.pv-acords span { flex: 1; font-family: 'Times New Roman', serif; font-size: 13pt; padding: 1mm 1.5mm; border-right: 0.5mm solid #555; border-bottom: 0.5mm solid #555; min-height: 7mm; }
+.pv-acords span.buida { background: #fff; border-color: transparent; }
+.pv-veu { flex: 1; padding: 2mm 2mm 3mm; white-space: pre-wrap; font-size: 10pt; line-height: 1.3; min-height: 10mm; }
+
 @media print {
+  @page vertical { size: A4 portrait; margin: 0; }
   @page { size: A4 landscape; margin: 0; }
   html, body { display: block !important; height: auto !important; overflow: visible !important; background: #fff !important; }
   body > *:not(#pagines) { display: none !important; }
@@ -261,6 +348,7 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 
 <div class="sidebar">
   <div class="sidebar-header"><img src="marca/rockin-logo.png" alt="" onerror="this.style.display='none'"><h1>Diagrames Musicals</h1></div>
+  <div class="pestanyes"><button id="tab-diag" class="actiu" onclick="canviarMode('diag')">🎸 Diagrames</button><button id="tab-est" onclick="canviarMode('est')">📝 Lletra i estructura</button></div>
   <div class="sidebar-content">
     <div class="grup-control">
       <label for="titolInput">Títol de la cançó</label>
@@ -270,6 +358,8 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
       <label for="artistaInput">Grup / artista</label>
       <input type="text" id="artistaInput" placeholder="Escriu el grup o artista" autocomplete="off" oninput="actualitzarCapcalera()">
     </div>
+    <button class="btn-accio" style="background:#0ca678" onclick="obrirImportar()">📥 Importar acords i lletra</button>
+    <div class="nomes-diag" style="display:flex;flex-direction:column;gap:14px">
     <div class="grup-control">
       <label for="acordsInput">Acords de la cançó</label>
       <input type="text" id="acordsInput" placeholder="Escriu els acords separats per espais" autocomplete="off">
@@ -333,10 +423,15 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
     <label class="check"><input type="checkbox" id="opt-inst" onchange="desar()"> Nom de l'instrument a la pàgina</label>
     <label class="check"><input type="checkbox" id="opt-pal" onchange="desar()"> Imprimir el pal del baix</label>
     <label class="check"><input type="checkbox" id="opt-ritmica" checked onchange="desar()"> Baix i bateria a la mateixa pàgina</label>
+    </div>
+    <div class="nomes-est" style="display:flex;flex-direction:column;gap:10px">
+      <label>📄 Opcions de pàgina</label>
+      <input type="text" id="marcaPeuEst" placeholder="Text de peu de pàgina (opcional)" oninput="$('marcaPeuInput').value=this.value;desar()">
+    </div>
 
     <button class="btn-accio btn-outline" id="btn-previsualitzar" onclick="togglePrevisualitzar()">👁️ Vista prèvia A4</button>
     <button class="btn-accio btn-imprimir" onclick="imprimirAra()">🖨️ Imprimir / PDF</button>
-    <p class="ajuda">Al diàleg d'impressió tria <b>A4</b>, orientació <b>horitzontal</b> i marges <b>cap</b>/per defecte.</p>
+    <p class="ajuda" id="ajuda-imprimir">Al diàleg d'impressió tria <b>A4</b>, orientació <b>horitzontal</b> i marges <b>cap</b>/per defecte.</p>
     <div class="hr-div"></div>
     <label>👥 Professorat</label>
     <button class="btn-accio btn-compartir" onclick="compartirCanco()">📤 Compartir amb el professorat</button>
@@ -353,11 +448,73 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 
 <div class="workspace-container" id="workspace">
   <h2 id="titolMostrat" class="titol-canco-global">TÍTOL DE LA CANÇÓ</h2>
-  <p class="buit" id="missatgeBuit">Escriu els acords de la cançó i prem <b>⚡ Omplir guitarra i teclat</b>, o afegeix diagrames des dels catàlegs i editors. Arrossega les targetes per canviar-ne l'ordre.</p>
-  <div id="seccions"></div>
+  <p class="buit nomes-diag" id="missatgeBuit">Escriu els acords de la cançó i prem <b>⚡ Omplir guitarra i teclat</b>, o afegeix diagrames des dels catàlegs i editors. Arrossega les targetes per canviar-ne l'ordre.</p>
+  <div id="seccions" class="nomes-diag" style="width:100%;display:flex;flex-direction:column;align-items:center"></div>
+  <div class="est-editor nomes-est">
+    <div class="est-card">
+      <div class="est-fila">
+        <label>Tonalitat
+          <span style="display:flex;gap:6px"><select id="est-to" onchange="estCanvi()">
+            <option value="auto">Automàtica</option><option>C</option><option>C#</option><option>D</option><option>D#</option><option>E</option><option>F</option><option>F#</option><option>G</option><option>G#</option><option>A</option><option>A#</option><option>B</option>
+          </select>
+          <select id="est-mode" onchange="estCanvi()"><option value="major">major</option><option value="menor">menor</option></select></span></label>
+        <label>Compàs <select id="est-temps" onchange="estCanviTemps()"><option value="4">4/4</option><option value="3">3/4</option><option value="2">2/4</option><option value="6">6/8</option></select></label>
+        <label>Estil <input id="est-estil" placeholder="Ex: Reggae" oninput="estCanvi()" style="width:160px"></label>
+        <label>Tempo <span style="display:flex;align-items:center;gap:6px"><input id="est-tempo" type="number" min="30" max="260" placeholder="110" oninput="estCanvi()" style="width:90px"> bpm</span></label>
+        <span class="ajuda" id="est-to-detectada"></span>
+      </div>
+      <div class="est-graus" id="est-graus"></div>
+      <p class="ajuda" style="margin-top:8px">Els colors surten del grau de cada acord dins la tonalitat, com al llibre. Els diagrames de guitarra i teclat també els fan servir.</p>
+    </div>
+    <div class="est-card">
+      <h3>1. Lletra completa</h3>
+      <p class="ajuda" style="margin-bottom:8px">Enganxa-hi la lletra sencera, amb una línia en blanc entre estrofes. Serà la primera pàgina.</p>
+      <textarea id="est-lletra" placeholder="Enganxa aquí la lletra de la cançó…" oninput="estLlegirCamps();estPintarEstrofes();desar()"></textarea>
+    </div>
+    <div class="est-card">
+      <h3>2. Estructura</h3>
+      <div class="est-fila">
+        <label style="flex:1">Ordre de l'estructura <input id="est-ordre" placeholder="Es genera sol a partir de les parts (ex: Intro – A – B – A – B)" oninput="estOrdreManual()" style="width:100%"></label>
+        <button class="btn-accio btn-outline" style="width:auto" onclick="estOrdreAuto()">↻ Automàtic</button>
+      </div>
+      <div class="est-afegir"><b style="font-size:13px">Afegir part:</b>
+        <button class="mel-btn" onclick="estAfegir('INTRO')">Intro</button>
+        <button class="mel-btn" onclick="estAfegir('PART')">Part A, B, C…</button>
+        <button class="mel-btn" onclick="estAfegir('TORNADA')">Tornada</button>
+        <button class="mel-btn" onclick="estAfegir('PONT')">Pont</button>
+        <button class="mel-btn" onclick="estAfegir('SOLO')">Solo</button>
+        <button class="mel-btn" onclick="estAfegir('FINAL')">Final</button>
+        <button class="mel-btn" onclick="estAfegir('ALTRA')">Una altra…</button>
+      </div>
+      <p class="buit" id="est-buit" style="margin:10px auto">Encara no hi ha cap part. Comença per «Intro» o «Part A».</p>
+      <div id="est-parts"></div>
+    </div>
+  </div>
 </div>
 
 <div id="pagines"></div>
+
+<!-- ===== IMPORTAR ===== -->
+<div id="modalImportar" class="modal-overlay" onclick="tancarSiFora(event)">
+  <div class="modal-contingut" style="max-width:760px;text-align:left">
+    <h2 style="text-align:center;color:#0ca678">📥 Importar acords i lletra</h2>
+    <p class="ajuda" style="text-align:center;margin-bottom:16px">L'eina omple sola els diagrames de guitarra i teclat, la lletra i l'estructura. Després ho pots retocar tot.</p>
+    <label>Opció 1 · Enllaç de Cifra Club o Ultimate Guitar</label>
+    <div style="display:flex;gap:8px;margin:6px 0 4px">
+      <input type="url" id="imp-url" placeholder="https://www.cifraclub.com/..." autocomplete="off">
+      <button class="btn-accio" style="background:#0ca678;width:auto;white-space:nowrap" onclick="importarEnllac()">Importar</button>
+    </div>
+    <div class="ajuda" id="imp-estat" style="min-height:18px"></div>
+    <div class="hr-div" style="margin:14px 0"></div>
+    <label>Opció 2 · Copia i enganxa el text de qualsevol web o document</label>
+    <p class="ajuda" style="margin:4px 0 6px">Selecciona a la web els acords amb la lletra (els acords a la línia de dalt de la lletra), copia'ls i enganxa'ls aquí. Si hi ha títols com [Intro] o [Refrão], es faran servir per a les parts.</p>
+    <textarea id="imp-text" style="width:100%;min-height:240px;font-family:monospace;font-size:13px;padding:10px;border:1px solid #ccc;border-radius:6px" placeholder="[Intro] Am F C G&#10;&#10;[Primeira Parte]&#10;Am              F&#10;És tard, no sé quina hora és&#10;C                G&#10;Però és fosc fa estona"></textarea>
+    <div style="margin-top:14px;display:flex;justify-content:center;gap:10px">
+      <button class="btn-accio" style="background:#0ca678" onclick="importarText()">Importar el text</button>
+      <button class="btn-accio btn-outline" onclick="tancarModal('modalImportar')">Cancel·lar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== BIBLIOTECA COMPARTIDA ===== -->
 <div id="modalBiblio" class="modal-overlay" onclick="tancarSiFora(event)">
@@ -622,7 +779,11 @@ function esAcord(it) { return (it.inst === 'guitarra') || (it.inst === 'teclat' 
 function etiquetaItem(it) { const p = parseAcord(it.nom); return p ? p.etiqueta : (it.nom || ''); }
 function mapaColors() {
   const mapa = {}; let i = 0;
-  items.filter(esAcord).forEach(it => { const k = clauItem(it); if (!(k in mapa)) mapa[k] = COLORS_ACORDS[i++ % COLORS_ACORDS.length]; });
+  const ton = typeof tonalitatEfectiva === 'function' ? tonalitatEfectiva() : null;
+  items.filter(esAcord).forEach(it => {
+    const k = clauItem(it); if (k in mapa) return;
+    mapa[k] = (ton && colorGrau(it.nom, ton, true)) || COLORS_ACORDS[i++ % COLORS_ACORDS.length];
+  });
   return mapa;
 }
 
@@ -1294,6 +1455,13 @@ function construirPagines() {
   const previ = document.body.classList.contains('previsualitzant');
   pag.innerHTML = '';
   if (!previ) pag.classList.add('construint');
+  if (modeActual === 'est') {
+    construirPaginesEstructura();
+    pag.classList.remove('construint');
+    paginesPendents = false;
+    if (!pag.children.length && previ) pag.innerHTML = '<p style="color:#fff;text-align:center">Encara no hi ha lletra ni estructura.</p>';
+    return;
+  }
   const colors = mapaColors();
   paginesGuitarra(items.filter(i => i.inst === 'guitarra'), colors);
   paginesTeclat(items.filter(i => i.inst === 'teclat' && i.tipus !== 'melodia'), colors);
@@ -1311,7 +1479,7 @@ function togglePrevisualitzar() {
   if (on) construirPagines();
 }
 function imprimirAra() {
-  if (!items.length) { alert("Afegeix algun diagrama abans d'imprimir."); return; }
+  if (modeActual === 'est' ? !estTeContingut() : !items.length) { alert(modeActual === 'est' ? "Escriu la lletra o afegeix alguna part abans d'imprimir." : "Afegeix algun diagrama abans d'imprimir."); return; }
   clearTimeout(tempsPagines);
   if (paginesPendents) construirPagines();
   // deixem que les imatges carreguin abans d'obrir el diàleg
@@ -2101,12 +2269,681 @@ document.addEventListener('keydown', e => {
 });
 
 /* =========================================================
+   LLETRA I ESTRUCTURA (com al llibre de Temes)
+   ========================================================= */
+let modeActual = 'diag';
+function estBuida() { return { to: 'auto', mode: 'major', temps: '4', estil: '', tempo: '', ordre: '', ordreAuto: true, lletra: '', parts: [] }; }
+let estructura = estBuida();
+
+// Colors per grau (els del llibre). Índex = grau de la tonalitat major (o de la relativa major).
+const COLORS_GRAU = ['#ff1a1a', '#ffc000', '#ffff00', '#00e600', '#4d4dff', '#a347e0', '#ff4da6'];
+const COLORS_GRAU_TEXT = ['#e03131', '#e8890c', '#c9a800', '#2f9e44', '#3b5bdb', '#9c36b5', '#d6336c'];
+const NOTES_BEM = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const NOM_NOTA_CAT = { C: 'Do', D: 'Re', E: 'Mi', F: 'Fa', G: 'Sol', A: 'La', B: 'Si' };
+const MODES = {
+  major: { st: [0, 2, 4, 5, 7, 9, 11], q: ['', '-', '-', '', '', '-', '°'], rom: ['I', 'ii', 'iii', 'IV', 'V', 'vi', 'vii°'], rel: i => i },
+  menor: { st: [0, 2, 3, 5, 7, 8, 10], q: ['-', '°', '', '-', '-', '', ''], rom: ['i', 'iiº', 'III', 'iv', 'v', 'VI', 'VII'], rel: i => (i + 5) % 7 }
+};
+function ambBemolls(tonica, mode) {
+  const maj = mode === 'menor' ? (tonica + 3) % 12 : tonica;
+  return [5, 10, 3, 8, 1, 6].includes(maj);
+}
+function nomNotaSemi(semi, bemolls) { return (bemolls ? NOTES_BEM : NOTES_SOST)[((semi % 12) + 12) % 12]; }
+function grausTonalitat(ton) {
+  if (!ton) return [];
+  const M = MODES[ton.mode], bem = ambBemolls(ton.tonica, ton.mode);
+  return M.st.map((st, i) => {
+    const semi = (ton.tonica + st) % 12;
+    const r = M.rel(i);
+    return { semi, nom: nomNotaSemi(semi, bem) + M.q[i], rom: M.rom[i], color: COLORS_GRAU[r], colorText: COLORS_GRAU_TEXT[r] };
+  });
+}
+function arrelAcord(nom) {
+  const m = String(nom || '').trim().match(/^([A-Ga-g])([#b♯♭]?)(.*)$/); if (!m) return null;
+  const semi = (ARREL[m[1].toUpperCase()] + (m[2] === '#' || m[2] === '♯' ? 1 : m[2] === 'b' || m[2] === '♭' ? -1 : 0) + 12) % 12;
+  const resta = m[3].trim();
+  const qual = /^(°|º|o|dim)/.test(resta) ? 'dim' : /^(-|m(?!aj)|min)/.test(resta) ? 'min' : /^5/.test(resta) ? '5' : 'maj';
+  return { semi, qual };
+}
+function nomTonalitat(ton) {
+  if (!ton) return '';
+  const n = nomNotaSemi(ton.tonica, ambBemolls(ton.tonica, ton.mode));
+  return NOM_NOTA_CAT[n[0]] + (n[1] === '#' ? '♯' : n[1] === 'b' ? '♭' : '') + ' ' + ton.mode;
+}
+function tokensAcords(txt) { return String(txt || '').split(/[\s,\/|]+/).map(t => t.trim()).filter(t => arrelAcord(t)); }
+function totsElsAcords() {
+  const llista = [];
+  estructura.parts.forEach(p => llista.push(...tokensAcords(p.acords)));
+  if (!llista.length) llista.push(...tokensAcords($('acordsInput').value));
+  if (!llista.length) items.filter(esAcord).forEach(it => llista.push(it.nom));
+  return llista;
+}
+function detectarTonalitat(acords) {
+  const ac = acords.map(arrelAcord).filter(Boolean);
+  if (!ac.length) return null;
+  let millor = null;
+  ['major', 'menor'].forEach(mode => {
+    for (let t = 0; t < 12; t++) {
+      const M = MODES[mode];
+      let punts = 0;
+      ac.forEach((a, k) => {
+        const i = M.st.findIndex(s => (t + s) % 12 === a.semi);
+        if (i < 0) { punts -= 1; return; }
+        punts += 1;
+        const q = M.q[i] === '-' ? 'min' : M.q[i] === '°' ? 'dim' : 'maj';
+        if (a.qual === q || a.qual === '5') punts += 1;
+        if (i === 0 && (k === 0 || k === ac.length - 1)) punts += 1.2;
+      });
+      if (!millor || punts > millor.punts) millor = { tonica: t, mode, punts };
+    }
+  });
+  return millor;
+}
+function tonalitatEfectiva() {
+  if (estructura.to && estructura.to !== 'auto') return { tonica: NOTES_SOST.indexOf(estructura.to), mode: estructura.mode };
+  return detectarTonalitat(totsElsAcords());
+}
+function colorGrau(nom, ton, perText) {
+  const a = arrelAcord(nom); if (!a || !ton) return null;
+  const g = grausTonalitat(ton).find(x => x.semi === a.semi);
+  return g ? (perText ? g.colorText : g.color) : null;
+}
+
+/* ---- Mode (pestanyes) ---- */
+function canviarMode(m) {
+  modeActual = m;
+  document.body.classList.toggle('mode-est', m === 'est');
+  $('tab-diag').classList.toggle('actiu', m === 'diag');
+  $('tab-est').classList.toggle('actiu', m === 'est');
+  $('ajuda-imprimir').innerHTML = m === 'est'
+    ? 'Al diàleg d\'impressió tria <b>A4</b>, orientació <b>vertical</b> i marges <b>cap</b>/per defecte.'
+    : 'Al diàleg d\'impressió tria <b>A4</b>, orientació <b>horitzontal</b> i marges <b>cap</b>/per defecte.';
+  if (m === 'est') estRender();
+  programarPagines();
+  if (document.body.classList.contains('previsualitzant')) construirPagines();
+}
+
+/* ---- Editor ---- */
+function estLlegirCamps() {
+  estructura.to = $('est-to').value; estructura.mode = $('est-mode').value;
+  estructura.estil = $('est-estil').value; estructura.tempo = $('est-tempo').value;
+  estructura.lletra = $('est-lletra').value;
+}
+function estEscriureCamps() {
+  $('est-to').value = estructura.to || 'auto'; $('est-mode').value = estructura.mode || 'major';
+  $('est-estil').value = estructura.estil || ''; $('est-tempo').value = estructura.tempo || '';
+  $('est-lletra').value = estructura.lletra || ''; $('est-ordre').value = estructura.ordre || '';
+  $('est-temps').value = String(estructura.temps || '4');
+}
+function estCanvi() {
+  estLlegirCamps();
+  $('est-mode').disabled = estructura.to === 'auto';
+  estActualitzarOrdre();
+  estPintarGraus();
+  estPintarCelles();
+  estPintarEstrofes();
+  renderTot();                   // els colors dels diagrames depenen de la tonalitat
+}
+function estPintarGraus() {
+  const ton = tonalitatEfectiva();
+  $('est-to-detectada').textContent = ton ? (estructura.to === 'auto' ? 'Detectada: ' : '') + nomTonalitat(ton) : 'Escriu acords per detectar-la';
+  if (ton && estructura.to === 'auto') $('est-mode').value = ton.mode;
+  $('est-graus').innerHTML = grausTonalitat(ton).map(g => `<span class="est-grau" style="background:${g.color}"><small>${g.rom}</small>${esc(g.nom)}</span>`).join('');
+}
+/* Compassos: separats per «|». Dins d'un compàs, diversos acords el comparteixen.
+   Un punt «.» allarga l'acord anterior un temps (D . . G = D 3 temps, G 1 temps).
+   «%» repeteix el compàs anterior. Sense «|», cada acord és un compàs sencer. */
+function compassosDe(txt) {
+  const t = String(txt || '').trim(); if (!t) return [];
+  const trossos = t.includes('|') ? t.split('|') : t.split(/\s+/);
+  const out = [];
+  trossos.forEach(tros => {
+    const toks = tros.trim().split(/[\s\/]+/).filter(Boolean);
+    if (!toks.length) return;
+    if (toks.length === 1 && toks[0] === '%') { if (out.length) out.push(JSON.parse(JSON.stringify(out[out.length - 1]))); return; }
+    const segs = [];
+    toks.forEach(tok => {
+      if (/^[.·]+$/.test(tok)) { if (segs.length) segs[segs.length - 1].temps += tok.length; return; }
+      if (tok === '_') { segs.push({ acord: '', temps: 1 }); return; }
+      if (arrelAcord(tok)) segs.push({ acord: tok, temps: 1 });
+    });
+    if (segs.length) out.push(segs);
+  });
+  return out;
+}
+function htmlCompas(segs, ton, classe) {
+  return `<span class="${classe}">${segs.map(sg => `<i style="flex:${sg.temps};background:${colorGrau(sg.acord, ton) || '#e6e6e6'}">${esc(sg.acord)}</i>`).join('')}</span>`;
+}
+function htmlCelles(acordsTxt, ton) {
+  return compassosDe(acordsTxt).map(c => htmlCompas(c, ton, 'est-cel')).join('');
+}
+function estPintarCelles() {
+  estructura.parts.forEach((p, i) => estPintarCompassos(i));
+}
+/* ---- Editor visual de compassos ---- */
+let estSel = null;                        // { p: part, b: compàs, c: casella }
+function tempsCompas() { return parseInt(estructura.temps) || 4; }
+function divisionsPossibles() { const B = tempsCompas(); return B % 2 === 0 && B > 2 ? [1, 2, B] : [1, B]; }
+function barsDeText(txt) {
+  const B = tempsCompas();
+  return compassosDe(txt).map(segs => {
+    const total = segs.reduce((a, s) => a + s.temps, 0);
+    if (segs.length === 1) return { div: 1, cells: [segs[0].acord] };
+    const iguals = segs.every(s => s.temps === segs[0].temps);
+    if (iguals && B % segs.length === 0 && divisionsPossibles().includes(segs.length)) return { div: segs.length, cells: segs.map(s => s.acord) };
+    const cells = []; let acc = 0;
+    segs.forEach((s, k) => { acc += s.temps; const fins = k === segs.length - 1 ? B : Math.round(acc / total * B); while (cells.length < fins) cells.push(s.acord); });
+    return { div: B, cells: cells.slice(0, B) };
+  });
+}
+function segmentsBar(b) {                 // uneix caselles seguides iguals
+  const segs = [];
+  b.cells.forEach(c => { const u = segs[segs.length - 1]; if (u && u.acord === c) u.n++; else segs.push({ acord: c, n: 1 }); });
+  return segs;
+}
+function textDeBars(bars) {
+  const B = tempsCompas();
+  return bars.map(b => {
+    const segs = segmentsBar(b);
+    if (segs.every(s => !s.acord)) return '_';
+    const unitat = B / b.div;
+    const iguals = segs.every(s => s.n === segs[0].n);
+    if (iguals) return segs.map(s => s.acord || '_').join(' ');
+    return segs.map(s => (s.acord || '_') + ' .'.repeat(Math.max(0, Math.round(s.n * unitat) - 1))).join(' ');
+  }).join(' | ');
+}
+function barsPart(p) {
+  if (!Array.isArray(p.compassos)) p.compassos = barsDeText(p.acords);
+  return p.compassos;
+}
+function sincronitzarText(p) {
+  p.acords = textDeBars(barsPart(p));
+  const inp = document.querySelector(`#est-parts .est-part[data-i="${estructura.parts.indexOf(p)}"] .est-acords`);
+  if (inp && document.activeElement !== inp) inp.value = p.acords;
+}
+function htmlBar(b, ton, classe) {
+  return `<span class="${classe}">${segmentsBar(b).map(sg => `<i style="flex:${sg.n};background:${sg.acord ? (colorGrau(sg.acord, ton) || '#e6e6e6') : '#fff'}">${esc(sg.acord)}</i>`).join('')}</span>`;
+}
+function acordsPaleta() {
+  const ton = tonalitatEfectiva();
+  const llista = grausTonalitat(ton).map(g => g.nom);
+  const extra = [];
+  estructura.parts.forEach(p => barsPart(p).forEach(b => b.cells.forEach(c => { if (c && !llista.includes(c) && !extra.includes(c)) extra.push(c); })));
+  tokensAcords($('acordsInput').value).forEach(c => { if (!llista.includes(c) && !extra.includes(c)) extra.push(c); });
+  return { ton, llista, extra };
+}
+function estPintarCompassos(i) {
+  const p = estructura.parts[i];
+  const cont = document.querySelector(`#est-parts .est-part[data-i="${i}"] .est-compassos`);
+  if (!cont) return;
+  const ton = tonalitatEfectiva();
+  const bars = barsPart(p);
+  let h = '<div class="cmp-graella">';
+  bars.forEach((b, j) => {
+    h += `<div class="cmp-bar" data-b="${j}">`;
+    b.cells.forEach((c, k) => {
+      const sel = estSel && estSel.p === i && estSel.b === j && (b.div === 1 || estSel.c === k);
+      const cont = k > 0 && c && c === b.cells[k - 1];
+      h += `<div class="cmp-cel${sel ? ' sel' : ''}${cont ? ' cont' : ''}${c ? '' : ' buida'}" style="background:${c ? (colorGrau(c, ton) || '#e6e6e6') : '#fff'}" onclick="estSeleccionar(${i},${j},${k})">${cont ? '' : (c ? esc(c) : '+')}</div>`;
+    });
+    h += '</div>';
+  });
+  const nouSel = estSel && estSel.p === i && estSel.b === bars.length;
+  h += `<button class="cmp-nou${nouSel ? ' sel' : ''}" onclick="estSeleccionar(${i},${bars.length},0)">＋ compàs</button></div>`;
+  h += `<div class="ajuda" style="margin-top:4px">${bars.length} compassos · clica un compàs i tria l'acord a la paleta</div>`;
+  if (estSel && estSel.p === i) h += htmlPaleta(i);
+  cont.innerHTML = h;
+}
+function htmlPaleta(i) {
+  const { ton, llista, extra } = acordsPaleta();
+  const bars = barsPart(estructura.parts[i]);
+  const b = bars[estSel.b];
+  const btn = a => `<button class="pal-acord" style="background:${colorGrau(a, ton) || '#e6e6e6'}" onclick="estPosarAcord('${esc(a)}')">${esc(a)}</button>`;
+  let h = '<div class="paleta">';
+  h += `<div class="paleta-titol">${b ? `Compàs ${estSel.b + 1}${b.div > 1 ? ` · ${b.div === 2 ? (estSel.c < b.div / 2 ? '1a meitat' : '2a meitat') : 'temps ' + (estSel.c + 1)}` : ''}` : 'Compàs nou'} — tria l'acord:</div>`;
+  h += '<div class="paleta-acords">';
+  if (llista.length) h += llista.map(btn).join('');
+  else h += '<span class="ajuda">Tria la tonalitat a dalt de tot i aquí sortiran els seus acords.</span>';
+  if (extra.length) h += '<span class="pal-sep"></span>' + extra.map(btn).join('');
+  h += `<button class="pal-acord altre" onclick="estAltreAcord()">Altre acord…</button>`;
+  if (b) h += `<button class="pal-acord altre" onclick="estPosarAcord('')">Buidar</button>`;
+  h += '</div>';
+  if (b) {
+    const B = tempsCompas();
+    const nomDiv = d => d === 1 ? 'Tot el compàs' : d === 2 ? 'Dos acords (meitat i meitat)' : `Un acord per temps (${B})`;
+    h += '<div class="paleta-eines"><span>Acords en aquest compàs:</span>' + divisionsPossibles().map(d => `<button class="mel-btn${b.div === d ? ' actiu' : ''}" onclick="estDividir(${d})">${nomDiv(d)}</button>`).join('');
+    h += `<span class="pal-sep"></span><button class="mel-btn" onclick="estDuplicarCompas()">⧉ Duplicar compàs</button><button class="mel-btn" onclick="estEsborrarCompas()">🗑️ Esborrar compàs</button>`;
+    h += '</div>';
+  }
+  h += `<div style="text-align:right;margin-top:6px"><button class="mel-btn" onclick="estSel=null;estPintarCompassos(${i})">Fet</button></div></div>`;
+  return h;
+}
+function estSeleccionar(i, j, k) {
+  const anterior = estSel ? estSel.p : null;
+  estSel = { p: i, b: j, c: k };
+  if (anterior !== null && anterior !== i) estPintarCompassos(anterior);
+  estPintarCompassos(i);
+}
+function estCanviCompassos(i) {
+  sincronitzarText(estructura.parts[i]);
+  estPintarGraus();
+  estPintarCompassos(i);
+  desar();
+  clearTimeout(estCanviCompassos.t); estCanviCompassos.t = setTimeout(renderTot, 400);
+}
+function estPosarAcord(a) {
+  if (!estSel) return;
+  const i = estSel.p, bars = barsPart(estructura.parts[i]);
+  let b = bars[estSel.b];
+  if (!b) { if (!a) return; b = { div: 1, cells: [''] }; bars.push(b); estSel.b = bars.length - 1; estSel.c = 0; }
+  if (b.div === 1) b.cells[0] = a; else b.cells[estSel.c] = a;
+  // avancem: següent casella, següent compàs o «compàs nou»
+  if (a) {
+    if (b.div > 1 && estSel.c < b.div - 1) estSel.c++;
+    else { estSel.b++; estSel.c = 0; }
+  }
+  estCanviCompassos(i);
+}
+function estAltreAcord() {
+  const a = (prompt('Escriu l\'acord (ex: F#-, Bb, E7, D5):') || '').trim();
+  if (!a) return;
+  if (!arrelAcord(a)) { alert('No entenc aquest acord. Ha de començar per una nota: C, D, E, F, G, A o B.'); return; }
+  estPosarAcord(a);
+}
+function estDividir(d) {
+  const i = estSel.p, b = barsPart(estructura.parts[i])[estSel.b]; if (!b) return;
+  const vell = b.cells.slice(), vd = b.div;
+  const aTemps = k => vell[Math.min(vd - 1, Math.floor(k * vd / d))];
+  b.cells = Array.from({ length: d }, (_, k) => aTemps(k) || '');
+  b.div = d;
+  estSel.c = Math.min(estSel.c, d - 1);
+  estCanviCompassos(i);
+}
+function estDuplicarCompas() {
+  const i = estSel.p, bars = barsPart(estructura.parts[i]), b = bars[estSel.b]; if (!b) return;
+  bars.splice(estSel.b + 1, 0, JSON.parse(JSON.stringify(b)));
+  estSel.b++; estSel.c = 0;
+  estCanviCompassos(i);
+}
+function estEsborrarCompas() {
+  const i = estSel.p, bars = barsPart(estructura.parts[i]); if (!bars[estSel.b]) return;
+  bars.splice(estSel.b, 1);
+  estSel.b = Math.max(0, Math.min(estSel.b, bars.length)); estSel.c = 0;
+  estCanviCompassos(i);
+}
+function estCanviTemps() {
+  const vell = tempsCompas();
+  const textos = estructura.parts.map(p => textDeBars(barsPart(p)));
+  estructura.temps = $('est-temps').value;
+  estructura.parts.forEach((p, k) => { p.compassos = barsDeText(textos[k]); sincronitzarText(p); });
+  estSel = null;
+  if (vell !== tempsCompas()) estRender();
+  desar();
+}
+
+function paragrafsLletra() {
+  return String(estructura.lletra || '').replace(/\r/g, '').split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+}
+function estPintarEstrofes() {
+  const ps = paragrafsLletra();
+  const opts = '<option value="">➕ Afegir un fragment de la lletra…</option>' + ps.map((p, i) => `<option value="${i}">${esc(p.split('\n')[0].slice(0, 60))}${p.includes('\n') ? ' …' : ''}</option>`).join('');
+  document.querySelectorAll('#est-parts .est-estrofa').forEach(s => { s.innerHTML = opts; s.disabled = !ps.length; });
+}
+function estRender() {
+  estEscriureCamps();
+  $('est-mode').disabled = estructura.to === 'auto';
+  const cont = $('est-parts');
+  cont.innerHTML = '';
+  estructura.parts.forEach((p, i) => {
+    const d = document.createElement('div');
+    d.className = 'est-part';
+    d.dataset.i = i;
+    d.innerHTML = `
+      <div class="est-part-cap">
+        <input class="est-nom" value="${esc(p.nom)}" placeholder="Nom de la part">
+        <div class="est-part-botons">
+          <button class="mel-btn" title="Pujar" onclick="estMoure(${i},-1)">↑</button>
+          <button class="mel-btn" title="Baixar" onclick="estMoure(${i},1)">↓</button>
+          <button class="mel-btn" title="Duplicar" onclick="estDuplicar(${i})">⧉</button>
+          <button class="mel-btn" title="Esborrar" onclick="estEsborrar(${i})">✕</button>
+        </div>
+      </div>
+      <div class="est-fila-part"><span class="est-etiq">Acords</span>
+        <div style="flex:1"><div class="est-compassos"></div>
+        <details class="est-avancat"><summary>Escriure els acords com a text (opció avançada)</summary>
+          <input class="est-acords" value="${esc(p.acords)}" placeholder="Ex: D- | F | C G | D- . . A-">
+          <p class="ajuda" style="margin:4px 0 0">Separa els compassos amb <b>|</b>. Dos acords al mateix compàs: <b>C G</b>. El punt allarga un temps: <b>D . . A</b> (3 + 1). <b>%</b> repeteix el compàs anterior.</p>
+        </details></div></div>
+      <div class="est-fila-part"><span class="est-etiq">Veu</span>
+        <div style="flex:1"><textarea class="est-veu" rows="4" placeholder="Lletra d'aquesta part (o tria un fragment de la lletra a sota)">${esc(p.veu)}</textarea>
+        <select class="est-estrofa"></select></div></div>`;
+    d.querySelector('.est-nom').oninput = e => { p.nom = e.target.value; estActualitzarOrdre(); desar(); };
+    d.querySelector('.est-acords').oninput = e => { p.acords = e.target.value; p.compassos = barsDeText(p.acords); estPintarGraus(); estPintarCompassos(i); desar(); };
+    d.querySelector('.est-acords').onchange = () => renderTot();
+    const ajustar = t => { t.style.height = 'auto'; t.style.height = Math.max(90, t.scrollHeight + 4) + 'px'; };
+    d.querySelector('.est-veu').oninput = e => { p.veu = e.target.value; ajustar(e.target); desar(); };
+    requestAnimationFrame(() => ajustar(d.querySelector('.est-veu')));
+    d.querySelector('.est-estrofa').onchange = e => {
+      const ps = paragrafsLletra(), k = e.target.value;
+      if (k === '') return;
+      p.veu = (p.veu.trim() ? p.veu.trimEnd() + '\n\n' : '') + ps[+k];
+      d.querySelector('.est-veu').value = p.veu; ajustar(d.querySelector('.est-veu'));
+      e.target.value = '';
+      desar();
+    };
+    cont.appendChild(d);
+  });
+  $('est-buit').style.display = estructura.parts.length ? 'none' : 'block';
+  estPintarGraus();
+  estPintarCelles();
+  estPintarEstrofes();
+}
+function estSeguentLletra() {
+  const usades = estructura.parts.map(p => (p.nom.match(/^PART\s+([A-Z])$/i) || [])[1]).filter(Boolean).map(l => l.toUpperCase());
+  for (const l of 'ABCDEFGHIJ') if (!usades.includes(l)) return l;
+  return 'X';
+}
+function estAfegir(tipus) {
+  let nom = tipus;
+  if (tipus === 'PART') nom = 'PART ' + estSeguentLletra();
+  if (tipus === 'ALTRA') { nom = (prompt('Nom de la part:') || '').trim().toUpperCase(); if (!nom) return; }
+  const anterior = estructura.parts[estructura.parts.length - 1];
+  const compassos = anterior ? JSON.parse(JSON.stringify(barsPart(anterior))) : barsDeText($('acordsInput').value || '');
+  estructura.parts.push({ nom, acords: textDeBars(compassos), compassos, veu: '' });
+  estSel = { p: estructura.parts.length - 1, b: compassos.length ? 0 : 0, c: 0 };
+  estActualitzarOrdre(); estRender(); desar();
+  const ult = document.querySelectorAll('#est-parts .est-part'); if (ult.length) ult[ult.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function estMoure(i, d) {
+  estSel = null;
+  const j = i + d; if (j < 0 || j >= estructura.parts.length) return;
+  [estructura.parts[i], estructura.parts[j]] = [estructura.parts[j], estructura.parts[i]];
+  estActualitzarOrdre(); estRender(); desar();
+}
+function estDuplicar(i) { estSel = null; estructura.parts.splice(i + 1, 0, JSON.parse(JSON.stringify(estructura.parts[i]))); estActualitzarOrdre(); estRender(); desar(); }
+function estEsborrar(i) {
+  if (!confirm(`Esborrar la part «${estructura.parts[i].nom}»?`)) return;
+  estSel = null;
+  estructura.parts.splice(i, 1); estActualitzarOrdre(); estRender(); desar(); renderTot();
+}
+function nomCurtPart(nom) {
+  const m = String(nom).match(/^PART\s+(.+)$/i);
+  if (m) return m[1].toUpperCase();
+  const n = String(nom).trim().toLowerCase();
+  return n.charAt(0).toUpperCase() + n.slice(1);
+}
+function estActualitzarOrdre() {
+  if (!estructura.ordreAuto) return;
+  estructura.ordre = estructura.parts.map(p => nomCurtPart(p.nom)).filter(Boolean).join(' – ');
+  if ($('est-ordre')) $('est-ordre').value = estructura.ordre;
+}
+function estOrdreManual() { estructura.ordre = $('est-ordre').value; estructura.ordreAuto = !estructura.ordre.trim(); desar(); }
+function estOrdreAuto() { estructura.ordreAuto = true; estActualitzarOrdre(); desar(); }
+function estTeContingut() { return !!(estructura.lletra.trim() || estructura.parts.length); }
+
+/* ---- Pàgines A4 verticals ---- */
+function peuEstructura(num) { const t = $('marcaPeuInput').value.trim(); return (t ? esc(t) + ' ' : '') + `-${num}-`; }
+function titolCurt() {
+  const t = $('titolInput').value.trim().toUpperCase(), a = $('artistaInput').value.trim();
+  return t + (a ? ` (${a})` : '');
+}
+function novaPaginaVertical(num, ambBarra, ton) {
+  const p = document.createElement('section');
+  p.className = 'pagina vertical';
+  let barra = '';
+  if (ambBarra) {
+    const g = grausTonalitat(ton);
+    if (g.length) barra = `<div class="est-barra">${g.map(x => `<div style="background:${x.color}"><small>${x.rom}</small><span>${esc(x.nom)}</span></div>`).join('')}</div>`;
+  }
+  p.innerHTML = `${barra}<div class="pv-cos"></div><div class="pv-peu">${peuEstructura(num)}</div>`;
+  $('pagines').appendChild(p);
+  return p.querySelector('.pv-cos');
+}
+function paginesLletra(num) {
+  const cos = novaPaginaVertical(num, false);
+  cos.parentElement.classList.add('pagina-lletra');
+  cos.innerHTML = `<h1 class="lt-titol">${esc(titolCurt())}</h1><div class="lt-sub">(lletra)</div><div class="lt-text"></div>`;
+  const txt = cos.querySelector('.lt-text');
+  txt.textContent = estructura.lletra.replace(/\r/g, '').trim();
+  const cap = () => cos.scrollHeight > cos.clientHeight + 2;
+  // primer provem d'encabir-ho en una columna amb lletra una mica més petita; si no, dues columnes
+  for (const mida of [10.5, 10, 9.5]) { if (!cap()) break; txt.style.fontSize = mida + 'pt'; }
+  if (cap()) { txt.classList.add('dues-col'); txt.style.fontSize = '10.5pt'; }
+  for (const mida of [10, 9, 8]) { if (!cap()) break; txt.style.fontSize = mida + 'pt'; }
+  return num + 1;
+}
+function blocPart(p, ton) {
+  const d = document.createElement('div');
+  d.className = 'pv-part';
+  const compassos = barsPart(p);
+  const files = [];
+  for (let i = 0; i < Math.max(compassos.length, 1); i += 4) files.push(compassos.slice(i, i + 4));
+  const filesHtml = files.map(f => `<div class="pv-acords">${[0, 1, 2, 3].map(k => f[k] ? htmlBar(f[k], ton, '') : '<span class="buida"></span>').join('')}</div>`).join('');
+  d.innerHTML = `
+    <div class="pv-fila pv-cap"><div class="pv-etiq">${esc(p.nom)}</div><div></div></div>
+    <div class="pv-fila"><div class="pv-etiq fluix">Acords</div><div class="pv-cels">${filesHtml}</div></div>
+    <div class="pv-fila"><div class="pv-etiq fluix">Veu</div><div class="pv-veu">${esc(p.veu)}</div></div>`;
+  return d;
+}
+function paginesEstructura(num) {
+  const ton = tonalitatEfectiva();
+  let cos;
+  const nova = (primera) => {
+    cos = novaPaginaVertical(num++, true, ton);
+    cos.insertAdjacentHTML('beforeend', `<div class="pv-titolcurt">${esc(titolCurt())}</div>`);
+    if (primera) {
+      cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTRUCTURA: ${esc(estructura.ordre || '')}</div>`);
+      const et = [estructura.estil, estructura.tempo ? estructura.tempo + ' bpm' : ''].filter(Boolean).join(' ');
+      if (et) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTIL / TEMPO: ${esc(et)}</div>`);
+    }
+  };
+  nova(true);
+  estructura.parts.forEach(p => {
+    const b = blocPart(p, ton);
+    cos.appendChild(b);
+    if (cos.scrollHeight > cos.clientHeight + 2) {
+      if (cos.querySelectorAll('.pv-part').length > 1) { cos.removeChild(b); nova(false); cos.appendChild(b); }
+      // si una sola part no hi cap, reduïm la lletra
+      for (const mida of [9, 8, 7]) { if (cos.scrollHeight <= cos.clientHeight + 2) break; b.querySelector('.pv-veu').style.fontSize = mida + 'pt'; }
+    }
+  });
+  return num;
+}
+function construirPaginesEstructura() {
+  let num = 1;
+  if (estructura.lletra.trim()) num = paginesLletra(num);
+  if (estructura.parts.length || estructura.ordre) num = paginesEstructura(num);
+}
+
+/* =========================================================
+   IMPORTAR UNA CANÇÓ (text enganxat o enllaç de Cifra Club / Ultimate Guitar)
+   ========================================================= */
+const RE_ACORD = /^[A-G](?:#|b)?(?:maj|min|m|M|dim|aug|sus|add|°|º|\+|-)?[0-9]*(?:\([^)]*\))?(?:(?:maj|sus|add|M|b|#|\+|-)?[0-9]+)*(?:\/[A-G](?:#|b)?)?$/;
+function esAcordText(t) { return RE_ACORD.test(t); }
+function esSoroll(t) { return /^(\||\|\||x\d+|\(?\d+x\)?|\(x\d+\)|%|-+|\.+|N\.?C\.?|\/)$/i.test(t); }
+function esLiniaAcords(l) {
+  const toks = l.trim().split(/\s+/).filter(Boolean);
+  if (!toks.length) return false;
+  const ac = toks.filter(esAcordText).length;
+  return ac > 0 && toks.every(t => esAcordText(t) || esSoroll(t));
+}
+function esLiniaTab(l) { return /^\s*[eEBGDA]\s*\|[-\d|hpbrx\/\\~ ]{4,}/.test(l) || /-{6,}/.test(l); }
+const NOMS_SECCIO = [
+  [/^(intro|introdu[cç][aã]o|introducci[oó]n?)\b/i, 'INTRO'],
+  [/^(pr[eé][- ]?(refr[aã]o|chorus|estribillo|tornada))/i, 'PRE-TORNADA'],
+  [/^(refr[aã]o|chorus|estribillo|tornada|coro)/i, 'TORNADA'],
+  [/^(ponte|bridge|pont|puente)/i, 'PONT'],
+  [/^(solo|instrumental|interl[uú]dio|interludi)/i, 'SOLO'],
+  [/^(final|outro|coda|fim|fin)\b/i, 'FINAL'],
+  [/^(primeira parte|verse ?1|estrofa ?1|verso ?1|part ?a)\b/i, 'PART A'],
+  [/^(segunda parte|verse ?2|estrofa ?2|verso ?2|part ?b)\b/i, 'PART B'],
+  [/^(terceira parte|verse ?3|estrofa ?3|verso ?3|part ?c)\b/i, 'PART C'],
+  [/^(quarta parte|verse ?4|estrofa ?4|verso ?4|part ?d)\b/i, 'PART D'],
+  [/^(verse|estrofa|verso|parte)\b/i, 'PART A']
+];
+function nomSeccio(t) {
+  const net = t.replace(/[\[\]():]/g, ' ').trim();
+  for (const [re, nom] of NOMS_SECCIO) if (re.test(net)) return nom;
+  return net.toUpperCase().slice(0, 24);
+}
+function capcaleraSeccio(l) {
+  // [Intro] Am F C  ·  Intro:  ·  [Refrão]
+  let m = l.match(/^\s*\[([^\]]{1,30})\]\s*(.*)$/);
+  if (m) return { nom: nomSeccio(m[1]), resta: m[2] };
+  m = l.match(/^\s*([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ .\d-]{1,24}):\s*(.*)$/);
+  if (m && NOMS_SECCIO.some(([re]) => re.test(m[1].trim())) && (!m[2] || esLiniaAcords(m[2]))) return { nom: nomSeccio(m[1]), resta: m[2] };
+  return null;
+}
+function normalitzarAcord(c) {
+  // Am -> A-, F#m7 -> F#-7, Bbm -> Bb-  (no toquem maj, dim…)
+  return c.replace(/^([A-G](?:#|b)?)m(?!aj|in)/, '$1-').replace(/^([A-G](?:#|b)?)min/, '$1-');
+}
+function acordBasic(c) {
+  const a = arrelAcord(c); if (!a) return null;
+  const nom = c.match(/^[A-G](?:#|b)?/)[0];
+  const resta = c.slice(nom.length);
+  if (/^(dim|°|º)/.test(resta)) return null;               // no en tenim diagrama
+  if (/^5/.test(resta)) return nom + '5';
+  if (/^(-|m(?!aj))/.test(resta)) return nom + '-';
+  return nom;
+}
+function periodeMinim(seq) {
+  for (let p = 1; p <= seq.length / 2; p++) {
+    if (seq.length % p && seq.length - p < p) continue;
+    if (seq.every((x, i) => x === seq[i % p])) return seq.slice(0, p);
+  }
+  return seq;
+}
+function analitzarXifrat(text) {
+  const linies = String(text || '').replace(/\r/g, '').replace(/\t/g, '    ').split('\n');
+  let to = null;
+  const seccions = [];                 // en ordre d'aparició
+  let actual = null;
+  const lletra = [];
+  const nova = (nom, auto) => { actual = { nom, acords: [], veu: [], auto: !!auto }; seccions.push(actual); };
+  const seguentPart = () => { for (const l of 'ABCDEFGH') if (!seccions.some(s => s.nom === 'PART ' + l)) return 'PART ' + l; return 'PART X'; };
+  linies.forEach(raw => {
+    const l = raw.replace(/\s+$/, '');
+    const tom = l.match(/^\s*(tom|tono|tonalitat|key)\s*:\s*([A-G](?:#|b)?m?)/i);
+    if (tom) { to = tom[2]; return; }
+    if (/^\s*(capotraste|capo|afinaç|afinaci|tuning|parte \d+ de \d+)/i.test(l)) return;
+    if (esLiniaTab(l)) return;
+    const cap = capcaleraSeccio(l);
+    if (cap) {
+      nova(cap.nom);
+      if (cap.resta && esLiniaAcords(cap.resta)) actual.acords.push(...cap.resta.trim().split(/\s+/).filter(esAcordText));
+      if (lletra.length && lletra[lletra.length - 1] !== '') lletra.push('');
+      return;
+    }
+    if (esLiniaAcords(l)) {
+      if (!actual) nova(seccions.length ? 'PART ?' : 'INTRO', true);
+      actual.acords.push(...l.trim().split(/\s+/).filter(esAcordText));
+      return;
+    }
+    if (!l.trim()) {
+      if (actual && actual.auto && actual.veu.length) { actual = null; }     // sense títols: cada paràgraf és una part
+      if (actual && actual.veu.length && actual.veu[actual.veu.length - 1] !== '') actual.veu.push('');
+      if (lletra.length && lletra[lletra.length - 1] !== '') lletra.push('');
+      return;
+    }
+    // línia de lletra
+    if (!actual) nova('PART ?', true);
+    else if (actual.nom === 'INTRO' && !actual.veu.length) {
+      if (actual.auto) actual.nom = 'PART ?';               // no era una intro: eren els acords de la primera estrofa
+      else nova('PART ?', true);
+    }
+    actual.veu.push(l.trim());
+    lletra.push(l.trim());
+  });
+  // Parts sense títol: les que tenen els mateixos acords són la mateixa part (A, B, A…)
+  const perAcords = {};
+  seccions.filter(s => s.nom === 'PART ?').forEach(s => {
+    const clau = periodeMinim(s.acords).join(' ');
+    if (!perAcords[clau]) perAcords[clau] = seguentPart();
+    s.nom = perAcords[clau];
+  });
+  // Unim seccions amb el mateix nom (les repeticions) i guardem l'ordre per a l'estructura
+  const ordre = [], parts = [];
+  seccions.forEach(s => {
+    if (!s.acords.length && !s.veu.join('').trim()) return;
+    ordre.push(s.nom);
+    const veu = s.veu.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    const ex = parts.find(p => p.nom === s.nom);
+    if (!ex) parts.push({ nom: s.nom, acords: s.acords.map(normalitzarAcord), veu });
+    else if (veu && !ex.veu.includes(veu)) ex.veu = (ex.veu ? ex.veu + '\n\n' : '') + veu;
+  });
+  parts.forEach(p => { p.acords = periodeMinim(p.acords); });
+  const tots = [];
+  parts.forEach(p => p.acords.forEach(a => { if (!tots.includes(a)) tots.push(a); }));
+  return { to: to ? normalitzarAcord(to) : null, parts, ordre, lletra: lletra.join('\n').replace(/\n{3,}/g, '\n\n').trim(), acords: tots };
+}
+function aplicarImportacio(r, titol, artista) {
+  if (!r.parts.length && !r.lletra) { alert("No he trobat ni acords ni lletra en aquest text."); return false; }
+  if ((items.length || estTeContingut()) && !confirm('Això substituirà la cançó que tens ara. Continuo?')) return false;
+  items = []; idSeq = 1;
+  estructura = estBuida();
+  if (titol) $('titolInput').value = titol;
+  if (artista) $('artistaInput').value = artista;
+  // tonalitat
+  if (r.to) {
+    const a = arrelAcord(r.to);
+    if (a) { estructura.to = NOTES_SOST[a.semi]; estructura.mode = a.qual === 'min' ? 'menor' : 'major'; }
+  }
+  estructura.lletra = r.lletra;
+  estructura.parts = r.parts.map(p => {
+    const compassos = p.acords.map(a => ({ div: 1, cells: [a] }));
+    return { nom: p.nom, compassos, acords: textDeBars(compassos), veu: p.veu };
+  });
+  const curt = n => nomCurtPart(n);
+  estructura.ordre = r.ordre.map(curt).join(' – ');
+  estructura.ordreAuto = false;
+  // diagrames de guitarra i teclat
+  const basics = [];
+  r.acords.forEach(a => { const b = acordBasic(a); if (b && !basics.includes(b)) basics.push(b); });
+  $('acordsInput').value = basics.join(' ');
+  $('ordreInput').value = '';
+  $('titolMostrat').innerText = textCapcalera() || 'TÍTOL DE LA CANÇÓ';
+  if (basics.length) { taparPreguntat = true; omplirDesDeAcords(); } else renderTot();
+  if (modeActual === 'est') estRender();
+  desar();
+  const noDiag = r.acords.filter(a => !acordBasic(a));
+  avis(`✅ Importada: ${estructura.parts.length} parts, ${basics.length} acords${noDiag.length ? ' (sense diagrama: ' + noDiag.join(', ') + ')' : ''}`, 6000);
+  return true;
+}
+function obrirImportar() { $('imp-url').value = ''; $('imp-text').value = ''; obrirModal('modalImportar'); }
+function importarText() {
+  const r = analitzarXifrat($('imp-text').value);
+  if (aplicarImportacio(r, '', '')) tancarModal('modalImportar');
+}
+async function importarEnllac() {
+  const url = $('imp-url').value.trim();
+  if (!/^https?:\/\//i.test(url)) { alert("Enganxa l'enllaç sencer (comença per https://)."); return; }
+  if (!biblioConfigurada()) return;
+  $('imp-estat').textContent = '⏳ Llegint la pàgina…';
+  try {
+    const j = await peticioBiblio('GET', { accio: 'importar', url });
+    if (!j.ok) throw new Error(j.error || 'error');
+    const r = analitzarXifrat(j.text);
+    if (!r.to && j.to) r.to = normalitzarAcord(j.to);
+    $('imp-estat').textContent = '';
+    if (aplicarImportacio(r, j.titol || '', j.artista || '')) tancarModal('modalImportar');
+  } catch (e) {
+    const m = e.message === 'domini' ? "Ara per ara només puc llegir enllaços de Cifra Club i Ultimate Guitar."
+      : e.message === 'accio' ? "Cal actualitzar l'script de Google amb la versió nova (mira les instruccions)."
+      : e.message === 'codi' || e.message === 'sense-codi' ? missatgeError(e)
+      : "No he pogut llegir aquesta pàgina. Copia'n el text i enganxa'l al requadre de sota.";
+    $('imp-estat').textContent = '⚠️ ' + m;
+  }
+}
+
+/* =========================================================
    BIBLIOTECA COMPARTIDA (Google Drive via Apps Script)
    ========================================================= */
 // Adreça de l'aplicació web de Google Apps Script (Implementa → Aplicació web).
 const URL_BIBLIOTECA = 'https://script.google.com/macros/s/AKfycbw2lhxNhxvT2EJGhQhpFlOAhT3M_RIrqN_tDQS0oChLULzyeX5dOP_HZLehm6SfXeWS/exec';
 const CLAU_CODI = 'generador-diagrames-codi', CLAU_AUTOR = 'generador-diagrames-autor';
 let biblioLlista = [];
+const XIP_INST = { guitarra: ['Guitarra', '#007bff'], teclat: ['Teclat', '#e83e8c'], baix: ['Baix', '#6f42c1'], bateria: ['Bateria', '#fd7e14'], estructura: ['Lletra', '#2f9e44'] };
 
 function avis(text, ms = 3500) {
   const a = $('avis'); a.textContent = text; a.style.display = 'block';
@@ -2152,11 +2989,13 @@ function missatgeError(e) {
   return "No s'ha pogut connectar amb la biblioteca. Comprova la connexió a internet.";
 }
 function instrumentsCanco() {
-  return Object.keys(INSTRUMENTS).filter(inst => items.some(i => i.inst === inst));
+  const l = Object.keys(INSTRUMENTS).filter(inst => items.some(i => i.inst === inst));
+  if (estTeContingut()) l.push('estructura');
+  return l;
 }
 async function compartirCanco(sobreescriure = false) {
   if (!biblioConfigurada()) return;
-  if (!items.length) { alert('Afegeix algun diagrama abans de compartir.'); return; }
+  if (!items.length && !estTeContingut()) { alert('Afegeix algun diagrama o la lletra abans de compartir.'); return; }
   const titol = $('titolInput').value.trim();
   if (!titol) { alert('Posa el títol de la cançó abans de compartir-la.'); $('titolInput').focus(); return; }
   let autor = llegirLocal(CLAU_AUTOR);
@@ -2199,14 +3038,14 @@ function pintarBiblioteca() {
   if (!llista.length) { $('biblio-llista').innerHTML = `<div class="biblio-buit">${biblioLlista.length ? 'Cap cançó coincideix amb la cerca.' : 'Encara no hi ha cap cançó compartida.'}</div>`; return; }
   $('biblio-llista').innerHTML = llista.map(c => {
     const data = new Date(c.data).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short', year: 'numeric' });
-    const icones = (c.instruments || []).map(i => (INSTRUMENTS[i] || {}).icona || '').join(' ');
+    const icones = (c.instruments || []).map(i => XIP_INST[i] ? `<span class="xip" style="background:${XIP_INST[i][1]}">${XIP_INST[i][0]}</span>` : '').join('');
     return `<div class="biblio-fila"><div><div class="t">${esc(c.titol || c.nom)}${c.artista ? ' <span style="font-weight:normal;color:#666">— ' + esc(c.artista) + '</span>' : ''}</div>
       <div class="m">${c.autor ? 'Compartida per ' + esc(c.autor) + ' · ' : ''}${data}</div></div>
       <span class="i">${icones}</span><button class="btn-accio" style="width:auto" onclick="obrirDeBiblioteca('${esc(c.id)}')">Obrir</button></div>`;
   }).join('');
 }
 async function obrirDeBiblioteca(id) {
-  if (items.length && !confirm('Això substituirà el que tens ara a la pantalla. Continuo?')) return;
+  if ((items.length || estTeContingut()) && !confirm('Això substituirà el que tens ara a la pantalla. Continuo?')) return;
   avis('📥 Obrint…', 20000);
   try {
     const j = await peticioBiblio('GET', { id });
@@ -2226,7 +3065,8 @@ function estatActual() {
     versio: 2, titol: $('titolInput').value, artista: $('artistaInput').value, acords: $('acordsInput').value, ordre: $('ordreInput').value,
     marcaPeu: $('marcaPeuInput').value, marca: $('opt-marca').value, marcaPropia: marcaPropia,
     opcions: { ordre: $('opt-ordre').checked, ilustracio: $('opt-ilustracio').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
-    items: items.map(({ id, ...resta }) => resta)
+    items: items.map(({ id, ...resta }) => resta),
+    estructura: estructura
   };
 }
 function carregarEstat(e) {
@@ -2240,6 +3080,9 @@ function carregarEstat(e) {
   $('opt-inst').checked = !!o.inst; $('opt-pal').checked = !!o.pal; $('opt-ritmica').checked = o.ritmica !== false;
   $('opt-ilustracio').checked = o.ilustracio !== false;
   cordesTapades = parseInt(o.tapar) || 0; taparPreguntat = 'tapar' in o; $('opt-tapar-doble').checked = !!o.taparDoble; modeTapar(o.taparMode === 'visibles' ? 'visibles' : 'tapar');
+  estructura = Object.assign(estBuida(), e.estructura || {});
+  $('marcaPeuEst').value = $('marcaPeuInput').value;
+  if (modeActual === 'est') estRender();
   items = []; idSeq = 1;
   e.items.forEach(it => afegirItem(it, false));
   $('titolMostrat').innerText = textCapcalera() || 'TÍTOL DE LA CANÇÓ';
@@ -2249,11 +3092,11 @@ function carregarEstat(e) {
 let ultimaSessio = null;
 function recuperarUltima() {
   if (!ultimaSessio) return;
-  if (items.length && !confirm('Això substituirà el que tens ara. Continuo?')) return;
+  if ((items.length || estTeContingut()) && !confirm('Això substituirà el que tens ara. Continuo?')) return;
   carregarEstat(ultimaSessio);
   $('btn-recuperar').style.display = 'none';
 }
-function desar() { programarPagines(); if (!items.length) return; /* no esborrem l'última cançó desada en començar en blanc */ try { localStorage.setItem(CLAU_LOCAL, JSON.stringify(estatActual())); } catch (e) { } }
+function desar() { programarPagines(); if (!items.length && !estTeContingut()) return; /* no esborrem l'última cançó desada en començar en blanc */ try { localStorage.setItem(CLAU_LOCAL, JSON.stringify(estatActual())); } catch (e) { } }
 function exportarJSON() {
   const nom = (textCapcalera() || 'canco').toLowerCase().replace(/[^a-z0-9àèéíïòóúüç]+/gi, '-').replace(/^-|-$/g, '');
   const blob = new Blob([JSON.stringify(estatActual(), null, 2)], { type: 'application/json' });
@@ -2271,6 +3114,7 @@ function importarJSON(input) {
 function netejarTot() {
   if (!confirm('Vols esborrar-ho tot i començar de zero?')) return;
   items = [];
+  estructura = estBuida(); $('marcaPeuEst').value = ''; if (modeActual === 'est') estRender();
   cordesTapades = 0; taparPreguntat = false; actualitzarResumTapar();
   ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput'].forEach(id => $(id).value = '');
   $('titolMostrat').innerText = 'TÍTOL DE LA CANÇÓ';
@@ -2280,12 +3124,13 @@ function netejarTot() {
 // Inici
 (function inici() {
   // sempre comencem en blanc (també netegem el que el navegador hagi pogut recordar)
-  ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput', 'marcaPeuInput'].forEach(id => $(id).value = '');
+  ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput', 'marcaPeuInput', 'marcaPeuEst'].forEach(id => $(id).value = '');
   $('titolMostrat').innerText = 'TÍTOL DE LA CANÇÓ';
   // l'última cançó es pot recuperar amb el botó
   let desada = null;
   try { desada = JSON.parse(localStorage.getItem(CLAU_LOCAL)); } catch (err) { }
-  if (desada && Array.isArray(desada.items) && desada.items.length) {
+  const teEst = desada && desada.estructura && ((desada.estructura.lletra || '').trim() || (desada.estructura.parts || []).length);
+  if (desada && Array.isArray(desada.items) && (desada.items.length || teEst)) {
     ultimaSessio = desada;
     $('btn-recuperar').style.display = 'flex';
   }
