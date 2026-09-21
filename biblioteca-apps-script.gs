@@ -13,8 +13,8 @@ const CODI = 'rockin';
 
 function doGet(e) {
   const p = e.parameter || {};
+  if (p.accio === 'importar') return importar(p.url);   // no toca el Drive: no cal el codi
   if (p.codi !== CODI) return resposta({ ok: false, error: 'codi' });
-  if (p.accio === 'importar') return importar(p.url);
   const carpeta = DriveApp.getFolderById(CARPETA_ID);
 
   // Obrir una cançó concreta
@@ -83,44 +83,70 @@ function resposta(obj) {
    l'eina ja s'encarrega d'entendre'l.
    --------------------------------------------------------- */
 function importar(url) {
-  url = String(url || '');
+  url = String(url || '').trim();
   const domini = (url.match(/^https?:\/\/([^\/]+)/i) || [])[1] || '';
   const esCifra = /(^|\.)cifraclub\.com(\.br)?$/i.test(domini);
   const esUG = /(^|\.)ultimate-guitar\.com$/i.test(domini);
   if (!esCifra && !esUG) return resposta({ ok: false, error: 'domini' });
-  let html;
-  try {
-    const r = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true, headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh) Generador de diagrames' } });
-    if (r.getResponseCode() !== 200) return resposta({ ok: false, error: 'http' });
-    html = r.getContentText('UTF-8');
-  } catch (err) { return resposta({ ok: false, error: 'http' }); }
 
-  if (esCifra) {
-    const pre = (html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i) || [])[1];
-    if (!pre) return resposta({ ok: false, error: 'format' });
-    const text = netejarHtml(pre.replace(/<span class="tablatura"[\s\S]*?<\/span>\s*<\/span>/gi, ''));
-    const titol = netejarHtml((html.match(/<h1[^>]*class="[^"]*t1[^"]*"[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] || '');
-    const artista = netejarHtml((html.match(/<h2[^>]*class="[^"]*t3[^"]*"[^>]*>([\s\S]*?)<\/h2>/i) || [])[1] || '');
-    const to = netejarHtml((html.match(/id="cifra_tom"[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i) || [])[1] || '');
-    let t = titol, a = artista;
-    if (!t) {
-      const og = netejarHtml((html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]*)"/i) || [])[1] || '');
-      const parts = og.split(' - ');
-      t = parts[0] || ''; a = a || parts[1] || '';
-    }
-    return resposta({ ok: true, titol: t.trim(), artista: a.trim(), to: to.trim(), text: text });
+  // 1r intent: directament, fent-nos passar per un navegador normal
+  const directe = descarregar(url);
+  if (directe.ok) {
+    const r = esCifra ? llegirCifraClub(directe.html) : llegirUG(directe.html);
+    if (r) return resposta(Object.assign({ ok: true, via: 'directe' }, r));
   }
-
-  // Ultimate Guitar: les dades van dins d'un atribut data-content en JSON
+  // 2n intent: a través d'un lector públic (r.jina.ai) que torna el text de la pàgina
+  const lector = descarregar('https://r.jina.ai/' + url, { 'X-Return-Format': 'text' });
+  if (lector.ok && lector.html.length > 200) {
+    return resposta({ ok: true, via: 'lector', titol: '', artista: '', to: '', text: textDelLector(lector.html) });
+  }
+  return resposta({ ok: false, error: 'http', detall: 'directe ' + directe.codi + ' · lector ' + lector.codi });
+}
+function descarregar(url, extra) {
+  try {
+    const r = UrlFetchApp.fetch(url, {
+      muteHttpExceptions: true, followRedirects: true,
+      headers: Object.assign({
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'ca,es;q=0.9,pt;q=0.8,en;q=0.7'
+      }, extra || {})
+    });
+    const codi = r.getResponseCode();
+    return { ok: codi === 200, codi: codi, html: codi === 200 ? r.getContentText('UTF-8') : '' };
+  } catch (err) { return { ok: false, codi: 'error: ' + err.message, html: '' }; }
+}
+function llegirCifraClub(html) {
+  const pre = (html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i) || [])[1];
+  if (!pre) return null;
+  const text = netejarHtml(pre.replace(/<span class="tablatura"[\s\S]*?<\/span>\s*<\/span>/gi, ''));
+  let titol = netejarHtml((html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] || '');
+  let artista = netejarHtml((html.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i) || [])[1] || '');
+  const to = netejarHtml((html.match(/id="cifra_tom"[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i) || [])[1] || '');
+  if (!titol) {
+    const og = netejarHtml((html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]*)"/i) || [])[1] || '');
+    const parts = og.split(' - ');
+    titol = parts[0] || ''; artista = artista || parts[1] || '';
+  }
+  return { titol: titol.trim(), artista: artista.trim(), to: to.trim(), text: text };
+}
+function llegirUG(html) {
   const dades = (html.match(/class="js-store"[^>]*data-content="([^"]*)"/i) || [])[1];
-  if (!dades) return resposta({ ok: false, error: 'format' });
+  if (!dades) return null;
   let j;
-  try { j = JSON.parse(desferEntitats(dades)); } catch (err) { return resposta({ ok: false, error: 'format' }); }
+  try { j = JSON.parse(desferEntitats(dades)); } catch (err) { return null; }
   const tab = (((j.store || {}).page || {}).data || {});
   const contingut = ((tab.tab_view || {}).wiki_tab || {}).content || '';
+  if (!contingut) return null;
   const info = tab.tab || {};
   const text = contingut.replace(/\[\/?tab\]/g, '').replace(/\[ch\]([\s\S]*?)\[\/ch\]/g, '$1').replace(/\r/g, '');
-  return resposta({ ok: true, titol: info.song_name || '', artista: info.artist_name || '', to: info.tonality_name || '', text: text });
+  return { titol: info.song_name || '', artista: info.artist_name || '', to: info.tonality_name || '', text: text };
+}
+function textDelLector(t) {
+  // Si hi ha blocs de codi (```), el xifrat sol ser el més llarg
+  const blocs = t.split('```').filter((b, i) => i % 2 === 1);
+  if (blocs.length) return blocs.sort((a, b) => b.length - a.length)[0].replace(/^[a-z]*\n/, '');
+  return t;
 }
 function netejarHtml(s) {
   return desferEntitats(String(s || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, ''));

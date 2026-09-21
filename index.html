@@ -2712,17 +2712,22 @@ function paginesLletra(num) {
   for (const mida of [10, 9, 8]) { if (!cap()) break; txt.style.fontSize = mida + 'pt'; }
   return num + 1;
 }
-function blocPart(p, ton) {
+function blocPart(p, ton, opt = {}) {
   const d = document.createElement('div');
   d.className = 'pv-part';
-  const compassos = barsPart(p);
-  const files = [];
-  for (let i = 0; i < Math.max(compassos.length, 1); i += 4) files.push(compassos.slice(i, i + 4));
-  const filesHtml = files.map(f => `<div class="pv-acords">${[0, 1, 2, 3].map(k => f[k] ? htmlBar(f[k], ton, '') : '<span class="buida"></span>').join('')}</div>`).join('');
+  const veu = opt.veu !== undefined ? opt.veu : p.veu;
+  let acordsHtml = '';
+  if (!opt.senseAcords) {
+    const compassos = barsPart(p);
+    const files = [];
+    for (let i = 0; i < Math.max(compassos.length, 1); i += 4) files.push(compassos.slice(i, i + 4));
+    const filesHtml = files.map(f => `<div class="pv-acords">${[0, 1, 2, 3].map(k => f[k] ? htmlBar(f[k], ton, '') : '<span class="buida"></span>').join('')}</div>`).join('');
+    acordsHtml = `<div class="pv-fila"><div class="pv-etiq fluix">Acords</div><div class="pv-cels">${filesHtml}</div></div>`;
+  }
   d.innerHTML = `
-    <div class="pv-fila pv-cap"><div class="pv-etiq">${esc(p.nom)}</div><div></div></div>
-    <div class="pv-fila"><div class="pv-etiq fluix">Acords</div><div class="pv-cels">${filesHtml}</div></div>
-    <div class="pv-fila"><div class="pv-etiq fluix">Veu</div><div class="pv-veu">${esc(p.veu)}</div></div>`;
+    <div class="pv-fila pv-cap"><div class="pv-etiq">${esc(p.nom)}${opt.cont ? ' <span style="font-weight:normal">(cont.)</span>' : ''}</div><div></div></div>
+    ${acordsHtml}
+    <div class="pv-fila"><div class="pv-etiq fluix">Veu</div><div class="pv-veu">${esc(veu)}</div></div>`;
   return d;
 }
 function paginesEstructura(num) {
@@ -2737,14 +2742,43 @@ function paginesEstructura(num) {
       if (et) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTIL / TEMPO: ${esc(et)}</div>`);
     }
   };
+  const desborda = () => cos.scrollHeight > cos.clientHeight + 2;
+  const parts = () => cos.querySelectorAll('.pv-part').length;
   nova(true);
   estructura.parts.forEach(p => {
-    const b = blocPart(p, ton);
-    cos.appendChild(b);
-    if (cos.scrollHeight > cos.clientHeight + 2) {
-      if (cos.querySelectorAll('.pv-part').length > 1) { cos.removeChild(b); nova(false); cos.appendChild(b); }
-      // si una sola part no hi cap, reduïm la lletra
-      for (const mida of [9, 8, 7]) { if (cos.scrollHeight <= cos.clientHeight + 2) break; b.querySelector('.pv-veu').style.fontSize = mida + 'pt'; }
+    let linies = String(p.veu || '').replace(/\r/g, '').split('\n');
+    let primer = true;
+    while (true) {
+      const opt = { veu: linies.join('\n'), senseAcords: !primer, cont: !primer };
+      const b = blocPart(p, ton, opt);
+      cos.appendChild(b);
+      if (!desborda()) break;
+      // No hi cap sencera: posem aquí tantes línies de la veu com hi càpiguen
+      let cap = 0;
+      for (let n = linies.length - 1; n >= 1; n--) {
+        b.querySelector('.pv-veu').textContent = linies.slice(0, n).join('\n');
+        if (!desborda()) { cap = n; break; }
+      }
+      // si el tros és massa petit (o són acords sols), passem la part sencera a la pàgina següent
+      if (cap >= 3 && linies.length - cap >= 2) {
+        // tallem millor en una línia en blanc (entre estrofes) si n'hi ha una a prop
+        for (let k = cap; k > Math.max(2, cap - 6); k--) if (!linies[k - 1].trim()) { cap = k - 1; break; }
+        b.querySelector('.pv-veu').textContent = linies.slice(0, cap).join('\n');
+        linies = linies.slice(cap);
+        while (linies.length && !linies[0].trim()) linies.shift();
+        nova(false);
+        primer = false;
+        continue;
+      }
+      b.querySelector('.pv-veu').textContent = linies.join('\n');
+      if (parts() > 1) {
+        cos.removeChild(b);
+        nova(false);
+        continue;
+      }
+      // una sola part a la pàgina i encara no hi cap: reduïm la lletra
+      for (const mida of [9, 8, 7]) { if (!desborda()) break; b.querySelector('.pv-veu').style.fontSize = mida + 'pt'; }
+      break;
     }
   });
   return num;
@@ -2919,21 +2953,27 @@ async function importarEnllac() {
   const url = $('imp-url').value.trim();
   if (!/^https?:\/\//i.test(url)) { alert("Enganxa l'enllaç sencer (comença per https://)."); return; }
   if (!biblioConfigurada()) return;
-  $('imp-estat').textContent = '⏳ Llegint la pàgina…';
+  $('imp-estat').textContent = '⏳ Llegint la pàgina… (pot trigar uns segons)';
+  let j;
   try {
-    const j = await peticioBiblio('GET', { accio: 'importar', url });
-    if (!j.ok) throw new Error(j.error || 'error');
+    const r = await fetch(URL_BIBLIOTECA + '?' + new URLSearchParams({ accio: 'importar', url }).toString());
+    j = await r.json();
+  } catch (e) { j = { ok: false, error: 'xarxa' }; }
+  if (j.ok && j.text) {
     const r = analitzarXifrat(j.text);
     if (!r.to && j.to) r.to = normalitzarAcord(j.to);
-    $('imp-estat').textContent = '';
-    if (aplicarImportacio(r, j.titol || '', j.artista || '')) tancarModal('modalImportar');
-  } catch (e) {
-    const m = e.message === 'domini' ? "Ara per ara només puc llegir enllaços de Cifra Club i Ultimate Guitar."
-      : e.message === 'accio' ? "Cal actualitzar l'script de Google amb la versió nova (mira les instruccions)."
-      : e.message === 'codi' || e.message === 'sense-codi' ? missatgeError(e)
-      : "No he pogut llegir aquesta pàgina. Copia'n el text i enganxa'l al requadre de sota.";
-    $('imp-estat').textContent = '⚠️ ' + m;
+    if (r.parts.length || r.lletra) {
+      $('imp-estat').textContent = '';
+      if (aplicarImportacio(r, j.titol || '', j.artista || '')) tancarModal('modalImportar');
+      return;
+    }
+    j = { ok: false, error: 'buit' };
   }
+  const m = j.error === 'domini' ? "Ara per ara només puc llegir enllaços de Cifra Club i Ultimate Guitar."
+    : j.error === 'codi' ? "Cal actualitzar l'script de Google amb la versió nova (i fer «Versió nova» a Gestiona les implementacions)."
+    : j.error === 'xarxa' ? "No hi ha connexió amb l'script de Google."
+    : "Aquesta web no deixa llegir la pàgina automàticament" + (j.detall ? ` (${j.detall})` : '') + ". Copia'n el text i enganxa'l al requadre de sota: funciona sempre.";
+  $('imp-estat').textContent = '⚠️ ' + m;
 }
 
 /* =========================================================
