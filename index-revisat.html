@@ -234,6 +234,13 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .biblio-fila .t { font-weight: bold; }
 .biblio-fila .m { font-size: 12px; color: #777; }
 .biblio-fila .i { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 260px; }
+.biblio-nivells { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.biblio-nivells button, .nivell-tria button { border: 2px solid #ddd; background: #fff; border-radius: 18px; padding: 5px 14px; font-weight: bold; cursor: pointer; font-size: 13px; }
+.biblio-nivells button.actiu { border-color: #333; background: #333; color: #fff; }
+.nivell-tria { display: flex; gap: 8px; margin: 6px 0 14px; }
+.nivell-tria button { flex: 1; padding: 10px 6px; font-size: 15px; border-radius: 10px; }
+.nivell-tria button.actiu { color: #fff; }
+.xip-nivell { display: inline-block; font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 10px; color: #fff; margin-right: 6px; vertical-align: 2px; }
 .xip { color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
 .biblio-buit { padding: 30px; text-align: center; color: #888; }
 #avis { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #2c3e50; color: #fff; padding: 12px 20px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.3); z-index: 3000; font-size: 14px; display: none; max-width: 90vw; }
@@ -521,6 +528,20 @@ body:not(.mode-est) .nomes-est { display: none !important; }
 </div>
 
 <!-- ===== BIBLIOTECA COMPARTIDA ===== -->
+<div id="modalCompartir" class="modal-overlay" onclick="tancarSiFora(event)">
+  <div class="modal-contingut" style="max-width:460px">
+    <h2>📤 Compartir amb el professorat</h2>
+    <p class="ajuda" style="margin-bottom:12px">La cançó quedarà a la biblioteca compartida perquè la resta de professorat la pugui obrir i imprimir.</p>
+    <label style="font-weight:bold">El teu nom (sortirà a la biblioteca)</label>
+    <input type="text" id="comp-autor" style="width:100%;margin:6px 0 14px" autocomplete="off">
+    <label style="font-weight:bold">De quin nivell és la cançó?</label>
+    <div class="nivell-tria" id="comp-nivell"></div>
+    <div style="display:flex;justify-content:center;gap:10px">
+      <button class="btn-accio" style="width:auto" onclick="confirmarCompartir()">📤 Compartir</button>
+      <button class="btn-accio btn-outline" style="width:auto" onclick="tancarModal('modalCompartir')">Cancel·lar</button>
+    </div>
+  </div>
+</div>
 <div id="modalBiblio" class="modal-overlay" onclick="tancarSiFora(event)">
   <div class="modal-contingut" style="max-width:760px">
     <h2>📚 Biblioteca compartida</h2>
@@ -529,6 +550,7 @@ body:not(.mode-est) .nomes-est { display: none !important; }
       <input type="text" id="biblio-filtre" placeholder="🔎 Cerca per títol, grup o professor/a" oninput="pintarBiblioteca()">
       <button class="btn-accio btn-outline" style="width:auto" onclick="obrirBiblioteca(true)">🔄</button>
     </div>
+    <div class="biblio-nivells" id="biblio-nivells"></div>
     <div class="biblio-llista" id="biblio-llista"></div>
     <div style="margin-top:14px;display:flex;justify-content:center;gap:10px">
       <button class="btn-accio btn-outline" onclick="canviarCodiBiblio()">🔑 Canviar codi</button>
@@ -2978,7 +3000,7 @@ function analitzarXifrat(text) {
 function aplicarImportacio(r, titol, artista) {
   if (!r.parts.length && !r.lletra) { alert("No he trobat ni acords ni lletra en aquest text."); return false; }
   if ((items.length || estTeContingut()) && !confirm('Això substituirà la cançó que tens ara. Continuo?')) return false;
-  items = []; idSeq = 1;
+  items = []; idSeq = 1; nivellCanco = '';
   estructura = estBuida();
   // Amb celleta, els acords del xifrat són les formes de la guitarra: els passem als acords reals
   const capo = parseInt(r.capo) || 0;
@@ -3112,32 +3134,46 @@ function instrumentsCanco() {
   if (estTeContingut()) l.push('estructura');
   return l;
 }
-async function compartirCanco(sobreescriure = false) {
+const NIVELLS = ['0', '1', '2'];
+const COLORS_NIVELL = { '0': '#2f9e44', '1': '#f08c00', '2': '#c92a2a' };
+let nivellCanco = '';
+function xipNivell(n) { return NIVELLS.includes(String(n)) ? `<span class="xip-nivell" style="background:${COLORS_NIVELL[n]}">Nivell ${n}</span>` : ''; }
+function pintarTriaNivell() {
+  $('comp-nivell').innerHTML = NIVELLS.map(n => `<button class="${nivellCanco === n ? 'actiu' : ''}" style="${nivellCanco === n ? 'background:' + COLORS_NIVELL[n] + ';border-color:' + COLORS_NIVELL[n] : 'color:' + COLORS_NIVELL[n] + ';border-color:' + COLORS_NIVELL[n]}" onclick="nivellCanco='${n}';pintarTriaNivell()">Nivell ${n}</button>`).join('');
+}
+function compartirCanco() {
   if (!biblioConfigurada()) return;
   if (!items.length && !estTeContingut()) { alert('Afegeix algun diagrama o la lletra abans de compartir.'); return; }
+  if (!$('titolInput').value.trim()) { alert('Posa el títol de la cançó abans de compartir-la.'); $('titolInput').focus(); return; }
+  $('comp-autor').value = llegirLocal(CLAU_AUTOR) || '';
+  pintarTriaNivell();
+  obrirModal('modalCompartir');
+}
+function confirmarCompartir() {
+  if (!nivellCanco) { alert('Tria de quin nivell és la cançó (0, 1 o 2).'); return; }
+  const autor = $('comp-autor').value.trim();
+  escriureLocal(CLAU_AUTOR, autor);
+  tancarModal('modalCompartir');
+  enviarCanco(false, autor);
+}
+async function enviarCanco(sobreescriure, autor) {
   const titol = $('titolInput').value.trim();
-  if (!titol) { alert('Posa el títol de la cançó abans de compartir-la.'); $('titolInput').focus(); return; }
-  let autor = llegirLocal(CLAU_AUTOR);
-  if (!sobreescriure) {
-    autor = (prompt('El teu nom (sortirà a la biblioteca):', autor) ?? null);
-    if (autor === null) return;
-    autor = autor.trim(); escriureLocal(CLAU_AUTOR, autor);
-  }
   const nom = [titol, $('artistaInput').value.trim()].filter(Boolean).join(' - ');
   avis('📤 Compartint…', 20000);
   try {
     const j = await peticioBiblio('POST', {
       nom, sobreescriure,
       canco: estatActual(),
-      info: { titol, artista: $('artistaInput').value.trim(), autor, instruments: instrumentsCanco() }
+      info: { titol, artista: $('artistaInput').value.trim(), autor, nivell: nivellCanco, instruments: instrumentsCanco() }
     });
     if (!j.ok && j.error === 'existeix') {
       $('avis').style.display = 'none';
-      if (confirm(`Ja hi ha una cançó que es diu «${nom}» a la biblioteca.\nLa vols substituir per aquesta versió?`)) compartirCanco(true);
+      if (confirm(`Ja hi ha una cançó que es diu «${nom}» a la biblioteca.\nLa vols substituir per aquesta versió?`)) enviarCanco(true, autor);
       return;
     }
     if (!j.ok) throw new Error(j.error || 'error');
-    avis(`✅ «${nom}» ja és a la biblioteca compartida`);
+    biblioLlista = [];
+    avis(`✅ «${nom}» ja és a la biblioteca compartida (nivell ${nivellCanco})`);
   } catch (e) { $('avis').style.display = 'none'; alert(missatgeError(e)); }
 }
 async function obrirBiblioteca(refrescar) {
@@ -3151,14 +3187,18 @@ async function obrirBiblioteca(refrescar) {
     pintarBiblioteca();
   } catch (e) { $('biblio-llista').innerHTML = `<div class="biblio-buit">${esc(missatgeError(e))}</div>`; }
 }
+let biblioNivell = '';
 function pintarBiblioteca() {
+  const compte = n => biblioLlista.filter(c => !n || String(c.nivell) === n).length;
+  $('biblio-nivells').innerHTML = [['', 'Tots els nivells'], ...NIVELLS.map(n => [n, 'Nivell ' + n])].map(([n, t]) =>
+    `<button class="${biblioNivell === n ? 'actiu' : ''}" onclick="biblioNivell='${n}';pintarBiblioteca()">${t} <span style="opacity:.6">${compte(n)}</span></button>`).join('');
   const f = $('biblio-filtre').value.trim().toLowerCase();
-  const llista = biblioLlista.filter(c => !f || [c.nom, c.titol, c.artista, c.autor].join(' ').toLowerCase().includes(f));
-  if (!llista.length) { $('biblio-llista').innerHTML = `<div class="biblio-buit">${biblioLlista.length ? 'Cap cançó coincideix amb la cerca.' : 'Encara no hi ha cap cançó compartida.'}</div>`; return; }
+  const llista = biblioLlista.filter(c => (!biblioNivell || String(c.nivell) === biblioNivell) && (!f || [c.nom, c.titol, c.artista, c.autor].join(' ').toLowerCase().includes(f)));
+  if (!llista.length) { $('biblio-llista').innerHTML = `<div class="biblio-buit">${biblioLlista.length ? 'Cap cançó coincideix amb la cerca o el nivell triat.' : 'Encara no hi ha cap cançó compartida.'}</div>`; return; }
   $('biblio-llista').innerHTML = llista.map(c => {
     const data = new Date(c.data).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short', year: 'numeric' });
     const icones = (c.instruments || []).map(i => XIP_INST[i] ? `<span class="xip" style="background:${XIP_INST[i][1]}">${XIP_INST[i][0]}</span>` : '').join('');
-    return `<div class="biblio-fila"><div><div class="t">${esc(c.titol || c.nom)}${c.artista ? ' <span style="font-weight:normal;color:#666">— ' + esc(c.artista) + '</span>' : ''}</div>
+    return `<div class="biblio-fila"><div><div class="t">${xipNivell(c.nivell)}${esc(c.titol || c.nom)}${c.artista ? ' <span style="font-weight:normal;color:#666">— ' + esc(c.artista) + '</span>' : ''}</div>
       <div class="m">${c.autor ? 'Compartida per ' + esc(c.autor) + ' · ' : ''}${data}</div></div>
       <span class="i">${icones}</span><button class="btn-accio" style="width:auto" onclick="obrirDeBiblioteca('${esc(c.id)}')">Obrir</button></div>`;
   }).join('');
@@ -3181,7 +3221,7 @@ async function obrirDeBiblioteca(id) {
 const CLAU_LOCAL = 'generador-diagrames-v2';
 function estatActual() {
   return {
-    versio: 2, titol: $('titolInput').value, artista: $('artistaInput').value, acords: $('acordsInput').value, ordre: $('ordreInput').value,
+    versio: 2, nivell: nivellCanco, titol: $('titolInput').value, artista: $('artistaInput').value, acords: $('acordsInput').value, ordre: $('ordreInput').value,
     marcaPeu: $('marcaPeuInput').value, marca: $('opt-marca').value, marcaPropia: marcaPropia,
     opcions: { ordre: $('opt-ordre').checked, ilustracio: $('opt-ilustracio').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, celleta: celleta, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
     items: items.map(({ id, ...resta }) => resta),
@@ -3191,6 +3231,7 @@ function estatActual() {
 function carregarEstat(e) {
   if (!e || !Array.isArray(e.items)) return false;
   $('titolInput').value = e.titol || ''; $('artistaInput').value = e.artista || '';
+  nivellCanco = NIVELLS.includes(String(e.nivell)) ? String(e.nivell) : '';
   $('acordsInput').value = e.acords || ''; $('ordreInput').value = e.ordre || '';
   $('marcaPeuInput').value = e.marcaPeu || ''; marcaPropia = e.marcaPropia || '';
   if (e.marca) $('opt-marca').value = e.marca;
@@ -3236,6 +3277,7 @@ function netejarTot() {
   items = [];
   estructura = estBuida(); $('marcaPeuEst').value = ''; if (modeActual === 'est') estRender();
   cordesTapades = 0; taparPreguntat = false; actualitzarResumTapar();
+  nivellCanco = '';
   celleta = 0; omplirSelectsCelleta(); $('celleta-ajuda').style.display = 'none';
   ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput'].forEach(id => $(id).value = '');
   $('titolMostrat').innerText = 'TÍTOL DE LA CANÇÓ';

@@ -32,6 +32,7 @@ function doGet(e) {
     if (!/\.json$/i.test(f.getName())) continue;
     let info = {};
     try { info = JSON.parse(f.getDescription() || '{}'); } catch (err) { }
+    if (!f.getDescription()) info = infoDelFitxer(f);   // fitxers pujats a mà a la carpeta
     llista.push({ id: f.getId(), nom: f.getName().replace(/\.json$/i, ''), data: f.getLastUpdated().toISOString(), ...info });
   }
   llista.sort((a, b) => b.data.localeCompare(a.data));
@@ -64,6 +65,21 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
+}
+
+// Si algú arrossega un .json directament a la carpeta, en llegim les dades i les guardem
+// a la descripció perquè la biblioteca en mostri el títol, el nivell i els instruments.
+function infoDelFitxer(f) {
+  try {
+    const c = JSON.parse(f.getBlob().getDataAsString('UTF-8'));
+    const inst = [];
+    ['guitarra', 'teclat', 'baix', 'bateria'].forEach(i => { if ((c.items || []).some(it => it.inst === i)) inst.push(i); });
+    const e = c.estructura || {};
+    if ((e.lletra || '').trim() || (e.parts || []).length) inst.push('estructura');
+    const info = { titol: c.titol || '', artista: c.artista || '', autor: c.autor || '', nivell: c.nivell != null ? String(c.nivell) : '', instruments: inst };
+    f.setDescription(JSON.stringify(info));
+    return info;
+  } catch (err) { return {}; }
 }
 
 function esDeLaCarpeta(fitxer, carpeta) {
