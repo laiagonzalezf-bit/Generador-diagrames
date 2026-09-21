@@ -190,7 +190,11 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .pag-cap { position: relative; height: 24mm; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
 .pag-cap h1 { margin: 0; font-size: 22pt; font-weight: bold; text-transform: uppercase; text-align: center; padding: 0 30mm; }
 .pag-celleta { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 11pt; font-weight: bold; color: #444; }
-.pag-logo { position: absolute; right: 0; top: 1mm; max-height: 16mm; max-width: 55mm; object-fit: contain; }
+.pag-logos { position: absolute; right: 0; top: 1mm; display: flex; align-items: center; gap: 4mm; }
+.pag-logo { max-height: 16mm; max-width: 45mm; object-fit: contain; }
+.marca-fixa { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 6px 10px; margin-bottom: 4px; }
+.marca-fixa img { height: 34px; }
+.marca-fixa span { font-size: 12px; color: #555; }
 .pag-inst-img { position: absolute; left: 0; top: 0; height: 18mm; }
 .pag-marca-peu { position: absolute; left: 14mm; right: 14mm; bottom: 4mm; display: flex; align-items: center; justify-content: space-between; font-size: 8pt; color: #666; }
 .pag-marca-peu img { height: 7mm; }
@@ -414,17 +418,16 @@ body:not(.mode-est) .nomes-est { display: none !important; }
     <label class="check"><input type="checkbox" id="opt-ordre" checked onchange="desar()"> Mostrar «Ordre d'acords» (guitarra i teclat)</label>
     <input type="text" id="ordreInput" placeholder="Ordre d'acords (opcional)" autocomplete="off" oninput="desar()">
     <label class="check"><input type="checkbox" id="opt-colors" checked onchange="renderTot()"> Noms d'acords en color</label>
-    <label class="check"><input type="checkbox" id="opt-logo" checked onchange="renderMarca()"> Imatge de marca a la capçalera</label>
+    <label style="margin-top:6px">Logo de la capçalera</label>
+    <div class="marca-fixa"><img src="marca/rockin-imagotip.png" alt="ROCKIN"><span>El logo de ROCKIN surt sempre a totes les pàgines.</span></div>
+    <label style="margin-top:6px">Afegir un altre logo (opcional)</label>
     <div class="marca-fila">
-      <select id="opt-marca" onchange="renderMarca()">
-        <option value="rockin-imagotip">ROCKIN (imagotip)</option>
-        <option value="rockin-logo">ROCKIN (logo)</option>
-        <option value="rockin-logo-eslogan">ROCKIN + eslògan</option>
+      <select id="opt-marca" onchange="canviMarcaExtra()">
+        <option value="">Cap</option>
         <option value="endirecte">En Directe</option>
-        <option value="antic">Guitarra groga (la d'abans)</option>
-        <option value="propia">La meva imatge…</option>
+        <option value="propia">La meva imatge (escola, institut…)</option>
       </select>
-      <button class="btn-accio btn-outline" style="width:auto" onclick="document.getElementById('fitxerMarca').click()">📁</button>
+      <button class="btn-accio btn-outline" style="width:auto" title="Pujar una imatge" onclick="document.getElementById('fitxerMarca').click()">📁</button>
       <input type="file" id="fitxerMarca" accept="image/*" style="display:none" onchange="carregarMarca(this)">
     </div>
     <div class="marca-previa" id="marca-previa"></div>
@@ -718,26 +721,26 @@ body:not(.mode-est) .nomes-est { display: none !important; }
 /* =========================================================
    ESTAT
    ========================================================= */
-const LOGO_ANTIC = 'data:image/png;base64,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';
-const MARQUES = {
-  'rockin-imagotip': 'marca/rockin-imagotip.png',
-  'rockin-logo': 'marca/rockin-logo.png',
-  'rockin-logo-eslogan': 'marca/rockin-logo-eslogan.png',
-  'endirecte': 'marca/endirecte.png'
-};
+const LOGO_ROCKIN = 'marca/rockin-imagotip.png';   // sempre present
+const MARQUES = { 'endirecte': 'marca/endirecte.png' };
 let marcaPropia = '';                      // imatge triada pel professor (data:)
-function srcMarca() {
+function srcMarca() {                     // el logo afegit (a més del de ROCKIN)
   const v = $('opt-marca').value;
   if (v === 'propia') return marcaPropia || '';
-  if (v === 'antic') return LOGO_ANTIC;
   return MARQUES[v] || '';
 }
+function canviMarcaExtra() {
+  if ($('opt-marca').value === 'propia' && !marcaPropia) { document.getElementById('fitxerMarca').click(); }
+  renderMarca();
+}
+function treureMarcaExtra() { $('opt-marca').value = ''; renderMarca(); }
 function srcIlustracio(inst) { return `marca/inst-${inst}.png`; }
 function renderMarca() {
   const src = srcMarca();
+  const v = $('opt-marca').value;
   $('marca-previa').innerHTML = src
-    ? `<img src="${src}" alt="" onerror="this.parentElement.innerHTML='<span class=\'ajuda\'>No trobo la imatge (carpeta marca/)</span>'">`
-    : '<span class="ajuda">Tria una imatge amb el botó 📁</span>';
+    ? `<img src="${src}" alt="" onerror="this.parentElement.innerHTML='<span class=\'ajuda\'>No trobo la imatge</span>'"> <button class="mel-btn" onclick="treureMarcaExtra()">✕ Treure</button>`
+    : (v === 'propia' ? '<span class="ajuda">Puja la imatge amb el botó 📁</span>' : '');
   desar();
   programarPagines();
 }
@@ -753,7 +756,6 @@ function carregarMarca(input) {
       c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
       try { marcaPropia = c.toDataURL('image/png'); } catch (e) { marcaPropia = r.result; }
       $('opt-marca').value = 'propia';
-      $('opt-logo').checked = true;
       renderMarca();
     };
     im.onerror = () => alert('No he pogut llegir aquesta imatge.');
@@ -1339,13 +1341,13 @@ function novaPagina(inst, ambOrdre) {
   const p = document.createElement('section');
   p.className = 'pagina';
   const cap = textCapcalera();
-  const marca = $('opt-logo').checked ? srcMarca() : '';
+  const marca = srcMarca();
   p.innerHTML = `<header class="pag-cap">`
     + ($('opt-ilustracio').checked ? `<img class="pag-inst-img" src="${srcIlustracio(inst)}" alt="" onerror="this.style.display='none'">` : '')
     + ($('opt-inst').checked ? `<span class="pag-inst" style="left:22mm">${INSTRUMENTS[inst].nom}</span>` : '')
     + `<h1>${esc(cap)}</h1>`
     + (inst === 'guitarra' && celleta ? `<div class="pag-celleta">🎸 Celleta al ${ordinalTraste(celleta)} traste</div>` : '')
-    + (marca ? `<img class="pag-logo" src="${marca}" alt="" onerror="this.style.display='none'">` : '')
+    + `<div class="pag-logos">${marca ? `<img class="pag-logo" src="${marca}" alt="" onerror="this.style.display='none'">` : ''}<img class="pag-logo" src="${LOGO_ROCKIN}" alt="ROCKIN" onerror="this.style.display='none'"></div>`
     + `</header><div class="pag-cos"></div>`;
   const peu = $('marcaPeuInput').value.trim();
   if (peu) {
@@ -3223,7 +3225,7 @@ function estatActual() {
   return {
     versio: 2, nivell: nivellCanco, titol: $('titolInput').value, artista: $('artistaInput').value, acords: $('acordsInput').value, ordre: $('ordreInput').value,
     marcaPeu: $('marcaPeuInput').value, marca: $('opt-marca').value, marcaPropia: marcaPropia,
-    opcions: { ordre: $('opt-ordre').checked, ilustracio: $('opt-ilustracio').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, celleta: celleta, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
+    opcions: { ordre: $('opt-ordre').checked, ilustracio: $('opt-ilustracio').checked, colors: $('opt-colors').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, celleta: celleta, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
     items: items.map(({ id, ...resta }) => resta),
     estructura: estructura
   };
@@ -3234,9 +3236,9 @@ function carregarEstat(e) {
   nivellCanco = NIVELLS.includes(String(e.nivell)) ? String(e.nivell) : '';
   $('acordsInput').value = e.acords || ''; $('ordreInput').value = e.ordre || '';
   $('marcaPeuInput').value = e.marcaPeu || ''; marcaPropia = e.marcaPropia || '';
-  if (e.marca) $('opt-marca').value = e.marca;
+  $('opt-marca').value = ['endirecte', 'propia'].includes(e.marca) ? e.marca : '';
   const o = e.opcions || {};
-  $('opt-ordre').checked = o.ordre !== false; $('opt-colors').checked = o.colors !== false; $('opt-logo').checked = o.logo !== false;
+  $('opt-ordre').checked = o.ordre !== false; $('opt-colors').checked = o.colors !== false; 
   $('opt-inst').checked = !!o.inst; $('opt-pal').checked = !!o.pal; $('opt-ritmica').checked = o.ritmica !== false;
   $('opt-ilustracio').checked = o.ilustracio !== false;
   celleta = parseInt(o.celleta) || 0; omplirSelectsCelleta(); $('celleta-ajuda').style.display = celleta ? 'block' : 'none';

@@ -32,7 +32,7 @@ function doGet(e) {
     if (!/\.json$/i.test(f.getName())) continue;
     let info = {};
     try { info = JSON.parse(f.getDescription() || '{}'); } catch (err) { }
-    if (!f.getDescription()) info = infoDelFitxer(f);   // fitxers pujats a mà a la carpeta
+    if (!f.getDescription() || !info.autor) info = Object.assign(infoDelFitxer(f), info.autor ? info : {});   // fitxers pujats a mà a la carpeta
     llista.push({ id: f.getId(), nom: f.getName().replace(/\.json$/i, ''), data: f.getLastUpdated().toISOString(), ...info });
   }
   llista.sort((a, b) => b.data.localeCompare(a.data));
