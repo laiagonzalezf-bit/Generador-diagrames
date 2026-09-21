@@ -885,7 +885,7 @@ function notesTeclat(p) {
 }
 /* ---- Celleta (capo) de la guitarra ---- */
 function omplirSelectsCelleta() {
-  const opts = '<option value="0">Sense celleta</option>' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<option value="${n}">Al ${ordinalTraste(n)} traste</option>`).join('');
+  const opts = '<option value="0">Sense celleta</option>' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<option value="${n}">Al ${ordinalTraste(n)} trast</option>`).join('');
   ['opt-celleta', 'est-celleta'].forEach(id => { const e = document.getElementById(id); if (e) { e.innerHTML = opts; e.value = String(celleta || 0); } });
 }
 let celleta = 0;
@@ -1346,7 +1346,7 @@ function novaPagina(inst, ambOrdre) {
     + ($('opt-ilustracio').checked ? `<img class="pag-inst-img" src="${srcIlustracio(inst)}" alt="" onerror="this.style.display='none'">` : '')
     + ($('opt-inst').checked ? `<span class="pag-inst" style="left:22mm">${INSTRUMENTS[inst].nom}</span>` : '')
     + `<h1>${esc(cap)}</h1>`
-    + (inst === 'guitarra' && celleta ? `<div class="pag-celleta">🎸 Celleta al ${ordinalTraste(celleta)} traste</div>` : '')
+    + (inst === 'guitarra' && celleta ? `<div class="pag-celleta">🎸 Celleta al ${ordinalTraste(celleta)} trast</div>` : '')
     + `<div class="pag-logos">${marca ? `<img class="pag-logo" src="${marca}" alt="" onerror="this.style.display='none'">` : ''}<img class="pag-logo" src="${LOGO_ROCKIN}" alt="ROCKIN" onerror="this.style.display='none'"></div>`
     + `</header><div class="pag-cos"></div>`;
   const peu = $('marcaPeuInput').value.trim();
@@ -2803,7 +2803,7 @@ function paginesEstructura(num) {
       cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTRUCTURA: ${esc(estructura.ordre || '')}</div>`);
       const et = [estructura.estil, estructura.tempo ? estructura.tempo + ' bpm' : ''].filter(Boolean).join(' ');
       if (et) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTIL / TEMPO: ${esc(et)}</div>`);
-      if (celleta) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">GUITARRA: celleta al ${ordinalTraste(celleta)} traste</div>`);
+      if (celleta) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">GUITARRA: celleta al ${ordinalTraste(celleta)} trast</div>`);
     }
   };
   const desborda = () => cos.scrollHeight > cos.clientHeight + 2;
@@ -3036,7 +3036,7 @@ function aplicarImportacio(r, titol, artista) {
   if (modeActual === 'est') estRender();
   desar();
   const noDiag = r.acords.filter(a => !acordBasic(a));
-  avis(`✅ Importada: ${estructura.parts.length} parts, ${basics.length} acords${capo ? ` · celleta al ${ordinalTraste(capo)} traste` : ''}${noDiag.length ? ' (sense diagrama: ' + noDiag.join(', ') + ')' : ''}`, 6000);
+  avis(`✅ Importada: ${estructura.parts.length} parts, ${basics.length} acords${capo ? ` · celleta al ${ordinalTraste(capo)} trast` : ''}${noDiag.length ? ' (sense diagrama: ' + noDiag.join(', ') + ')' : ''}`, 6000);
   return true;
 }
 function obrirImportar() { $('imp-url').value = ''; $('imp-text').value = ''; obrirModal('modalImportar'); }
