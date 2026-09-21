@@ -121,14 +121,15 @@ function llegirCifraClub(html) {
   if (!pre) return null;
   const text = netejarHtml(pre.replace(/<span class="tablatura"[\s\S]*?<\/span>\s*<\/span>/gi, ''));
   let titol = netejarHtml((html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] || '');
-  let artista = netejarHtml((html.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i) || [])[1] || '');
+  let artista = netejarHtml((html.match(/<h2[^>]*class="[^"]*t3[^"]*"[^>]*>([\s\S]*?)<\/h2>/i) || [])[1] || '');
   const to = netejarHtml((html.match(/id="cifra_tom"[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i) || [])[1] || '');
   if (!titol) {
     const og = netejarHtml((html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]*)"/i) || [])[1] || '');
     const parts = og.split(' - ');
     titol = parts[0] || ''; artista = artista || parts[1] || '';
   }
-  return { titol: titol.trim(), artista: artista.trim(), to: to.trim(), text: text };
+  const capo = (netejarHtml(html).match(/Capotraste\s+na\s+(\d{1,2})/i) || [])[1] || '';
+  return { titol: titol.trim(), artista: artista.trim(), to: to.trim(), capo: capo, text: text };
 }
 function llegirUG(html) {
   const dades = (html.match(/class="js-store"[^>]*data-content="([^"]*)"/i) || [])[1];
@@ -140,7 +141,7 @@ function llegirUG(html) {
   if (!contingut) return null;
   const info = tab.tab || {};
   const text = contingut.replace(/\[\/?tab\]/g, '').replace(/\[ch\]([\s\S]*?)\[\/ch\]/g, '$1').replace(/\r/g, '');
-  return { titol: info.song_name || '', artista: info.artist_name || '', to: info.tonality_name || '', text: text };
+  return { titol: info.song_name || '', artista: info.artist_name || '', to: info.tonality_name || '', capo: String(((tab.tab_view || {}).meta || {}).capo || ''), text: text };
 }
 function textDelLector(t) {
   // Si hi ha blocs de codi (```), el xifrat sol ser el més llarg
@@ -154,5 +155,10 @@ function netejarHtml(s) {
 function desferEntitats(s) {
   return String(s || '')
     .replace(/&quot;/g, '"').replace(/&#039;|&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ').replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&');
+    .replace(/&nbsp;/g, ' ').replace(/&#x([0-9a-f]+);/gi, (m, h) => String.fromCharCode(parseInt(h, 16))).replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&');
+}
+
+// Executa aquesta funció una vegada des de l'editor per donar permís a l'script per llegir pàgines web
+function autoritzar() {
+  UrlFetchApp.fetch('https://www.google.com');
 }

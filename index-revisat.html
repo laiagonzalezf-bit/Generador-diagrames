@@ -189,6 +189,7 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
 .pagina:last-child { break-after: auto; page-break-after: auto; }
 .pag-cap { position: relative; height: 24mm; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
 .pag-cap h1 { margin: 0; font-size: 22pt; font-weight: bold; text-transform: uppercase; text-align: center; padding: 0 30mm; }
+.pag-celleta { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: 11pt; font-weight: bold; color: #444; }
 .pag-logo { position: absolute; right: 0; top: 1mm; max-height: 16mm; max-width: 55mm; object-fit: contain; }
 .pag-inst-img { position: absolute; left: 0; top: 0; height: 18mm; }
 .pag-marca-peu { position: absolute; left: 14mm; right: 14mm; bottom: 4mm; display: flex; align-items: center; justify-content: space-between; font-size: 8pt; color: #666; }
@@ -373,6 +374,8 @@ body:not(.mode-est) .nomes-est { display: none !important; }
       <div class="fila-botons">
         <button class="btn-accio btn-outline" style="color:#007bff;border-color:#007bff" onclick="obrirCataleg('guitarra')">🖼️ Catàleg d'acords</button>
         <button class="btn-accio btn-outline" style="color:#17a2b8;border-color:#17a2b8" onclick="obrirEditorGuitarra()">✏️ Dibuixar acord</button>
+        <div class="tapar-resum"><span>Celleta:</span><select id="opt-celleta" onchange="canviarCelleta(this.value)" style="width:auto;padding:4px 6px"></select></div>
+        <p class="ajuda" id="celleta-ajuda" style="display:none;margin:0">Escriu els acords <b>reals</b> (els que sonen). La guitarra mostrarà la posició que s'ha de tocar amb la celleta.</p>
         <div class="tapar-resum"><span id="tapar-text">Cordes tapades: <b>cap</b></span><button class="link-btn" onclick="preguntarTapar()">Canviar</button></div>
         <label class="check" id="tapar-doble-wrap" style="display:none"><input type="checkbox" id="opt-tapar-doble" onchange="desar()"> Imprimir també la versió sense tapar</label>
       </div>
@@ -459,6 +462,7 @@ body:not(.mode-est) .nomes-est { display: none !important; }
           </select>
           <select id="est-mode" onchange="estCanvi()"><option value="major">major</option><option value="menor">menor</option></select></span></label>
         <label>Compàs <select id="est-temps" onchange="estCanviTemps()"><option value="4">4/4</option><option value="3">3/4</option><option value="2">2/4</option><option value="6">6/8</option></select></label>
+        <label>Celleta (guitarra) <select id="est-celleta" onchange="canviarCelleta(this.value)"></select></label>
         <label>Estil <input id="est-estil" placeholder="Ex: Reggae" oninput="estCanvi()" style="width:160px"></label>
         <label>Tempo <span style="display:flex;align-items:center;gap:6px"><input id="est-tempo" type="number" min="30" max="260" placeholder="110" oninput="estCanvi()" style="width:90px"> bpm</span></label>
         <span class="ajuda" id="est-to-detectada"></span>
@@ -774,15 +778,16 @@ function fitxerAcord(p) {           // nom del PNG de guitarra (el de teclat por
   if (ENHARMONIC[p.semi]) { const [s, b] = ENHARMONIC[p.semi]; return `${s}sostingut${m} o ${b}bemoll${m}`; }
   return NATURAL[p.semi] + m;
 }
-function clauItem(it) { const p = parseAcord(it.nom); return p ? p.clau : 'txt:' + String(it.nom || '').toLowerCase(); }
+function clauItem(it) { const n = it.sona || it.nom; const p = parseAcord(n); return p ? p.clau : 'txt:' + String(n || '').toLowerCase(); }
+function clauForma(it) { const p = parseAcord(it.nom); return p ? p.clau : 'txt:' + String(it.nom || '').toLowerCase(); }
 function esAcord(it) { return (it.inst === 'guitarra') || (it.inst === 'teclat' && it.tipus !== 'melodia'); }
-function etiquetaItem(it) { const p = parseAcord(it.nom); return p ? p.etiqueta : (it.nom || ''); }
+function etiquetaItem(it) { const p = parseAcord(it.nom); return (p ? p.etiqueta : (it.nom || '')) + (it.sona ? ` · sona ${it.sona}` : ''); }
 function mapaColors() {
   const mapa = {}; let i = 0;
   const ton = typeof tonalitatEfectiva === 'function' ? tonalitatEfectiva() : null;
   items.filter(esAcord).forEach(it => {
     const k = clauItem(it); if (k in mapa) return;
-    mapa[k] = (ton && colorGrau(it.nom, ton, true)) || COLORS_ACORDS[i++ % COLORS_ACORDS.length];
+    mapa[k] = (ton && colorGrau(it.sona || it.nom, ton, true)) || COLORS_ACORDS[i++ % COLORS_ACORDS.length];
   });
   return mapa;
 }
@@ -854,9 +859,39 @@ function notesTeclat(p) {
   intervals.forEach(iv => { const s = p.semi + iv; notes.push(NOTES_SOST[s % 12] + (4 + Math.floor(s / 12))); });
   return notes;
 }
-function itemGuitarraDesDe(p) {
-  if (p.qual === '5') return { inst: 'guitarra', tipus: 'diag', nom: p.nom, ...powerChordGuitarra(p) };
-  return { inst: 'guitarra', tipus: 'img', nom: p.nom, fitxer: fitxerAcord(p) };
+/* ---- Celleta (capo) de la guitarra ---- */
+function omplirSelectsCelleta() {
+  const opts = '<option value="0">Sense celleta</option>' + [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<option value="${n}">Al ${ordinalTraste(n)} traste</option>`).join('');
+  ['opt-celleta', 'est-celleta'].forEach(id => { const e = document.getElementById(id); if (e) { e.innerHTML = opts; e.value = String(celleta || 0); } });
+}
+let celleta = 0;
+const NOMS_TRANSP = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
+function ordinalTraste(n) { n = +n; return n + (n === 1 || n === 3 ? 'r' : n === 2 ? 'n' : n === 4 ? 't' : 'è'); }
+function transposarNom(nom, n) {             // transposa un acord escrit (manté el sufix: -, 7, /E…)
+  return String(nom).replace(/^([A-G])([#b]?)/, (m, l, a) => NOMS_TRANSP[(ARREL[l] + (a === '#' ? 1 : a === 'b' ? -1 : 0) + n + 120) % 12])
+    .replace(/\/([A-G])([#b]?)$/, (m, l, a) => '/' + NOMS_TRANSP[(ARREL[l] + (a === '#' ? 1 : a === 'b' ? -1 : 0) + n + 120) % 12]);
+}
+function transposarText(t, n) {
+  return String(t || '').split(/(\s+|\||\/(?=\s))/).map(tok => /^[A-G][#b]?/.test(tok) ? transposarNom(tok, n) : tok).join('');
+}
+function itemGuitarraDesDe(pReal) {
+  const pf = celleta ? parseAcord(transposarNom(pReal.nom, -celleta)) || pReal : pReal;   // forma que es toca
+  const extra = celleta ? { sona: pReal.nom } : {};
+  if (pf.qual === '5') return { inst: 'guitarra', tipus: 'diag', auto: true, nom: pf.nom, ...extra, ...powerChordGuitarra(pf) };
+  return { inst: 'guitarra', tipus: 'img', auto: true, nom: pf.nom, ...extra, fitxer: fitxerAcord(pf) };
+}
+function canviarCelleta(v) {
+  celleta = Math.max(0, Math.min(11, parseInt(v) || 0));
+  ['opt-celleta', 'est-celleta'].forEach(id => { if ($(id)) $(id).value = String(celleta); });
+  $('celleta-ajuda').style.display = celleta ? 'block' : 'none';
+  // tornem a calcular les formes de guitarra generades automàticament
+  items = items.map(it => {
+    if (it.inst !== 'guitarra' || !(it.auto || it.tipus === 'img')) return it;
+    const pReal = parseAcord(it.sona || it.nom); if (!pReal) return it;
+    const nou = itemGuitarraDesDe(pReal); nou.id = it.id; return nou;
+  });
+  if (modeActual === 'est') estRender();
+  renderTot();
 }
 function itemTeclatDesDe(p) {
   if (p.qual === '5') return { inst: 'teclat', tipus: 'notes', nom: p.nom, notes: notesTeclat(p) };
@@ -1287,6 +1322,7 @@ function novaPagina(inst, ambOrdre) {
     + ($('opt-ilustracio').checked ? `<img class="pag-inst-img" src="${srcIlustracio(inst)}" alt="" onerror="this.style.display='none'">` : '')
     + ($('opt-inst').checked ? `<span class="pag-inst" style="left:22mm">${INSTRUMENTS[inst].nom}</span>` : '')
     + `<h1>${esc(cap)}</h1>`
+    + (inst === 'guitarra' && celleta ? `<div class="pag-celleta">🎸 Celleta al ${ordinalTraste(celleta)} traste</div>` : '')
     + (marca ? `<img class="pag-logo" src="${marca}" alt="" onerror="this.style.display='none'">` : '')
     + `</header><div class="pag-cos"></div>`;
   const peu = $('marcaPeuInput').value.trim();
@@ -1300,7 +1336,7 @@ function novaPagina(inst, ambOrdre) {
   if (ambOrdre && $('opt-ordre').checked && ordre) {
     const f = document.createElement('footer');
     f.className = 'pag-peu';
-    f.textContent = "ORDRE D'ACORDS: " + ordre;
+    f.textContent = "ORDRE D'ACORDS: " + (inst === 'guitarra' && celleta ? transposarText(ordre, -celleta) : ordre);
     p.appendChild(f);
   }
   $('pagines').appendChild(p);
@@ -1530,7 +1566,10 @@ function obrirCataleg(inst) {
         d.appendChild(contingut(it));
         const nom = (NOM_ENH[l] || l) + (q === 'min' ? '-' : q === '5' ? '5' : '');
         d.insertAdjacentHTML('beforeend', `<div class="cataleg-nom">${nom}</div>`);
-        d.onclick = () => toggleCataleg(inst === 'guitarra' ? itemGuitarraDesDe(p) : itemTeclatDesDe(p), x => x.tipus !== 'melodia' && clauItem(x) === p.clau);
+        d.onclick = () => {
+          if (inst === 'guitarra') { const real = parseAcord(transposarNom(p.nom, celleta)) || p; toggleCataleg(itemGuitarraDesDe(real), x => clauForma(x) === p.clau); }
+          else toggleCataleg(itemTeclatDesDe(p), x => x.tipus !== 'melodia' && clauItem(x) === p.clau);
+        };
         g.appendChild(d);
       });
       cos.appendChild(g);
@@ -1547,7 +1586,7 @@ function toggleCataleg(nou, coincideix) {
 function refrescarCataleg() {
   if (!catalegObert || $('modalCataleg').style.display !== 'flex') return;
   const inst = catalegObert;
-  const claus = new Set(items.filter(i => i.inst === inst && i.tipus !== 'melodia').map(i => inst === 'bateria' ? (i.tipus === 'img' ? 'bat' + i.num : '') : clauItem(i)));
+  const claus = new Set(items.filter(i => i.inst === inst && i.tipus !== 'melodia').map(i => inst === 'bateria' ? (i.tipus === 'img' ? 'bat' + i.num : '') : inst === 'guitarra' ? clauForma(i) : clauItem(i)));
   document.querySelectorAll('#cataleg-cos .cataleg-opcio').forEach(d => d.classList.toggle('seleccionat', claus.has(d.dataset.clau)));
 }
 
@@ -2740,6 +2779,7 @@ function paginesEstructura(num) {
       cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTRUCTURA: ${esc(estructura.ordre || '')}</div>`);
       const et = [estructura.estil, estructura.tempo ? estructura.tempo + ' bpm' : ''].filter(Boolean).join(' ');
       if (et) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">ESTIL / TEMPO: ${esc(et)}</div>`);
+      if (celleta) cos.insertAdjacentHTML('beforeend', `<div class="pv-meta">GUITARRA: celleta al ${ordinalTraste(celleta)} traste</div>`);
     }
   };
   const desborda = () => cos.scrollHeight > cos.clientHeight + 2;
@@ -2848,21 +2888,41 @@ function periodeMinim(seq) {
   }
   return seq;
 }
+function desferEntitatsText(t) {
+  return String(t || '').replace(/&#x([0-9a-f]+);/gi, (m, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (m, n) => String.fromCharCode(+n))
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&');
+}
 function analitzarXifrat(text) {
+  text = desferEntitatsText(text);
+  const alias = {};                     // marques numerades (1a), 2)…) → nom de la part
   const linies = String(text || '').replace(/\r/g, '').replace(/\t/g, '    ').split('\n');
-  let to = null;
+  let to = null, capo = 0;
   const seccions = [];                 // en ordre d'aparició
   let actual = null;
   const lletra = [];
   const nova = (nom, auto) => { actual = { nom, acords: [], veu: [], auto: !!auto }; seccions.push(actual); };
   const seguentPart = () => { for (const l of 'ABCDEFGH') if (!seccions.some(s => s.nom === 'PART ' + l)) return 'PART ' + l; return 'PART X'; };
+  const seguentPartLliure = () => { for (const l of 'ABCDEFGH') { const n = 'PART ' + l; if (!seccions.some(s => s.nom === n) && !Object.values(alias).includes(n)) return n; } return 'PART X'; };
   linies.forEach(raw => {
     const l = raw.replace(/\s+$/, '');
     const tom = l.match(/^\s*(tom|tono|tonalitat|key)\s*:\s*([A-G](?:#|b)?m?)/i);
     if (tom) { to = tom[2]; return; }
-    if (/^\s*(capotraste|capo|afinaç|afinaci|tuning|parte \d+ de \d+)/i.test(l)) return;
+    const cp = l.match(/^\s*(?:capotraste|capo|cejilla|celleta)\D{0,25}?(\d{1,2})/i);
+    if (cp) { capo = +cp[1]; return; }
+    if (/^\s*(capotraste|capo|cejilla|celleta|afinaç|afinaci|tuning|parte \d+ de \d+)/i.test(l)) return;
     if (esLiniaTab(l)) return;
-    const cap = capcaleraSeccio(l);
+    const num = l.match(/^\s*(\d{1,2})[a-z]?\s*[).:-]\s*$/i);
+    if (num) {
+      const n = num[1];
+      if (actual && !actual.auto && !actual.acords.length && !actual.veu.length) { alias[n] = alias[n] || actual.nom; return; }
+      if (!alias[n]) alias[n] = seguentPartLliure();
+      if (!(actual && actual.nom === alias[n] && !actual.veu.length && !actual.acords.length)) nova(alias[n]);
+      if (lletra.length && lletra[lletra.length - 1] !== '') lletra.push('');
+      return;
+    }
+    const etiq = l.match(/^\s*([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ'·]*(?:\s+[A-Za-zÀ-ÿ'·\d]+){0,2})\s*:\s*$/);
+    const cap = capcaleraSeccio(l) || (etiq && !esLiniaAcords(etiq[1]) ? { nom: nomSeccio(etiq[1]), resta: '' } : null);
     if (cap) {
       nova(cap.nom);
       if (cap.resta && esLiniaAcords(cap.resta)) actual.acords.push(...cap.resta.trim().split(/\s+/).filter(esAcordText));
@@ -2900,22 +2960,33 @@ function analitzarXifrat(text) {
   const ordre = [], parts = [];
   seccions.forEach(s => {
     if (!s.acords.length && !s.veu.join('').trim()) return;
-    ordre.push(s.nom);
+    if (ordre[ordre.length - 1] !== s.nom) ordre.push(s.nom);          // estrofes seguides de la mateixa part: un sol cop
     const veu = s.veu.join('\n').replace(/\n{3,}/g, '\n\n').trim();
     const ex = parts.find(p => p.nom === s.nom);
     if (!ex) parts.push({ nom: s.nom, acords: s.acords.map(normalitzarAcord), veu });
-    else if (veu && !ex.veu.includes(veu)) ex.veu = (ex.veu ? ex.veu + '\n\n' : '') + veu;
+    else {
+      const nous = s.acords.map(normalitzarAcord);
+      if (nous.length && !(ex.acords.join(' ') + ' ').startsWith(nous.join(' ') + ' ')) ex.acords.push(...nous);   // una repetició (o un tros) no s'afegeix
+      if (veu && !ex.veu.includes(veu)) ex.veu = (ex.veu ? ex.veu + '\n\n' : '') + veu;
+    }
   });
   parts.forEach(p => { p.acords = periodeMinim(p.acords); });
   const tots = [];
   parts.forEach(p => p.acords.forEach(a => { if (!tots.includes(a)) tots.push(a); }));
-  return { to: to ? normalitzarAcord(to) : null, parts, ordre, lletra: lletra.join('\n').replace(/\n{3,}/g, '\n\n').trim(), acords: tots };
+  return { to: to ? normalitzarAcord(to) : null, capo, parts, ordre, lletra: lletra.join('\n').replace(/\n{3,}/g, '\n\n').trim(), acords: tots };
 }
 function aplicarImportacio(r, titol, artista) {
   if (!r.parts.length && !r.lletra) { alert("No he trobat ni acords ni lletra en aquest text."); return false; }
   if ((items.length || estTeContingut()) && !confirm('Això substituirà la cançó que tens ara. Continuo?')) return false;
   items = []; idSeq = 1;
   estructura = estBuida();
+  // Amb celleta, els acords del xifrat són les formes de la guitarra: els passem als acords reals
+  const capo = parseInt(r.capo) || 0;
+  if (capo) {
+    r.parts.forEach(p => { p.acords = p.acords.map(a => transposarNom(a, capo)); });
+    r.acords = r.acords.map(a => transposarNom(a, capo));
+  }
+  celleta = capo; omplirSelectsCelleta(); $('celleta-ajuda').style.display = capo ? 'block' : 'none';
   if (titol) $('titolInput').value = titol;
   if (artista) $('artistaInput').value = artista;
   // tonalitat
@@ -2941,7 +3012,7 @@ function aplicarImportacio(r, titol, artista) {
   if (modeActual === 'est') estRender();
   desar();
   const noDiag = r.acords.filter(a => !acordBasic(a));
-  avis(`✅ Importada: ${estructura.parts.length} parts, ${basics.length} acords${noDiag.length ? ' (sense diagrama: ' + noDiag.join(', ') + ')' : ''}`, 6000);
+  avis(`✅ Importada: ${estructura.parts.length} parts, ${basics.length} acords${capo ? ` · celleta al ${ordinalTraste(capo)} traste` : ''}${noDiag.length ? ' (sense diagrama: ' + noDiag.join(', ') + ')' : ''}`, 6000);
   return true;
 }
 function obrirImportar() { $('imp-url').value = ''; $('imp-text').value = ''; obrirModal('modalImportar'); }
@@ -2962,12 +3033,20 @@ async function importarEnllac() {
   if (j.ok && j.text) {
     const r = analitzarXifrat(j.text);
     if (!r.to && j.to) r.to = normalitzarAcord(j.to);
+    if (!r.capo && j.capo) r.capo = parseInt(j.capo) || 0;
     if (r.parts.length || r.lletra) {
       $('imp-estat').textContent = '';
-      if (aplicarImportacio(r, j.titol || '', j.artista || '')) tancarModal('modalImportar');
+      let artista = desferEntitatsText(j.artista || '');
+    const slug = (url.match(/cifraclub\.com(?:\.br)?\/([^\/?#]+)\//i) || [])[1];
+    if (slug && (!artista || /menu|principal|cifra club/i.test(artista))) artista = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    if (aplicarImportacio(r, desferEntitatsText(j.titol || ''), artista)) tancarModal('modalImportar');
       return;
     }
     j = { ok: false, error: 'buit' };
+  }
+  if (/UrlFetchApp|external_request|permiso|permission/i.test(j.detall || '')) {
+    $('imp-estat').textContent = "⚠️ L'script de Google encara no té permís per llegir pàgines web. Cal autoritzar-lo una vegada des de script.google.com (botó ▶ Executa).";
+    return;
   }
   const m = j.error === 'domini' ? "Ara per ara només puc llegir enllaços de Cifra Club i Ultimate Guitar."
     : j.error === 'codi' ? "Cal actualitzar l'script de Google amb la versió nova (i fer «Versió nova» a Gestiona les implementacions)."
@@ -3104,7 +3183,7 @@ function estatActual() {
   return {
     versio: 2, titol: $('titolInput').value, artista: $('artistaInput').value, acords: $('acordsInput').value, ordre: $('ordreInput').value,
     marcaPeu: $('marcaPeuInput').value, marca: $('opt-marca').value, marcaPropia: marcaPropia,
-    opcions: { ordre: $('opt-ordre').checked, ilustracio: $('opt-ilustracio').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
+    opcions: { ordre: $('opt-ordre').checked, ilustracio: $('opt-ilustracio').checked, colors: $('opt-colors').checked, logo: $('opt-logo').checked, inst: $('opt-inst').checked, pal: $('opt-pal').checked, ritmica: $('opt-ritmica').checked, tapar: cordesTapades, celleta: celleta, taparMode: modeTaparActual, taparDoble: $('opt-tapar-doble').checked },
     items: items.map(({ id, ...resta }) => resta),
     estructura: estructura
   };
@@ -3119,6 +3198,7 @@ function carregarEstat(e) {
   $('opt-ordre').checked = o.ordre !== false; $('opt-colors').checked = o.colors !== false; $('opt-logo').checked = o.logo !== false;
   $('opt-inst').checked = !!o.inst; $('opt-pal').checked = !!o.pal; $('opt-ritmica').checked = o.ritmica !== false;
   $('opt-ilustracio').checked = o.ilustracio !== false;
+  celleta = parseInt(o.celleta) || 0; omplirSelectsCelleta(); $('celleta-ajuda').style.display = celleta ? 'block' : 'none';
   cordesTapades = parseInt(o.tapar) || 0; taparPreguntat = 'tapar' in o; $('opt-tapar-doble').checked = !!o.taparDoble; modeTapar(o.taparMode === 'visibles' ? 'visibles' : 'tapar');
   estructura = Object.assign(estBuida(), e.estructura || {});
   $('marcaPeuEst').value = $('marcaPeuInput').value;
@@ -3156,6 +3236,7 @@ function netejarTot() {
   items = [];
   estructura = estBuida(); $('marcaPeuEst').value = ''; if (modeActual === 'est') estRender();
   cordesTapades = 0; taparPreguntat = false; actualitzarResumTapar();
+  celleta = 0; omplirSelectsCelleta(); $('celleta-ajuda').style.display = 'none';
   ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput'].forEach(id => $(id).value = '');
   $('titolMostrat').innerText = 'TÍTOL DE LA CANÇÓ';
   renderTot();
@@ -3163,6 +3244,7 @@ function netejarTot() {
 
 // Inici
 (function inici() {
+  omplirSelectsCelleta();
   // sempre comencem en blanc (també netegem el que el navegador hagi pogut recordar)
   ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput', 'marcaPeuInput', 'marcaPeuEst'].forEach(id => $(id).value = '');
   $('titolMostrat').innerText = 'TÍTOL DE LA CANÇÓ';
