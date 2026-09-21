@@ -264,15 +264,15 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
   <div class="sidebar-content">
     <div class="grup-control">
       <label for="titolInput">Títol de la cançó</label>
-      <input type="text" id="titolInput" placeholder="Ex: Corren" oninput="actualitzarCapcalera()">
+      <input type="text" id="titolInput" placeholder="Escriu el títol" autocomplete="off" oninput="actualitzarCapcalera()">
     </div>
     <div class="grup-control">
       <label for="artistaInput">Grup / artista</label>
-      <input type="text" id="artistaInput" placeholder="Ex: Gossos" oninput="actualitzarCapcalera()">
+      <input type="text" id="artistaInput" placeholder="Escriu el grup o artista" autocomplete="off" oninput="actualitzarCapcalera()">
     </div>
     <div class="grup-control">
       <label for="acordsInput">Acords de la cançó</label>
-      <input type="text" id="acordsInput" placeholder="Ex: D- F C D-   (o D5 F5 C5)">
+      <input type="text" id="acordsInput" placeholder="Escriu els acords separats per espais" autocomplete="off">
       <p class="ajuda">Majors: <b>D</b> · menors: <b>D-</b> o <b>Dm</b> · power chords: <b>D5</b> · alteracions: <b>F#</b>, <b>Bb</b>.</p>
       <button class="btn-accio" style="background:#6f42c1" onclick="omplirDesDeAcords()">⚡ Omplir guitarra i teclat</button>
     </div>
@@ -312,7 +312,7 @@ body.previsualitzant .pagina { margin: 0 auto 24px; box-shadow: 0 4px 18px rgba(
     <div class="hr-div"></div>
     <label>📄 Opcions de pàgina</label>
     <label class="check"><input type="checkbox" id="opt-ordre" checked onchange="desar()"> Mostrar «Ordre d'acords» (guitarra i teclat)</label>
-    <input type="text" id="ordreInput" placeholder="Ordre d'acords, ex: D- / F / C / D-" oninput="desar()">
+    <input type="text" id="ordreInput" placeholder="Ordre d'acords (opcional)" autocomplete="off" oninput="desar()">
     <label class="check"><input type="checkbox" id="opt-colors" checked onchange="renderTot()"> Noms d'acords en color</label>
     <label class="check"><input type="checkbox" id="opt-logo" checked onchange="renderMarca()"> Imatge de marca a la capçalera</label>
     <div class="marca-fila">
@@ -2104,7 +2104,7 @@ document.addEventListener('keydown', e => {
    BIBLIOTECA COMPARTIDA (Google Drive via Apps Script)
    ========================================================= */
 // Adreça de l'aplicació web de Google Apps Script (Implementa → Aplicació web).
-const URL_BIBLIOTECA = '';
+const URL_BIBLIOTECA = 'https://script.google.com/macros/s/AKfycbw2lhxNhxvT2EJGhQhpFlOAhT3M_RIrqN_tDQS0oChLULzyeX5dOP_HZLehm6SfXeWS/exec';
 const CLAU_CODI = 'generador-diagrames-codi', CLAU_AUTOR = 'generador-diagrames-autor';
 let biblioLlista = [];
 
@@ -2253,7 +2253,7 @@ function recuperarUltima() {
   carregarEstat(ultimaSessio);
   $('btn-recuperar').style.display = 'none';
 }
-function desar() { programarPagines(); try { localStorage.setItem(CLAU_LOCAL, JSON.stringify(estatActual())); } catch (e) { } }
+function desar() { programarPagines(); if (!items.length) return; /* no esborrem l'última cançó desada en començar en blanc */ try { localStorage.setItem(CLAU_LOCAL, JSON.stringify(estatActual())); } catch (e) { } }
 function exportarJSON() {
   const nom = (textCapcalera() || 'canco').toLowerCase().replace(/[^a-z0-9àèéíïòóúüç]+/gi, '-').replace(/^-|-$/g, '');
   const blob = new Blob([JSON.stringify(estatActual(), null, 2)], { type: 'application/json' });
@@ -2279,7 +2279,10 @@ function netejarTot() {
 
 // Inici
 (function inici() {
-  // sempre comencem en blanc; l'última cançó es pot recuperar amb el botó
+  // sempre comencem en blanc (també netegem el que el navegador hagi pogut recordar)
+  ['titolInput', 'artistaInput', 'acordsInput', 'ordreInput', 'marcaPeuInput'].forEach(id => $(id).value = '');
+  $('titolMostrat').innerText = 'TÍTOL DE LA CANÇÓ';
+  // l'última cançó es pot recuperar amb el botó
   let desada = null;
   try { desada = JSON.parse(localStorage.getItem(CLAU_LOCAL)); } catch (err) { }
   if (desada && Array.isArray(desada.items) && desada.items.length) {
