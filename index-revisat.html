@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de Diagrames Musicals</title>
+<title>Generador de Diagrames Musicals · Rockin</title>
+<link rel="icon" href="https://rockin.cat/wp-content/uploads/2022/07/cropped-rockin-favicon-32x32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
@@ -346,6 +349,34 @@ body:not(.mode-est) .nomes-est { display: none !important; }
 .pv-acords span.buida { background: #fff; border-color: transparent; }
 .pv-veu { flex: 1; padding: 2mm 2mm 3mm; white-space: pre-wrap; font-size: 10pt; line-height: 1.3; min-height: 10mm; }
 
+/* =========================================================
+   IMATGE DE MARCA ROCKIN (com rockin.cat i l'Entrenament auditiu)
+   ========================================================= */
+:root { --rk-groc: #FDBE10; --rk-tinta: #221F20; --rk-fons: #FAF8F3; --rk-suau: #F4F1EA; --rk-linia: #E2DDD3; --rk-gris: #6B6461; }
+body { font-family: 'Ubuntu', Helvetica, Arial, sans-serif; background: var(--rk-fons); color: var(--rk-tinta); padding-top: 68px; }
+.topbar { position: fixed; top: 0; left: 0; right: 0; height: 68px; z-index: 1500; background: var(--rk-groc); color: var(--rk-tinta); display: flex; align-items: center; gap: 16px; padding: 0 20px; }
+.topbar .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; }
+.topbar .brand img { height: 44px; width: auto; display: block; }
+.topbar .brand span { font-weight: 500; font-size: 14px; text-transform: uppercase; letter-spacing: .08em; opacity: .8; }
+.sidebar { background: #fff; border-right: 1px solid var(--rk-linia); box-shadow: none; }
+.sidebar-header { display: none; }
+.pestanyes { background: var(--rk-tinta); }
+.pestanyes button { color: #d9d3c7; font-family: inherit; }
+.pestanyes button.actiu { color: var(--rk-groc); background: var(--rk-tinta); border-bottom-color: var(--rk-groc); }
+label { color: var(--rk-gris); letter-spacing: .03em; }
+input, select, textarea { font-family: inherit; border-color: var(--rk-linia); border-radius: 2px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--rk-groc); outline-offset: 0; border-color: var(--rk-tinta); }
+.btn-accio { border-radius: 2px; font-family: inherit; }
+.btn-accio:not(.btn-outline):not([style*="background"]):not(.btn-imprimir):not(.btn-netejar) { background: var(--rk-tinta); color: var(--rk-groc); }
+.btn-outline { border-color: var(--rk-linia); }
+.btn-imprimir { background: var(--rk-groc); color: var(--rk-tinta); }
+.titol-canco-global, .modal-contingut h2, .seccio-embolcall h2, .titol-seccio { font-family: 'Lora', Georgia, serif; }
+.titol-canco-global { letter-spacing: -.01em; }
+.seccio-embolcall { border-radius: 4px; border: 1px solid var(--rk-linia); box-shadow: none; }
+.acord-item { border-radius: 4px; }
+.modal-contingut { border-radius: 4px; }
+.hr-div { background: var(--rk-linia); }
+
 @media print {
   @page vertical { size: A4 portrait; margin: 0; }
   @page { size: A4 landscape; margin: 0; }
@@ -357,6 +388,10 @@ body:not(.mode-est) .nomes-est { display: none !important; }
 </style>
 </head>
 <body>
+
+<header class="topbar">
+  <a class="brand" href="https://rockin.cat" target="_blank" rel="noopener"><img src="https://rockin.cat/wp-content/uploads/2022/07/rockin-logo.svg" alt="Rockin" onerror="this.outerHTML='<b style=&quot;font-family:Lora,serif;font-size:30px;letter-spacing:.02em&quot;>ROCKIN</b>'"><span>Generador de diagrames</span></a>
+</header>
 
 <div class="sidebar">
   <div class="sidebar-header"><img src="marca/rockin-logo.png" alt="" onerror="this.style.display='none'"><h1>Diagrames Musicals</h1></div>
