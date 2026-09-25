@@ -1,0 +1,22 @@
+{
+  "title": "Generador de diagrames musicals Rockin / Rockin Music Diagram Generator",
+  "description": "<p><b>CA:</b> Eina web per crear diagrames d'acords de guitarra i teclat per a materials didàctics de música, amb l'estil gràfic de Rockin.</p><p><b>EN:</b> Web tool for creating guitar and keyboard chord diagrams for music teaching materials, in the Rockin visual style.</p>",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "González Fernández, Laia",
+      "affiliation": "Rockin.cat SCCL"
+    }
+  ],
+  "license": "cc-by-nc-sa-4.0",
+  "access_right": "open",
+  "keywords": [
+    "music education",
+    "educació musical",
+    "chord diagrams",
+    "guitar",
+    "keyboard",
+    "Rockin"
+  ],
+  "language": "cat"
+}
